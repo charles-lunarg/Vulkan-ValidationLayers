@@ -151,8 +151,8 @@ script:
       VVL_REG_DIR=${TRAVIS_BUILD_DIR}/external/Vulkan-Headers/registry
       VT_SCRIPTS_DIR=${TRAVIS_BUILD_DIR}/external/Vulkan-Tools/scripts
       python3 ${TRAVIS_BUILD_DIR}/scripts/lvl_genvk.py -registry ${VVL_REG_DIR}/vk.xml vk_typemap_helper.h
-      python3 ${VT_SCRIPTS_DIR}/kvt_genvk.py -registry ${VVL_REG_DIR}/vk.xml mock_icd.cpp
-      python3 ${VT_SCRIPTS_DIR}/kvt_genvk.py -registry ${VVL_REG_DIR}/vk.xml mock_icd.h
+      python3 ${VT_SCRIPTS_DIR}/kvt_genvk.py -registry -${VVL_REG_DIR}/vk.xml -directory . mock_icd.cpp
+      python3 ${VT_SCRIPTS_DIR}/kvt_genvk.py -registry ${VVL_REG_DIR}/vk.xml -directory . mock_icd.h
       popd
       cmake --build . --target VkICD_mock_icd -- -j $core_count
       cp ../icd/linux/VkICD_mock_icd.json icd
