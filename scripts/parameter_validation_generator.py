@@ -1741,6 +1741,7 @@ std::vector<{groupName}> ValidationObject::ValidParamValues() const {{
                 func_sig = self.getCmdDef(command) + ' const {\n'
                 func_sig = func_sig.split('VKAPI_CALL vk')[1]
                 cmdDef = 'bool StatelessValidation::PreCallValidate' + func_sig
+                cmdDef += '    ZoneScoped;\n'
                 cmdDef += '%sbool skip = false;\n' % indent
                 if isinstance(command.promotion_info, list):
                     version_flag = command.promotion_info[1]

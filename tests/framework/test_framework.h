@@ -45,6 +45,8 @@ class VkTestFramework : public ::testing::Test {
     static bool optionMatch(const char *option, char *optionLine);
     static void InitArgs(int *argc, char *argv[]);
     static void Finish();
+    void SetUp() override;
+    void TearDown() override;
 
     bool GLSLtoSPV(VkPhysicalDeviceLimits const *const device_limits, const VkShaderStageFlagBits shader_type, const char *pshader,
                    std::vector<uint32_t> &spv, bool debug = false, const spv_target_env spv_env = SPV_ENV_VULKAN_1_0);

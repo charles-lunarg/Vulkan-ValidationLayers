@@ -123,6 +123,7 @@ class DispatchTableHelperOutputGenerator(OutputGenerator):
         preamble += '#include <string>\n'
         preamble += '#include "vk_layer_dispatch_table.h"\n'
         preamble += '#include "vk_extension_helper.h"\n'
+        preamble += '#include <tracy/Tracy.hpp>\n'
 
         write(copyright, file=self.outFile)
         write(preamble, file=self.outFile)
@@ -288,11 +289,13 @@ class DispatchTableHelperOutputGenerator(OutputGenerator):
         if table_type == 'device':
             entries = self.device_dispatch_list
             table += 'static inline void layer_init_device_dispatch_table(VkDevice device, VkLayerDispatchTable *table, PFN_vkGetDeviceProcAddr gpa) {\n'
+            table += '    ZoneScoped;\n'
             table += '    memset(table, 0, sizeof(*table));\n'
             table += '    // Device function pointers\n'
         else:
             entries = self.instance_dispatch_list
             table += 'static inline void layer_init_instance_dispatch_table(VkInstance instance, VkLayerInstanceDispatchTable *table, PFN_vkGetInstanceProcAddr gpa) {\n'
+            table += '    ZoneScoped;\n'
             table += '    memset(table, 0, sizeof(*table));\n'
             table += '    // Instance function pointers\n'
             table += '    table->GetPhysicalDeviceProcAddr = (PFN_GetPhysicalDeviceProcAddr) gpa(instance, "vk_layerGetPhysicalDeviceProcAddr");\n'

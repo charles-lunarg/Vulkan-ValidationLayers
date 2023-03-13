@@ -143,7 +143,9 @@ const char* DepReasonToString(ExtDeprecationReason reason) {
 
 bool BestPractices::ValidateDeprecatedExtensions(const char* api_name, const char* extension_name, uint32_t version,
                                                  const char* vuid) const {
+    ZoneScoped;
     bool skip = false;
+
     auto dep_info_it = deprecated_extensions.find(extension_name);
     if (dep_info_it != deprecated_extensions.end()) {
         auto dep_info = dep_info_it->second;
@@ -171,6 +173,7 @@ bool BestPractices::ValidateDeprecatedExtensions(const char* api_name, const cha
 
 bool BestPractices::ValidateSpecialUseExtensions(const char* api_name, const char* extension_name,
                                                  const SpecialUseVUIDs& special_use_vuids) const {
+    ZoneScoped;
     bool skip = false;
     auto dep_info_it = special_use_extensions.find(extension_name);
 
@@ -208,6 +211,7 @@ bool BestPractices::ValidateSpecialUseExtensions(const char* api_name, const cha
 
 bool BestPractices::PreCallValidateCreateInstance(const VkInstanceCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator,
                                                   VkInstance* pInstance) const {
+    ZoneScoped;
     bool skip = false;
 
     for (uint32_t i = 0; i < pCreateInfo->enabledExtensionCount; i++) {
@@ -228,6 +232,7 @@ bool BestPractices::PreCallValidateCreateInstance(const VkInstanceCreateInfo* pC
 
 bool BestPractices::PreCallValidateCreateDevice(VkPhysicalDevice physicalDevice, const VkDeviceCreateInfo* pCreateInfo,
                                                 const VkAllocationCallbacks* pAllocator, VkDevice* pDevice) const {
+    ZoneScoped;
     bool skip = false;
 
     // get API version of physical device passed when creating device.
@@ -309,6 +314,7 @@ bool BestPractices::PreCallValidateCreateDevice(VkPhysicalDevice physicalDevice,
 
 bool BestPractices::PreCallValidateCreateBuffer(VkDevice device, const VkBufferCreateInfo* pCreateInfo,
                                                 const VkAllocationCallbacks* pAllocator, VkBuffer* pBuffer) const {
+    ZoneScoped;
     bool skip = false;
 
     if ((pCreateInfo->queueFamilyIndexCount > 1) && (pCreateInfo->sharingMode == VK_SHARING_MODE_EXCLUSIVE)) {
@@ -327,6 +333,7 @@ bool BestPractices::PreCallValidateCreateBuffer(VkDevice device, const VkBufferC
 
 bool BestPractices::PreCallValidateCreateImage(VkDevice device, const VkImageCreateInfo* pCreateInfo,
                                                const VkAllocationCallbacks* pAllocator, VkImage* pImage) const {
+    ZoneScoped;
     bool skip = false;
 
     if ((pCreateInfo->queueFamilyIndexCount > 1) && (pCreateInfo->sharingMode == VK_SHARING_MODE_EXCLUSIVE)) {
@@ -449,6 +456,7 @@ bool BestPractices::PreCallValidateCreateImage(VkDevice device, const VkImageCre
 
 bool BestPractices::PreCallValidateCreateSwapchainKHR(VkDevice device, const VkSwapchainCreateInfoKHR* pCreateInfo,
                                                       const VkAllocationCallbacks* pAllocator, VkSwapchainKHR* pSwapchain) const {
+    ZoneScoped;
     bool skip = false;
 
     const auto* bp_pd_state = GetPhysicalDeviceState();
@@ -510,6 +518,7 @@ bool BestPractices::PreCallValidateCreateSharedSwapchainsKHR(VkDevice device, ui
                                                              const VkSwapchainCreateInfoKHR* pCreateInfos,
                                                              const VkAllocationCallbacks* pAllocator,
                                                              VkSwapchainKHR* pSwapchains) const {
+    ZoneScoped;
     bool skip = false;
 
     for (uint32_t i = 0; i < swapchainCount; i++) {
@@ -528,6 +537,7 @@ bool BestPractices::PreCallValidateCreateSharedSwapchainsKHR(VkDevice device, ui
 
 bool BestPractices::PreCallValidateCreateRenderPass(VkDevice device, const VkRenderPassCreateInfo* pCreateInfo,
                                                     const VkAllocationCallbacks* pAllocator, VkRenderPass* pRenderPass) const {
+    ZoneScoped;
     bool skip = false;
 
     for (uint32_t i = 0; i < pCreateInfo->attachmentCount; ++i) {
@@ -581,6 +591,7 @@ bool BestPractices::PreCallValidateCreateRenderPass(VkDevice device, const VkRen
 
 bool BestPractices::ValidateAttachments(const VkRenderPassCreateInfo2* rpci, uint32_t attachmentCount,
                                         const VkImageView* image_views) const {
+    ZoneScoped;
     bool skip = false;
 
     // Check for non-transient attachments that should be transient and vice versa
@@ -634,6 +645,7 @@ bool BestPractices::ValidateAttachments(const VkRenderPassCreateInfo2* rpci, uin
 
 bool BestPractices::PreCallValidateCreateFramebuffer(VkDevice device, const VkFramebufferCreateInfo* pCreateInfo,
                                                      const VkAllocationCallbacks* pAllocator, VkFramebuffer* pFramebuffer) const {
+    ZoneScoped;
     bool skip = false;
 
     auto rp_state = Get<RENDER_PASS_STATE>(pCreateInfo->renderPass);
@@ -646,6 +658,7 @@ bool BestPractices::PreCallValidateCreateFramebuffer(VkDevice device, const VkFr
 
 bool BestPractices::PreCallValidateAllocateDescriptorSets(VkDevice device, const VkDescriptorSetAllocateInfo* pAllocateInfo,
                                                           VkDescriptorSet* pDescriptorSets, void* ads_state_data) const {
+    ZoneScoped;
     bool skip = false;
     skip |= ValidationStateTracker::PreCallValidateAllocateDescriptorSets(device, pAllocateInfo, pDescriptorSets, ads_state_data);
 
@@ -697,6 +710,7 @@ bool BestPractices::PreCallValidateAllocateDescriptorSets(VkDevice device, const
 
 void BestPractices::ManualPostCallRecordAllocateDescriptorSets(VkDevice device, const VkDescriptorSetAllocateInfo* pAllocateInfo,
                                                                VkDescriptorSet* pDescriptorSets, VkResult result, void* ads_state) {
+    ZoneScoped;
     if (result == VK_SUCCESS) {
         auto pool_state = Get<bp_state::DescriptorPool>(pAllocateInfo->descriptorPool);
         if (pool_state) {
@@ -714,6 +728,7 @@ void BestPractices::ManualPostCallRecordAllocateDescriptorSets(VkDevice device, 
 
 void BestPractices::PostCallRecordFreeDescriptorSets(VkDevice device, VkDescriptorPool descriptorPool, uint32_t descriptorSetCount,
                                                      const VkDescriptorSet* pDescriptorSets, VkResult result) {
+    ZoneScoped;
     ValidationStateTracker::PostCallRecordFreeDescriptorSets(device, descriptorPool, descriptorSetCount, pDescriptorSets, result);
     if (result == VK_SUCCESS) {
         auto pool_state = Get<bp_state::DescriptorPool>(descriptorPool);
@@ -726,6 +741,7 @@ void BestPractices::PostCallRecordFreeDescriptorSets(VkDevice device, VkDescript
 
 void BestPractices::PreCallRecordAllocateMemory(VkDevice device, const VkMemoryAllocateInfo* pAllocateInfo,
                                                 const VkAllocationCallbacks* pAllocator, VkDeviceMemory* pMemory) {
+    ZoneScoped;
     if (VendorCheckEnabled(kBPVendorNVIDIA)) {
         WriteLockGuard guard{memory_free_events_lock_};
 
@@ -740,6 +756,7 @@ void BestPractices::PreCallRecordAllocateMemory(VkDevice device, const VkMemoryA
 
 bool BestPractices::PreCallValidateAllocateMemory(VkDevice device, const VkMemoryAllocateInfo* pAllocateInfo,
                                                   const VkAllocationCallbacks* pAllocator, VkDeviceMemory* pMemory) const {
+    ZoneScoped;
     bool skip = false;
 
     if ((Count<DEVICE_MEMORY_STATE>() + 1) > kMemoryObjectWarningLimit) {
@@ -815,6 +832,7 @@ bool BestPractices::PreCallValidateAllocateMemory(VkDevice device, const VkMemor
 void BestPractices::ManualPostCallRecordAllocateMemory(VkDevice device, const VkMemoryAllocateInfo* pAllocateInfo,
                                                        const VkAllocationCallbacks* pAllocator, VkDeviceMemory* pMemory,
                                                        VkResult result) {
+    ZoneScoped;
     if (result != VK_SUCCESS) {
         constexpr std::array error_codes = {VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_TOO_MANY_OBJECTS,
                                             VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS};
@@ -825,6 +843,7 @@ void BestPractices::ManualPostCallRecordAllocateMemory(VkDevice device, const Vk
 
 void BestPractices::ValidateReturnCodes(const char* api_name, VkResult result, vvl::span<const VkResult> error_codes,
                                         vvl::span<const VkResult> success_codes) const {
+    ZoneScoped;
     auto error = std::find(error_codes.begin(), error_codes.end(), result);
     if (error != error_codes.end()) {
         constexpr std::array common_failure_codes = {VK_ERROR_OUT_OF_DATE_KHR, VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT};
@@ -845,6 +864,7 @@ void BestPractices::ValidateReturnCodes(const char* api_name, VkResult result, v
 }
 
 void BestPractices::PreCallRecordFreeMemory(VkDevice device, VkDeviceMemory memory, const VkAllocationCallbacks* pAllocator) {
+    ZoneScoped;
     if (memory != VK_NULL_HANDLE && VendorCheckEnabled(kBPVendorNVIDIA)) {
         auto mem_info = Get<DEVICE_MEMORY_STATE>(memory);
 
@@ -865,6 +885,7 @@ void BestPractices::PreCallRecordFreeMemory(VkDevice device, VkDeviceMemory memo
 
 bool BestPractices::PreCallValidateFreeMemory(VkDevice device, VkDeviceMemory memory,
                                               const VkAllocationCallbacks* pAllocator) const {
+    ZoneScoped;
     if (memory == VK_NULL_HANDLE) return false;
     bool skip = false;
 
@@ -881,6 +902,7 @@ bool BestPractices::PreCallValidateFreeMemory(VkDevice device, VkDeviceMemory me
 }
 
 bool BestPractices::ValidateBindBufferMemory(VkBuffer buffer, VkDeviceMemory memory, const char* api_name) const {
+    ZoneScoped;
     bool skip = false;
     auto buffer_state = Get<BUFFER_STATE>(buffer);
 
@@ -910,6 +932,7 @@ bool BestPractices::ValidateBindBufferMemory(VkBuffer buffer, VkDeviceMemory mem
 
 bool BestPractices::PreCallValidateBindBufferMemory(VkDevice device, VkBuffer buffer, VkDeviceMemory memory,
                                                     VkDeviceSize memoryOffset) const {
+    ZoneScoped;
     bool skip = false;
     const char* api_name = "BindBufferMemory()";
 
@@ -920,6 +943,7 @@ bool BestPractices::PreCallValidateBindBufferMemory(VkDevice device, VkBuffer bu
 
 bool BestPractices::PreCallValidateBindBufferMemory2(VkDevice device, uint32_t bindInfoCount,
                                                      const VkBindBufferMemoryInfo* pBindInfos) const {
+    ZoneScoped;
     char api_name[64];
     bool skip = false;
 
@@ -933,6 +957,7 @@ bool BestPractices::PreCallValidateBindBufferMemory2(VkDevice device, uint32_t b
 
 bool BestPractices::PreCallValidateBindBufferMemory2KHR(VkDevice device, uint32_t bindInfoCount,
                                                         const VkBindBufferMemoryInfo* pBindInfos) const {
+    ZoneScoped;
     char api_name[64];
     bool skip = false;
 
@@ -945,6 +970,7 @@ bool BestPractices::PreCallValidateBindBufferMemory2KHR(VkDevice device, uint32_
 }
 
 bool BestPractices::ValidateBindImageMemory(VkImage image, VkDeviceMemory memory, const char* api_name) const {
+    ZoneScoped;
     bool skip = false;
     auto image_state = Get<IMAGE_STATE>(image);
 
@@ -1009,6 +1035,7 @@ bool BestPractices::ValidateBindImageMemory(VkImage image, VkDeviceMemory memory
 
 bool BestPractices::PreCallValidateBindImageMemory(VkDevice device, VkImage image, VkDeviceMemory memory,
                                                    VkDeviceSize memoryOffset) const {
+    ZoneScoped;
     bool skip = false;
     const char* api_name = "vkBindImageMemory()";
 
@@ -1019,6 +1046,7 @@ bool BestPractices::PreCallValidateBindImageMemory(VkDevice device, VkImage imag
 
 bool BestPractices::PreCallValidateBindImageMemory2(VkDevice device, uint32_t bindInfoCount,
                                                     const VkBindImageMemoryInfo* pBindInfos) const {
+    ZoneScoped;
     char api_name[64];
     bool skip = false;
 
@@ -1034,6 +1062,7 @@ bool BestPractices::PreCallValidateBindImageMemory2(VkDevice device, uint32_t bi
 
 bool BestPractices::PreCallValidateBindImageMemory2KHR(VkDevice device, uint32_t bindInfoCount,
                                                        const VkBindImageMemoryInfo* pBindInfos) const {
+    ZoneScoped;
     char api_name[64];
     bool skip = false;
 
@@ -1046,6 +1075,7 @@ bool BestPractices::PreCallValidateBindImageMemory2KHR(VkDevice device, uint32_t
 }
 
 void BestPractices::PreCallRecordSetDeviceMemoryPriorityEXT(VkDevice device, VkDeviceMemory memory, float priority) {
+    ZoneScoped;
     auto mem_info = std::static_pointer_cast<bp_state::DeviceMemory>(Get<DEVICE_MEMORY_STATE>(memory));
     mem_info->dynamic_priority.emplace(priority);
 }
@@ -1053,6 +1083,7 @@ void BestPractices::PreCallRecordSetDeviceMemoryPriorityEXT(VkDevice device, VkD
 bool BestPractices::PreCallValidateGetVideoSessionMemoryRequirementsKHR(
     VkDevice device, VkVideoSessionKHR videoSession, uint32_t* pMemoryRequirementsCount,
     VkVideoSessionMemoryRequirementsKHR* pMemoryRequirements) const {
+    ZoneScoped;
     bool skip = false;
 
     auto vs_state = Get<VIDEO_SESSION_STATE>(videoSession);
@@ -1072,6 +1103,7 @@ bool BestPractices::PreCallValidateGetVideoSessionMemoryRequirementsKHR(
 bool BestPractices::PreCallValidateBindVideoSessionMemoryKHR(VkDevice device, VkVideoSessionKHR videoSession,
                                                              uint32_t bindSessionMemoryInfoCount,
                                                              const VkBindVideoSessionMemoryInfoKHR* pBindSessionMemoryInfos) const {
+    ZoneScoped;
     bool skip = false;
 
     auto vs_state = Get<VIDEO_SESSION_STATE>(videoSession);
@@ -1114,6 +1146,7 @@ static inline bool FormatHasFullThroughputBlendingArm(VkFormat format) {
 
 bool BestPractices::ValidateMultisampledBlendingArm(uint32_t createInfoCount,
                                                     const VkGraphicsPipelineCreateInfo* pCreateInfos) const {
+    ZoneScoped;
     bool skip = false;
 
     for (uint32_t i = 0; i < createInfoCount; i++) {
@@ -1163,6 +1196,7 @@ bool BestPractices::PreCallValidateCreateGraphicsPipelines(VkDevice device, VkPi
                                                            const VkGraphicsPipelineCreateInfo* pCreateInfos,
                                                            const VkAllocationCallbacks* pAllocator, VkPipeline* pPipelines,
                                                            void* cgpl_state_data) const {
+    ZoneScoped;
     bool skip = StateTracker::PreCallValidateCreateGraphicsPipelines(device, pipelineCache, createInfoCount, pCreateInfos,
                                                                      pAllocator, pPipelines, cgpl_state_data);
     if (skip) {
@@ -1247,6 +1281,7 @@ bool BestPractices::PreCallValidateCreateGraphicsPipelines(VkDevice device, VkPi
 
 static std::vector<bp_state::AttachmentInfo> GetAttachmentAccess(const safe_VkGraphicsPipelineCreateInfo& create_info,
                                                                  std::shared_ptr<const RENDER_PASS_STATE>& rp) {
+    ZoneScoped;
     std::vector<bp_state::AttachmentInfo> result;
     if (!rp || rp->UsesDynamicRendering()) {
         return result;
@@ -1298,6 +1333,7 @@ std::shared_ptr<PIPELINE_STATE> BestPractices::CreateGraphicsPipelineState(const
                                                                            std::shared_ptr<const RENDER_PASS_STATE>&& render_pass,
                                                                            std::shared_ptr<const PIPELINE_LAYOUT_STATE>&& layout,
                                                                            CreateShaderModuleStates* csm_states) const {
+    ZoneScoped;
     return std::static_pointer_cast<PIPELINE_STATE>(std::make_shared<bp_state::Pipeline>(
         this, pCreateInfo, create_index, std::move(render_pass), std::move(layout), csm_states));
 }
@@ -1314,6 +1350,7 @@ bool BestPractices::PreCallValidateCreateComputePipelines(VkDevice device, VkPip
                                                           const VkComputePipelineCreateInfo* pCreateInfos,
                                                           const VkAllocationCallbacks* pAllocator, VkPipeline* pPipelines,
                                                           void* ccpl_state_data) const {
+    ZoneScoped;
     bool skip = StateTracker::PreCallValidateCreateComputePipelines(device, pipelineCache, createInfoCount, pCreateInfos,
                                                                     pAllocator, pPipelines, ccpl_state_data);
 
@@ -1358,6 +1395,7 @@ bool BestPractices::PreCallValidateCreateComputePipelines(VkDevice device, VkPip
 }
 
 bool BestPractices::ValidateCreateComputePipelineArm(const VkComputePipelineCreateInfo& createInfo) const {
+    ZoneScoped;
     bool skip = false;
     auto module_state = Get<SHADER_MODULE_STATE>(createInfo.stage.module);
     if (!module_state) {  // No module if creating from module identifier
@@ -1430,6 +1468,7 @@ bool BestPractices::ValidateCreateComputePipelineArm(const VkComputePipelineCrea
 }
 
 bool BestPractices::CheckPipelineStageFlags(const std::string& api_name, VkPipelineStageFlags flags) const {
+    ZoneScoped;
     bool skip = false;
 
     if (flags & VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT) {
@@ -1444,6 +1483,7 @@ bool BestPractices::CheckPipelineStageFlags(const std::string& api_name, VkPipel
 }
 
 bool BestPractices::CheckPipelineStageFlags(const std::string& api_name, VkPipelineStageFlags2KHR flags) const {
+    ZoneScoped;
     bool skip = false;
 
     if (flags & VK_PIPELINE_STAGE_2_ALL_GRAPHICS_BIT_KHR) {
@@ -1458,6 +1498,7 @@ bool BestPractices::CheckPipelineStageFlags(const std::string& api_name, VkPipel
 }
 
 bool BestPractices::CheckDependencyInfo(const std::string& api_name, const VkDependencyInfoKHR& dep_info) const {
+    ZoneScoped;
     bool skip = false;
     auto stage_masks = sync_utils::GetGlobalStageMasks(dep_info);
 
@@ -1474,6 +1515,7 @@ bool BestPractices::CheckDependencyInfo(const std::string& api_name, const VkDep
 }
 
 void BestPractices::ManualPostCallRecordQueuePresentKHR(VkQueue queue, const VkPresentInfoKHR* pPresentInfo, VkResult result) {
+    ZoneScoped;
     for (uint32_t i = 0; i < pPresentInfo->swapchainCount; ++i) {
         auto swapchains_result = pPresentInfo->pResults ? pPresentInfo->pResults[i] : result;
         if (swapchains_result == VK_SUBOPTIMAL_KHR) {
@@ -1496,6 +1538,7 @@ void BestPractices::ManualPostCallRecordQueuePresentKHR(VkQueue queue, const VkP
 
 bool BestPractices::PreCallValidateQueueSubmit(VkQueue queue, uint32_t submitCount, const VkSubmitInfo* pSubmits,
                                                VkFence fence) const {
+    ZoneScoped;
     bool skip = false;
 
     for (uint32_t submit = 0; submit < submitCount; submit++) {
@@ -1520,6 +1563,7 @@ bool BestPractices::PreCallValidateQueueSubmit(VkQueue queue, uint32_t submitCou
 
 bool BestPractices::PreCallValidateQueueSubmit2KHR(VkQueue queue, uint32_t submitCount, const VkSubmitInfo2KHR* pSubmits,
                                                    VkFence fence) const {
+    ZoneScoped;
     bool skip = false;
 
     for (uint32_t submit = 0; submit < submitCount; submit++) {
@@ -1533,6 +1577,7 @@ bool BestPractices::PreCallValidateQueueSubmit2KHR(VkQueue queue, uint32_t submi
 
 bool BestPractices::PreCallValidateQueueSubmit2(VkQueue queue, uint32_t submitCount, const VkSubmitInfo2* pSubmits,
                                                 VkFence fence) const {
+    ZoneScoped;
     bool skip = false;
 
     for (uint32_t submit = 0; submit < submitCount; submit++) {
@@ -1546,6 +1591,7 @@ bool BestPractices::PreCallValidateQueueSubmit2(VkQueue queue, uint32_t submitCo
 
 bool BestPractices::PreCallValidateCreateCommandPool(VkDevice device, const VkCommandPoolCreateInfo* pCreateInfo,
                                                      const VkAllocationCallbacks* pAllocator, VkCommandPool* pCommandPool) const {
+    ZoneScoped;
     bool skip = false;
 
     if (pCreateInfo->flags & VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT) {
@@ -1560,6 +1606,7 @@ bool BestPractices::PreCallValidateCreateCommandPool(VkDevice device, const VkCo
 
 bool BestPractices::PreCallValidateAllocateCommandBuffers(VkDevice device, const VkCommandBufferAllocateInfo* pAllocateInfo,
                                                           VkCommandBuffer* pCommandBuffers) const {
+    ZoneScoped;
     bool skip = false;
 
     auto cp_state = Get<COMMAND_POOL_STATE>(pAllocateInfo->commandPool);
@@ -1581,6 +1628,7 @@ bool BestPractices::PreCallValidateAllocateCommandBuffers(VkDevice device, const
 }
 
 void BestPractices::PreCallRecordBeginCommandBuffer(VkCommandBuffer commandBuffer, const VkCommandBufferBeginInfo* pBeginInfo) {
+    ZoneScoped;
     StateTracker::PreCallRecordBeginCommandBuffer(commandBuffer, pBeginInfo);
 
     auto cb = GetWrite<bp_state::CommandBuffer>(commandBuffer);
@@ -1592,6 +1640,7 @@ void BestPractices::PreCallRecordBeginCommandBuffer(VkCommandBuffer commandBuffe
 
 bool BestPractices::PreCallValidateBeginCommandBuffer(VkCommandBuffer commandBuffer,
                                                       const VkCommandBufferBeginInfo* pBeginInfo) const {
+    ZoneScoped;
     bool skip = false;
 
     if (pBeginInfo->flags & VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT) {
@@ -1622,6 +1671,7 @@ bool BestPractices::PreCallValidateBeginCommandBuffer(VkCommandBuffer commandBuf
 }
 
 bool BestPractices::PreCallValidateCmdSetEvent(VkCommandBuffer commandBuffer, VkEvent event, VkPipelineStageFlags stageMask) const {
+    ZoneScoped;
     bool skip = false;
 
     skip |= CheckPipelineStageFlags("vkCmdSetEvent", stageMask);
@@ -1641,6 +1691,7 @@ bool BestPractices::PreCallValidateCmdSetEvent2(VkCommandBuffer commandBuffer, V
 
 bool BestPractices::PreCallValidateCmdResetEvent(VkCommandBuffer commandBuffer, VkEvent event,
                                                  VkPipelineStageFlags stageMask) const {
+    ZoneScoped;
     bool skip = false;
 
     skip |= CheckPipelineStageFlags("vkCmdResetEvent", stageMask);
@@ -1650,6 +1701,7 @@ bool BestPractices::PreCallValidateCmdResetEvent(VkCommandBuffer commandBuffer, 
 
 bool BestPractices::PreCallValidateCmdResetEvent2KHR(VkCommandBuffer commandBuffer, VkEvent event,
                                                      VkPipelineStageFlags2KHR stageMask) const {
+    ZoneScoped;
     bool skip = false;
 
     skip |= CheckPipelineStageFlags("vkCmdResetEvent2KHR", stageMask);
@@ -1659,6 +1711,7 @@ bool BestPractices::PreCallValidateCmdResetEvent2KHR(VkCommandBuffer commandBuff
 
 bool BestPractices::PreCallValidateCmdResetEvent2(VkCommandBuffer commandBuffer, VkEvent event,
                                                   VkPipelineStageFlags2 stageMask) const {
+    ZoneScoped;
     bool skip = false;
 
     skip |= CheckPipelineStageFlags("vkCmdResetEvent2", stageMask);
@@ -1673,6 +1726,7 @@ bool BestPractices::PreCallValidateCmdWaitEvents(VkCommandBuffer commandBuffer, 
                                                  const VkBufferMemoryBarrier* pBufferMemoryBarriers,
                                                  uint32_t imageMemoryBarrierCount,
                                                  const VkImageMemoryBarrier* pImageMemoryBarriers) const {
+    ZoneScoped;
     bool skip = false;
 
     skip |= CheckPipelineStageFlags("vkCmdWaitEvents", srcStageMask);
@@ -1683,6 +1737,7 @@ bool BestPractices::PreCallValidateCmdWaitEvents(VkCommandBuffer commandBuffer, 
 
 bool BestPractices::PreCallValidateCmdWaitEvents2KHR(VkCommandBuffer commandBuffer, uint32_t eventCount, const VkEvent* pEvents,
                                                      const VkDependencyInfoKHR* pDependencyInfos) const {
+    ZoneScoped;
     bool skip = false;
     for (uint32_t i = 0; i < eventCount; i++) {
         skip = CheckDependencyInfo("vkCmdWaitEvents2KHR", pDependencyInfos[i]);
@@ -1693,6 +1748,7 @@ bool BestPractices::PreCallValidateCmdWaitEvents2KHR(VkCommandBuffer commandBuff
 
 bool BestPractices::PreCallValidateCmdWaitEvents2(VkCommandBuffer commandBuffer, uint32_t eventCount, const VkEvent* pEvents,
                                                   const VkDependencyInfo* pDependencyInfos) const {
+    ZoneScoped;
     bool skip = false;
     for (uint32_t i = 0; i < eventCount; i++) {
         skip = CheckDependencyInfo("vkCmdWaitEvents2", pDependencyInfos[i]);
@@ -1703,6 +1759,7 @@ bool BestPractices::PreCallValidateCmdWaitEvents2(VkCommandBuffer commandBuffer,
 
 bool BestPractices::ValidateAccessLayoutCombination(const std::string& api_name, VkAccessFlags2 access, VkImageLayout layout,
                                                     VkImageAspectFlags aspect) const {
+    ZoneScoped;
     bool skip = false;
 
     const VkAccessFlags2 all = vvl::kU64Max;  // core validation is responsible for detecting undefined flags.
@@ -1798,6 +1855,7 @@ bool BestPractices::ValidateAccessLayoutCombination(const std::string& api_name,
 bool BestPractices::ValidateImageMemoryBarrier(const std::string& api_name, VkImageLayout oldLayout, VkImageLayout newLayout,
                                                VkAccessFlags2 srcAccessMask, VkAccessFlags2 dstAccessMask,
                                                VkImageAspectFlags aspectMask) const {
+    ZoneScoped;
     bool skip = false;
 
     if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && IsImageLayoutReadOnly(newLayout)) {
@@ -1820,6 +1878,7 @@ bool BestPractices::PreCallValidateCmdPipelineBarrier(VkCommandBuffer commandBuf
                                                       const VkBufferMemoryBarrier* pBufferMemoryBarriers,
                                                       uint32_t imageMemoryBarrierCount,
                                                       const VkImageMemoryBarrier* pImageMemoryBarriers) const {
+    ZoneScoped;
     bool skip = false;
 
     skip |= CheckPipelineStageFlags("vkCmdPipelineBarrier", srcStageMask);
@@ -1887,6 +1946,7 @@ bool BestPractices::PreCallValidateCmdPipelineBarrier(VkCommandBuffer commandBuf
 
 bool BestPractices::PreCallValidateCmdPipelineBarrier2KHR(VkCommandBuffer commandBuffer,
                                                           const VkDependencyInfoKHR* pDependencyInfo) const {
+    ZoneScoped;
     bool skip = false;
 
     skip |= CheckDependencyInfo("vkCmdPipelineBarrier2KHR", *pDependencyInfo);
@@ -1900,6 +1960,7 @@ bool BestPractices::PreCallValidateCmdPipelineBarrier2KHR(VkCommandBuffer comman
 
 bool BestPractices::PreCallValidateCmdPipelineBarrier2(VkCommandBuffer commandBuffer,
                                                        const VkDependencyInfo* pDependencyInfo) const {
+    ZoneScoped;
     bool skip = false;
 
     skip |= CheckDependencyInfo("vkCmdPipelineBarrier2", *pDependencyInfo);
@@ -1913,6 +1974,7 @@ bool BestPractices::PreCallValidateCmdPipelineBarrier2(VkCommandBuffer commandBu
 
 template <typename ImageMemoryBarrier>
 bool BestPractices::ValidateCmdPipelineBarrierImageBarrier(VkCommandBuffer commandBuffer, const ImageMemoryBarrier& barrier) const {
+    ZoneScoped;
     bool skip = false;
 
     const auto cmd_state = GetRead<bp_state::CommandBuffer>(commandBuffer);
@@ -1929,6 +1991,7 @@ bool BestPractices::ValidateCmdPipelineBarrierImageBarrier(VkCommandBuffer comma
 
 bool BestPractices::PreCallValidateCmdWriteTimestamp(VkCommandBuffer commandBuffer, VkPipelineStageFlagBits pipelineStage,
                                                      VkQueryPool queryPool, uint32_t query) const {
+    ZoneScoped;
     bool skip = false;
 
     skip |= CheckPipelineStageFlags("vkCmdWriteTimestamp", static_cast<VkPipelineStageFlags>(pipelineStage));
@@ -1938,6 +2001,7 @@ bool BestPractices::PreCallValidateCmdWriteTimestamp(VkCommandBuffer commandBuff
 
 bool BestPractices::PreCallValidateCmdWriteTimestamp2KHR(VkCommandBuffer commandBuffer, VkPipelineStageFlags2KHR pipelineStage,
                                                          VkQueryPool queryPool, uint32_t query) const {
+    ZoneScoped;
     bool skip = false;
 
     skip |= CheckPipelineStageFlags("vkCmdWriteTimestamp2KHR", pipelineStage);
@@ -1947,6 +2011,7 @@ bool BestPractices::PreCallValidateCmdWriteTimestamp2KHR(VkCommandBuffer command
 
 bool BestPractices::PreCallValidateCmdWriteTimestamp2(VkCommandBuffer commandBuffer, VkPipelineStageFlags2 pipelineStage,
                                                       VkQueryPool queryPool, uint32_t query) const {
+    ZoneScoped;
     bool skip = false;
 
     skip |= CheckPipelineStageFlags("vkCmdWriteTimestamp2", pipelineStage);
@@ -1956,6 +2021,7 @@ bool BestPractices::PreCallValidateCmdWriteTimestamp2(VkCommandBuffer commandBuf
 
 void BestPractices::PreCallRecordCmdBindPipeline(VkCommandBuffer commandBuffer, VkPipelineBindPoint pipelineBindPoint,
                                                  VkPipeline pipeline) {
+    ZoneScoped;
     StateTracker::PreCallRecordCmdBindPipeline(commandBuffer, pipelineBindPoint, pipeline);
 
     auto pipeline_info = Get<PIPELINE_STATE>(pipeline);
@@ -2006,6 +2072,7 @@ void BestPractices::PreCallRecordCmdBindPipeline(VkCommandBuffer commandBuffer, 
 
 void BestPractices::PostCallRecordCmdBindPipeline(VkCommandBuffer commandBuffer, VkPipelineBindPoint pipelineBindPoint,
                                                   VkPipeline pipeline) {
+    ZoneScoped;
     StateTracker::PostCallRecordCmdBindPipeline(commandBuffer, pipelineBindPoint, pipeline);
 
     // AMD best practice
@@ -2054,6 +2121,7 @@ void BestPractices::PostCallRecordCmdBindPipeline(VkCommandBuffer commandBuffer,
 }
 
 void BestPractices::PreCallRecordCmdSetDepthCompareOp(VkCommandBuffer commandBuffer, VkCompareOp depthCompareOp) {
+    ZoneScoped;
     StateTracker::PreCallRecordCmdSetDepthCompareOp(commandBuffer, depthCompareOp);
 
     auto cb = GetWrite<bp_state::CommandBuffer>(commandBuffer);
@@ -2065,6 +2133,7 @@ void BestPractices::PreCallRecordCmdSetDepthCompareOp(VkCommandBuffer commandBuf
 }
 
 void BestPractices::PreCallRecordCmdSetDepthCompareOpEXT(VkCommandBuffer commandBuffer, VkCompareOp depthCompareOp) {
+    ZoneScoped;
     StateTracker::PreCallRecordCmdSetDepthCompareOpEXT(commandBuffer, depthCompareOp);
 
     auto cb = GetWrite<bp_state::CommandBuffer>(commandBuffer);
@@ -2076,6 +2145,7 @@ void BestPractices::PreCallRecordCmdSetDepthCompareOpEXT(VkCommandBuffer command
 }
 
 void BestPractices::PreCallRecordCmdSetDepthTestEnable(VkCommandBuffer commandBuffer, VkBool32 depthTestEnable) {
+    ZoneScoped;
     StateTracker::PreCallRecordCmdSetDepthTestEnable(commandBuffer, depthTestEnable);
 
     auto cb = GetWrite<bp_state::CommandBuffer>(commandBuffer);
@@ -2087,6 +2157,7 @@ void BestPractices::PreCallRecordCmdSetDepthTestEnable(VkCommandBuffer commandBu
 }
 
 void BestPractices::PreCallRecordCmdSetDepthTestEnableEXT(VkCommandBuffer commandBuffer, VkBool32 depthTestEnable) {
+    ZoneScoped;
     StateTracker::PreCallRecordCmdSetDepthTestEnableEXT(commandBuffer, depthTestEnable);
 
     auto cb = GetWrite<bp_state::CommandBuffer>(commandBuffer);
@@ -2099,6 +2170,7 @@ void BestPractices::PreCallRecordCmdSetDepthTestEnableEXT(VkCommandBuffer comman
 
 void BestPractices::RecordSetDepthTestState(bp_state::CommandBuffer& cmd_state, VkCompareOp new_depth_compare_op,
                                             bool new_depth_test_enable) {
+    ZoneScoped;
     assert(VendorCheckEnabled(kBPVendorNVIDIA));
 
     if (cmd_state.nv.depth_compare_op != new_depth_compare_op) {
@@ -2121,6 +2193,7 @@ void BestPractices::RecordSetDepthTestState(bp_state::CommandBuffer& cmd_state, 
 }
 
 void BestPractices::RecordCmdBeginRenderingCommon(VkCommandBuffer commandBuffer) {
+    ZoneScoped;
     auto cmd_state = GetWrite<bp_state::CommandBuffer>(commandBuffer);
     assert(cmd_state);
 
@@ -2185,6 +2258,7 @@ void BestPractices::RecordCmdBeginRenderingCommon(VkCommandBuffer commandBuffer)
 }
 
 void BestPractices::RecordCmdEndRenderingCommon(VkCommandBuffer commandBuffer) {
+    ZoneScoped;
     auto cmd_state = GetWrite<bp_state::CommandBuffer>(commandBuffer);
     assert(cmd_state);
 
@@ -2224,6 +2298,7 @@ void BestPractices::RecordCmdEndRenderingCommon(VkCommandBuffer commandBuffer) {
 
 void BestPractices::RecordBindZcullScope(bp_state::CommandBuffer& cmd_state, VkImage depth_attachment,
                                          const VkImageSubresourceRange& subresource_range) {
+    ZoneScoped;
     assert(VendorCheckEnabled(kBPVendorNVIDIA));
 
     if (depth_attachment == VK_NULL_HANDLE) {
@@ -2252,12 +2327,14 @@ void BestPractices::RecordBindZcullScope(bp_state::CommandBuffer& cmd_state, VkI
 }
 
 void BestPractices::RecordUnbindZcullScope(bp_state::CommandBuffer& cmd_state) {
+    ZoneScoped;
     assert(VendorCheckEnabled(kBPVendorNVIDIA));
 
     RecordBindZcullScope(cmd_state, VK_NULL_HANDLE, VkImageSubresourceRange{});
 }
 
 void BestPractices::RecordResetScopeZcullDirection(bp_state::CommandBuffer& cmd_state) {
+    ZoneScoped;
     assert(VendorCheckEnabled(kBPVendorNVIDIA));
 
     auto& scope = cmd_state.nv.zcull_scope;
@@ -2282,6 +2359,7 @@ static void ForEachSubresource(const IMAGE_STATE& image, const VkImageSubresourc
 
 void BestPractices::RecordResetZcullDirection(bp_state::CommandBuffer& cmd_state, VkImage depth_image,
                                               const VkImageSubresourceRange& subresource_range) {
+    ZoneScoped;
     assert(VendorCheckEnabled(kBPVendorNVIDIA));
 
     RecordSetZcullDirection(cmd_state, depth_image, subresource_range, bp_state::CommandBufferStateNV::ZcullDirection::Unknown);
@@ -2304,6 +2382,7 @@ void BestPractices::RecordResetZcullDirection(bp_state::CommandBuffer& cmd_state
 
 void BestPractices::RecordSetScopeZcullDirection(bp_state::CommandBuffer& cmd_state,
                                                  bp_state::CommandBufferStateNV::ZcullDirection mode) {
+    ZoneScoped;
     assert(VendorCheckEnabled(kBPVendorNVIDIA));
 
     auto& scope = cmd_state.nv.zcull_scope;
@@ -2313,6 +2392,7 @@ void BestPractices::RecordSetScopeZcullDirection(bp_state::CommandBuffer& cmd_st
 void BestPractices::RecordSetZcullDirection(bp_state::CommandBuffer& cmd_state, VkImage depth_image,
                                             const VkImageSubresourceRange& subresource_range,
                                             bp_state::CommandBufferStateNV::ZcullDirection mode) {
+    ZoneScoped;
     assert(VendorCheckEnabled(kBPVendorNVIDIA));
 
     const auto image_it = cmd_state.nv.zcull_per_image.find(depth_image);
@@ -2330,6 +2410,7 @@ void BestPractices::RecordSetZcullDirection(bp_state::CommandBuffer& cmd_state, 
 }
 
 void BestPractices::RecordZcullDraw(bp_state::CommandBuffer& cmd_state) {
+    ZoneScoped;
     assert(VendorCheckEnabled(kBPVendorNVIDIA));
 
     // Add one draw to each subresource depending on the current Z-cull direction
@@ -2357,8 +2438,8 @@ void BestPractices::RecordZcullDraw(bp_state::CommandBuffer& cmd_state) {
 }
 
 bool BestPractices::ValidateZcullScope(const bp_state::CommandBuffer& cmd_state) const {
+    ZoneScoped;
     assert(VendorCheckEnabled(kBPVendorNVIDIA));
-
     bool skip = false;
 
     if (cmd_state.nv.depth_test_enable) {
@@ -2371,6 +2452,7 @@ bool BestPractices::ValidateZcullScope(const bp_state::CommandBuffer& cmd_state)
 
 bool BestPractices::ValidateZcull(const bp_state::CommandBuffer& cmd_state, VkImage image,
                                   const VkImageSubresourceRange& subresource_range) const {
+    ZoneScoped;
     bool skip = false;
 
     const char* good_mode = nullptr;
@@ -2474,6 +2556,7 @@ static std::string MakeCompressedFormatListNVIDIA() {
 }
 
 void BestPractices::RecordClearColor(VkFormat format, const VkClearColorValue& clear_value) {
+    ZoneScoped;
     assert(VendorCheckEnabled(kBPVendorNVIDIA));
 
     const std::array<uint32_t, 4> raw_color = GetRawClearColor(format, clear_value);
@@ -2497,8 +2580,8 @@ void BestPractices::RecordClearColor(VkFormat format, const VkClearColorValue& c
 }
 
 bool BestPractices::ValidateClearColor(VkCommandBuffer commandBuffer, VkFormat format, const VkClearColorValue& clear_value) const {
+    ZoneScoped;
     assert(VendorCheckEnabled(kBPVendorNVIDIA));
-
     bool skip = false;
 
     const std::array<uint32_t, 4> raw_color = GetRawClearColor(format, clear_value);
@@ -2615,6 +2698,7 @@ static inline bool RenderPassUsesAttachmentAsImageOnly(const safe_VkRenderPassCr
 
 bool BestPractices::ValidateCmdBeginRenderPass(VkCommandBuffer commandBuffer, RenderPassCreateVersion rp_version,
                                                const VkRenderPassBeginInfo* pRenderPassBegin) const {
+    ZoneScoped;
     bool skip = false;
 
     if (!pRenderPassBegin) {
@@ -2720,6 +2804,7 @@ bool BestPractices::ValidateCmdBeginRenderPass(VkCommandBuffer commandBuffer, Re
 }
 
 bool BestPractices::ValidateCmdBeginRendering(VkCommandBuffer commandBuffer, const VkRenderingInfo* pRenderingInfo) const {
+    ZoneScoped;
     bool skip = false;
 
     auto cmd_state = Get<bp_state::CommandBuffer>(commandBuffer);
@@ -2748,6 +2833,7 @@ void BestPractices::QueueValidateImageView(QueueCallbacks& funcs, const char* fu
 
 void BestPractices::QueueValidateImage(QueueCallbacks& funcs, const char* function_name, std::shared_ptr<bp_state::Image>& state,
                                        IMAGE_SUBRESOURCE_USAGE_BP usage, const VkImageSubresourceRange& subresource_range) {
+    ZoneScoped;
     // If we're viewing a 3D slice, ignore base array layer.
     // The entire 3D subresource is accessed as one atomic unit.
     const uint32_t base_array_layer = state->createInfo.imageType == VK_IMAGE_TYPE_3D ? 0 : subresource_range.baseArrayLayer;
@@ -2767,6 +2853,7 @@ void BestPractices::QueueValidateImage(QueueCallbacks& funcs, const char* functi
 
 void BestPractices::QueueValidateImage(QueueCallbacks& funcs, const char* function_name, std::shared_ptr<bp_state::Image>& state,
                                        IMAGE_SUBRESOURCE_USAGE_BP usage, const VkImageSubresourceLayers& subresource_layers) {
+    ZoneScoped;
     const uint32_t max_layers = state->createInfo.arrayLayers - subresource_layers.baseArrayLayer;
     const uint32_t array_layers = std::min(subresource_layers.layerCount, max_layers);
 
@@ -2778,6 +2865,7 @@ void BestPractices::QueueValidateImage(QueueCallbacks& funcs, const char* functi
 
 void BestPractices::QueueValidateImage(QueueCallbacks& funcs, const char* function_name, std::shared_ptr<bp_state::Image>& state,
                                        IMAGE_SUBRESOURCE_USAGE_BP usage, uint32_t array_layer, uint32_t mip_level) {
+    ZoneScoped;
     funcs.push_back([this, function_name, state, usage, array_layer, mip_level](
                         const ValidationStateTracker& vst, const QUEUE_STATE& qs, const CMD_BUFFER_STATE& cbs) -> bool {
         ValidateImageInQueue(qs, cbs, function_name, *state, usage, array_layer, mip_level);
@@ -2788,6 +2876,7 @@ void BestPractices::QueueValidateImage(QueueCallbacks& funcs, const char* functi
 void BestPractices::ValidateImageInQueueArmImg(const char* function_name, const bp_state::Image& image,
                                                IMAGE_SUBRESOURCE_USAGE_BP last_usage, IMAGE_SUBRESOURCE_USAGE_BP usage,
                                                uint32_t array_layer, uint32_t mip_level) {
+    ZoneScoped;
     // Swapchain images are implicitly read so clear after store is expected.
     if (usage == IMAGE_SUBRESOURCE_USAGE_BP::RENDER_PASS_CLEARED && last_usage == IMAGE_SUBRESOURCE_USAGE_BP::RENDER_PASS_STORED &&
         !image.IsSwapchainImage()) {
@@ -2862,6 +2951,7 @@ void BestPractices::ValidateImageInQueueArmImg(const char* function_name, const 
 void BestPractices::ValidateImageInQueue(const QUEUE_STATE& qs, const CMD_BUFFER_STATE& cbs, const char* function_name,
                                          bp_state::Image& state, IMAGE_SUBRESOURCE_USAGE_BP usage, uint32_t array_layer,
                                          uint32_t mip_level) {
+    ZoneScoped;
     auto queue_family = qs.queueFamilyIndex;
     auto last_usage = state.UpdateUsage(array_layer, mip_level, usage, queue_family);
 
@@ -2907,6 +2997,7 @@ void BestPractices::AddDeferredQueueOperations(bp_state::CommandBuffer& cb) {
 }
 
 void BestPractices::PreCallRecordCmdEndRenderPass(VkCommandBuffer commandBuffer) {
+    ZoneScoped;
     RecordCmdEndRenderingCommon(commandBuffer);
 
     ValidationStateTracker::PreCallRecordCmdEndRenderPass(commandBuffer);
@@ -2917,6 +3008,7 @@ void BestPractices::PreCallRecordCmdEndRenderPass(VkCommandBuffer commandBuffer)
 }
 
 void BestPractices::PreCallRecordCmdEndRenderPass2(VkCommandBuffer commandBuffer, const VkSubpassEndInfo* pSubpassInfo) {
+    ZoneScoped;
     RecordCmdEndRenderingCommon(commandBuffer);
 
     ValidationStateTracker::PreCallRecordCmdEndRenderPass2(commandBuffer, pSubpassInfo);
@@ -2927,6 +3019,7 @@ void BestPractices::PreCallRecordCmdEndRenderPass2(VkCommandBuffer commandBuffer
 }
 
 void BestPractices::PreCallRecordCmdEndRenderPass2KHR(VkCommandBuffer commandBuffer, const VkSubpassEndInfoKHR* pSubpassInfo) {
+    ZoneScoped;
     RecordCmdEndRenderingCommon(commandBuffer);
 
     ValidationStateTracker::PreCallRecordCmdEndRenderPass2KHR(commandBuffer, pSubpassInfo);
@@ -2937,12 +3030,14 @@ void BestPractices::PreCallRecordCmdEndRenderPass2KHR(VkCommandBuffer commandBuf
 }
 
 void BestPractices::PreCallRecordCmdEndRendering(VkCommandBuffer commandBuffer) {
+    ZoneScoped;
     RecordCmdEndRenderingCommon(commandBuffer);
 
     ValidationStateTracker::PreCallRecordCmdEndRendering(commandBuffer);
 }
 
 void BestPractices::PreCallRecordCmdEndRenderingKHR(VkCommandBuffer commandBuffer) {
+    ZoneScoped;
     RecordCmdEndRenderingCommon(commandBuffer);
 
     ValidationStateTracker::PreCallRecordCmdEndRenderingKHR(commandBuffer);
@@ -2950,6 +3045,7 @@ void BestPractices::PreCallRecordCmdEndRenderingKHR(VkCommandBuffer commandBuffe
 
 void BestPractices::PreCallRecordCmdBeginRenderPass(VkCommandBuffer commandBuffer, const VkRenderPassBeginInfo* pRenderPassBegin,
                                                     VkSubpassContents contents) {
+    ZoneScoped;
     ValidationStateTracker::PreCallRecordCmdBeginRenderPass(commandBuffer, pRenderPassBegin, contents);
     RecordCmdBeginRenderingCommon(commandBuffer);
     RecordCmdBeginRenderPass(commandBuffer, pRenderPassBegin);
@@ -2957,6 +3053,7 @@ void BestPractices::PreCallRecordCmdBeginRenderPass(VkCommandBuffer commandBuffe
 
 void BestPractices::PreCallRecordCmdBeginRenderPass2(VkCommandBuffer commandBuffer, const VkRenderPassBeginInfo* pRenderPassBegin,
                                                      const VkSubpassBeginInfo* pSubpassBeginInfo) {
+    ZoneScoped;
     ValidationStateTracker::PreCallRecordCmdBeginRenderPass2(commandBuffer, pRenderPassBegin, pSubpassBeginInfo);
     RecordCmdBeginRenderingCommon(commandBuffer);
     RecordCmdBeginRenderPass(commandBuffer, pRenderPassBegin);
@@ -2965,22 +3062,26 @@ void BestPractices::PreCallRecordCmdBeginRenderPass2(VkCommandBuffer commandBuff
 void BestPractices::PreCallRecordCmdBeginRenderPass2KHR(VkCommandBuffer commandBuffer,
                                                         const VkRenderPassBeginInfo* pRenderPassBegin,
                                                         const VkSubpassBeginInfo* pSubpassBeginInfo) {
+    ZoneScoped;
     ValidationStateTracker::PreCallRecordCmdBeginRenderPass2KHR(commandBuffer, pRenderPassBegin, pSubpassBeginInfo);
     RecordCmdBeginRenderingCommon(commandBuffer);
     RecordCmdBeginRenderPass(commandBuffer, pRenderPassBegin);
 }
 
 void BestPractices::PreCallRecordCmdBeginRendering(VkCommandBuffer commandBuffer, const VkRenderingInfo* pRenderingInfo) {
+    ZoneScoped;
     ValidationStateTracker::PreCallRecordCmdBeginRendering(commandBuffer, pRenderingInfo);
     RecordCmdBeginRenderingCommon(commandBuffer);
 }
 
 void BestPractices::PreCallRecordCmdBeginRenderingKHR(VkCommandBuffer commandBuffer, const VkRenderingInfo* pRenderingInfo) {
+    ZoneScoped;
     ValidationStateTracker::PreCallRecordCmdBeginRenderingKHR(commandBuffer, pRenderingInfo);
     RecordCmdBeginRenderingCommon(commandBuffer);
 }
 
 void BestPractices::PostCallRecordCmdNextSubpass(VkCommandBuffer commandBuffer, VkSubpassContents contents) {
+    ZoneScoped;
     ValidationStateTracker::PostCallRecordCmdNextSubpass(commandBuffer, contents);
 
     auto cmd_state = GetWrite<bp_state::CommandBuffer>(commandBuffer);
@@ -3008,6 +3109,7 @@ void BestPractices::PostCallRecordCmdNextSubpass(VkCommandBuffer commandBuffer, 
 }
 
 void BestPractices::RecordCmdBeginRenderPass(VkCommandBuffer commandBuffer, const VkRenderPassBeginInfo* pRenderPassBegin) {
+    ZoneScoped;
     if (!pRenderPassBegin) {
         return;
     }
@@ -3100,6 +3202,7 @@ void BestPractices::RecordCmdBeginRenderPass(VkCommandBuffer commandBuffer, cons
 
 bool BestPractices::PreCallValidateCmdBeginRenderPass(VkCommandBuffer commandBuffer, const VkRenderPassBeginInfo* pRenderPassBegin,
                                                       VkSubpassContents contents) const {
+    ZoneScoped;
     bool skip = StateTracker::PreCallValidateCmdBeginRenderPass(commandBuffer, pRenderPassBegin, contents);
     skip |= ValidateCmdBeginRenderPass(commandBuffer, RENDER_PASS_VERSION_1, pRenderPassBegin);
     return skip;
@@ -3108,6 +3211,7 @@ bool BestPractices::PreCallValidateCmdBeginRenderPass(VkCommandBuffer commandBuf
 bool BestPractices::PreCallValidateCmdBeginRenderPass2KHR(VkCommandBuffer commandBuffer,
                                                           const VkRenderPassBeginInfo* pRenderPassBegin,
                                                           const VkSubpassBeginInfo* pSubpassBeginInfo) const {
+    ZoneScoped;
     bool skip = StateTracker::PreCallValidateCmdBeginRenderPass2KHR(commandBuffer, pRenderPassBegin, pSubpassBeginInfo);
     skip |= ValidateCmdBeginRenderPass(commandBuffer, RENDER_PASS_VERSION_2, pRenderPassBegin);
     return skip;
@@ -3115,12 +3219,14 @@ bool BestPractices::PreCallValidateCmdBeginRenderPass2KHR(VkCommandBuffer comman
 
 bool BestPractices::PreCallValidateCmdBeginRenderPass2(VkCommandBuffer commandBuffer, const VkRenderPassBeginInfo* pRenderPassBegin,
                                                        const VkSubpassBeginInfo* pSubpassBeginInfo) const {
+    ZoneScoped;
     bool skip = StateTracker::PreCallValidateCmdBeginRenderPass2(commandBuffer, pRenderPassBegin, pSubpassBeginInfo);
     skip |= ValidateCmdBeginRenderPass(commandBuffer, RENDER_PASS_VERSION_2, pRenderPassBegin);
     return skip;
 }
 
 bool BestPractices::PreCallValidateCmdBeginRendering(VkCommandBuffer commandBuffer, const VkRenderingInfo* pRenderingInfo) const {
+    ZoneScoped;
     bool skip = StateTracker::PreCallValidateCmdBeginRendering(commandBuffer, pRenderingInfo);
     skip |= ValidateCmdBeginRendering(commandBuffer, pRenderingInfo);
     return skip;
@@ -3128,6 +3234,7 @@ bool BestPractices::PreCallValidateCmdBeginRendering(VkCommandBuffer commandBuff
 
 bool BestPractices::PreCallValidateCmdBeginRenderingKHR(VkCommandBuffer commandBuffer,
                                                         const VkRenderingInfo* pRenderingInfo) const {
+    ZoneScoped;
     bool skip = StateTracker::PreCallValidateCmdBeginRenderingKHR(commandBuffer, pRenderingInfo);
     skip |= ValidateCmdBeginRendering(commandBuffer, pRenderingInfo);
     return skip;
@@ -3135,6 +3242,7 @@ bool BestPractices::PreCallValidateCmdBeginRenderingKHR(VkCommandBuffer commandB
 
 void BestPractices::RecordCmdBeginRenderPass(VkCommandBuffer commandBuffer, RenderPassCreateVersion rp_version,
                                              const VkRenderPassBeginInfo* pRenderPassBegin) {
+    ZoneScoped;
     // Reset the renderpass state
     auto cb = GetWrite<bp_state::CommandBuffer>(commandBuffer);
     // TODO - move this logic to the Render Pass state as cb->has_draw_cmd should stay true for lifetime of command buffer
@@ -3166,12 +3274,14 @@ void BestPractices::RecordCmdBeginRenderPass(VkCommandBuffer commandBuffer, Rend
 
 void BestPractices::PostCallRecordCmdBeginRenderPass(VkCommandBuffer commandBuffer, const VkRenderPassBeginInfo* pRenderPassBegin,
                                                      VkSubpassContents contents) {
+    ZoneScoped;
     StateTracker::PostCallRecordCmdBeginRenderPass(commandBuffer, pRenderPassBegin, contents);
     RecordCmdBeginRenderPass(commandBuffer, RENDER_PASS_VERSION_1, pRenderPassBegin);
 }
 
 void BestPractices::PostCallRecordCmdBeginRenderPass2(VkCommandBuffer commandBuffer, const VkRenderPassBeginInfo* pRenderPassBegin,
                                                       const VkSubpassBeginInfo* pSubpassBeginInfo) {
+    ZoneScoped;
     StateTracker::PostCallRecordCmdBeginRenderPass2(commandBuffer, pRenderPassBegin, pSubpassBeginInfo);
     RecordCmdBeginRenderPass(commandBuffer, RENDER_PASS_VERSION_2, pRenderPassBegin);
 }
@@ -3179,12 +3289,14 @@ void BestPractices::PostCallRecordCmdBeginRenderPass2(VkCommandBuffer commandBuf
 void BestPractices::PostCallRecordCmdBeginRenderPass2KHR(VkCommandBuffer commandBuffer,
                                                          const VkRenderPassBeginInfo* pRenderPassBegin,
                                                          const VkSubpassBeginInfo* pSubpassBeginInfo) {
+    ZoneScoped;
     StateTracker::PostCallRecordCmdBeginRenderPass2KHR(commandBuffer, pRenderPassBegin, pSubpassBeginInfo);
     RecordCmdBeginRenderPass(commandBuffer, RENDER_PASS_VERSION_2, pRenderPassBegin);
 }
 
 // Generic function to handle validation for all CmdDraw* type functions
 bool BestPractices::ValidateCmdDrawType(VkCommandBuffer cmd_buffer, const char* caller) const {
+    ZoneScoped;
     bool skip = false;
     const auto cb_state = GetRead<bp_state::CommandBuffer>(cmd_buffer);
     if (cb_state) {
@@ -3226,6 +3338,7 @@ bool BestPractices::ValidateCmdDrawType(VkCommandBuffer cmd_buffer, const char* 
 }
 
 void BestPractices::RecordCmdDrawType(VkCommandBuffer cmd_buffer, uint32_t draw_count, const char* caller) {
+    ZoneScoped;
     auto cb_node = GetWrite<bp_state::CommandBuffer>(cmd_buffer);
     assert(cb_node);
     if (VendorCheckEnabled(kBPVendorArm)) {
@@ -3245,6 +3358,7 @@ void BestPractices::RecordCmdDrawType(VkCommandBuffer cmd_buffer, uint32_t draw_
 }
 
 void BestPractices::RecordCmdDrawTypeArm(bp_state::CommandBuffer& cb_node, uint32_t draw_count, const char* caller) {
+    ZoneScoped;
     auto& render_pass_state = cb_node.render_pass_state;
     // Each TBDR vendor requires a depth pre-pass draw call to have a minimum number of vertices/indices before it counts towards
     // depth prepass warnings First find the lowest enabled draw count
@@ -3260,6 +3374,7 @@ void BestPractices::RecordCmdDrawTypeArm(bp_state::CommandBuffer& cb_node, uint3
 }
 
 void BestPractices::RecordCmdDrawTypeNVIDIA(bp_state::CommandBuffer& cmd_state) {
+    ZoneScoped;
     assert(VendorCheckEnabled(kBPVendorNVIDIA));
 
     if (cmd_state.nv.depth_test_enable && cmd_state.nv.zcull_direction != bp_state::CommandBufferStateNV::ZcullDirection::Unknown) {
@@ -3270,6 +3385,7 @@ void BestPractices::RecordCmdDrawTypeNVIDIA(bp_state::CommandBuffer& cmd_state) 
 
 bool BestPractices::PreCallValidateCmdDraw(VkCommandBuffer commandBuffer, uint32_t vertexCount, uint32_t instanceCount,
                                            uint32_t firstVertex, uint32_t firstInstance) const {
+    ZoneScoped;
     bool skip = false;
 
     if (instanceCount == 0) {
@@ -3289,6 +3405,7 @@ void BestPractices::PostCallRecordCmdDraw(VkCommandBuffer commandBuffer, uint32_
 
 bool BestPractices::PreCallValidateCmdDrawIndexed(VkCommandBuffer commandBuffer, uint32_t indexCount, uint32_t instanceCount,
                                                   uint32_t firstIndex, int32_t vertexOffset, uint32_t firstInstance) const {
+    ZoneScoped;
     bool skip = false;
 
     if (instanceCount == 0) {
@@ -3320,6 +3437,7 @@ bool BestPractices::PreCallValidateCmdDrawIndexed(VkCommandBuffer commandBuffer,
 
 bool BestPractices::ValidateIndexBufferArm(const bp_state::CommandBuffer& cmd_state, uint32_t indexCount, uint32_t instanceCount,
                                            uint32_t firstIndex, int32_t vertexOffset, uint32_t firstInstance) const {
+    ZoneScoped;
     bool skip = false;
 
     // check for sparse/underutilised index buffer, and post-transform cache thrashing
@@ -3473,6 +3591,7 @@ bool BestPractices::ValidateIndexBufferArm(const bp_state::CommandBuffer& cmd_st
 
 bool BestPractices::PreCallValidateCmdExecuteCommands(VkCommandBuffer commandBuffer, uint32_t commandBufferCount,
                                                       const VkCommandBuffer* pCommandBuffers) const {
+    ZoneScoped;
     bool skip = false;
     const auto primary = GetRead<bp_state::CommandBuffer>(commandBuffer);
     for (uint32_t i = 0; i < commandBufferCount; i++) {
@@ -3500,6 +3619,7 @@ bool BestPractices::PreCallValidateCmdExecuteCommands(VkCommandBuffer commandBuf
 
 void BestPractices::PreCallRecordCmdExecuteCommands(VkCommandBuffer commandBuffer, uint32_t commandBufferCount,
                                                     const VkCommandBuffer* pCommandBuffers) {
+    ZoneScoped;
     ValidationStateTracker::PreCallRecordCmdExecuteCommands(commandBuffer, commandBufferCount, pCommandBuffers);
 
     auto primary = GetWrite<bp_state::CommandBuffer>(commandBuffer);
@@ -3554,6 +3674,7 @@ bool BestPractices::PreCallValidateCmdBuildAccelerationStructuresKHR(
 }
 
 bool BestPractices::ValidateBuildAccelerationStructure(VkCommandBuffer commandBuffer) const {
+    ZoneScoped;
     bool skip = false;
     auto cb_node = GetRead<bp_state::CommandBuffer>(commandBuffer);
     assert(cb_node);
@@ -3571,6 +3692,7 @@ bool BestPractices::ValidateBuildAccelerationStructure(VkCommandBuffer commandBu
 }
 
 bool BestPractices::ValidateBindMemory(VkDevice device, VkDeviceMemory memory) const {
+    ZoneScoped;
     bool skip = false;
 
     if (VendorCheckEnabled(kBPVendorNVIDIA) && IsExtEnabled(device_extensions.vk_ext_pageable_device_local_memory)) {
@@ -3606,6 +3728,7 @@ void BestPractices::RecordAttachmentAccess(bp_state::CommandBuffer& cb_state, ui
 void BestPractices::RecordAttachmentClearAttachments(bp_state::CommandBuffer& cmd_state, uint32_t fb_attachment,
                                                      uint32_t color_attachment, VkImageAspectFlags aspects, uint32_t rectCount,
                                                      const VkClearRect* pRects) {
+    ZoneScoped;
     auto& state = cmd_state.render_pass_state;
     // If we observe a full clear before any other access to a frame buffer attachment,
     // we have candidate for redundant clear attachments.
@@ -3636,6 +3759,7 @@ void BestPractices::RecordAttachmentClearAttachments(bp_state::CommandBuffer& cm
 void BestPractices::PreCallRecordCmdClearAttachments(VkCommandBuffer commandBuffer, uint32_t attachmentCount,
                                                      const VkClearAttachment* pClearAttachments, uint32_t rectCount,
                                                      const VkClearRect* pRects) {
+    ZoneScoped;
     ValidationStateTracker::PreCallRecordCmdClearAttachments(commandBuffer, attachmentCount, pClearAttachments, rectCount, pRects);
 
     auto cmd_state = GetWrite<bp_state::CommandBuffer>(commandBuffer);
@@ -3715,6 +3839,7 @@ void BestPractices::PreCallRecordCmdClearAttachments(VkCommandBuffer commandBuff
 
 void BestPractices::PreCallRecordCmdDrawIndexed(VkCommandBuffer commandBuffer, uint32_t indexCount, uint32_t instanceCount,
                                                 uint32_t firstIndex, int32_t vertexOffset, uint32_t firstInstance) {
+    ZoneScoped;
     ValidationStateTracker::PreCallRecordCmdDrawIndexed(commandBuffer, indexCount, instanceCount, firstIndex, vertexOffset,
                                                         firstInstance);
 
@@ -3734,6 +3859,7 @@ void BestPractices::PostCallRecordCmdDrawIndexed(VkCommandBuffer commandBuffer, 
 
 bool BestPractices::PreCallValidateCmdDrawIndirect(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset,
                                                    uint32_t drawCount, uint32_t stride) const {
+    ZoneScoped;
     bool skip = false;
 
     if (drawCount == 0) {
@@ -3748,12 +3874,14 @@ bool BestPractices::PreCallValidateCmdDrawIndirect(VkCommandBuffer commandBuffer
 
 void BestPractices::PostCallRecordCmdDrawIndirect(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset,
                                                   uint32_t count, uint32_t stride) {
+    ZoneScoped;
     StateTracker::PostCallRecordCmdDrawIndirect(commandBuffer, buffer, offset, count, stride);
     RecordCmdDrawType(commandBuffer, count, "vkCmdDrawIndirect()");
 }
 
 bool BestPractices::PreCallValidateCmdDrawIndexedIndirect(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset,
                                                           uint32_t drawCount, uint32_t stride) const {
+    ZoneScoped;
     bool skip = false;
 
     if (drawCount == 0) {
@@ -3768,6 +3896,7 @@ bool BestPractices::PreCallValidateCmdDrawIndexedIndirect(VkCommandBuffer comman
 
 void BestPractices::PostCallRecordCmdDrawIndexedIndirect(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset,
                                                          uint32_t count, uint32_t stride) {
+    ZoneScoped;
     StateTracker::PostCallRecordCmdDrawIndexedIndirect(commandBuffer, buffer, offset, count, stride);
     RecordCmdDrawType(commandBuffer, count, "vkCmdDrawIndexedIndirect()");
 }
@@ -3775,6 +3904,7 @@ void BestPractices::PostCallRecordCmdDrawIndexedIndirect(VkCommandBuffer command
 bool BestPractices::PreCallValidateCmdDrawIndexedIndirectCount(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset,
                                                                VkBuffer countBuffer, VkDeviceSize countBufferOffset,
                                                                uint32_t maxDrawCount, uint32_t stride) const {
+    ZoneScoped;
     bool skip = ValidateCmdDrawType(commandBuffer, "vkCmdDrawIndexedIndirectCount()");
 
     return skip;
@@ -3783,6 +3913,7 @@ bool BestPractices::PreCallValidateCmdDrawIndexedIndirectCount(VkCommandBuffer c
 void BestPractices::PostCallRecordCmdDrawIndexedIndirectCount(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset,
                                                               VkBuffer countBuffer, VkDeviceSize countBufferOffset,
                                                               uint32_t maxDrawCount, uint32_t stride) {
+    ZoneScoped;
     StateTracker::PostCallRecordCmdDrawIndexedIndirectCount(commandBuffer, buffer, offset, countBuffer, countBufferOffset,
                                                             maxDrawCount, stride);
     RecordCmdDrawType(commandBuffer, 0, "vkCmdDrawIndexedIndirectCount()");
@@ -3792,6 +3923,7 @@ bool BestPractices::PreCallValidateCmdDrawIndexedIndirectCountAMD(VkCommandBuffe
                                                                   VkDeviceSize offset, VkBuffer countBuffer,
                                                                   VkDeviceSize countBufferOffset, uint32_t maxDrawCount,
                                                                   uint32_t stride) const {
+    ZoneScoped;
     bool skip = ValidateCmdDrawType(commandBuffer, "vkCmdDrawIndexedIndirectCountAMD");
 
     return skip;
@@ -3801,6 +3933,7 @@ void BestPractices::PostCallRecordCmdDrawIndexedIndirectCountAMD(VkCommandBuffer
                                                                  VkDeviceSize offset, VkBuffer countBuffer,
                                                                  VkDeviceSize countBufferOffset, uint32_t maxDrawCount,
                                                                  uint32_t stride) {
+    ZoneScoped;
     StateTracker::PostCallRecordCmdDrawIndexedIndirectCountAMD(commandBuffer, buffer, offset, countBuffer, countBufferOffset,
                                                                maxDrawCount, stride);
     RecordCmdDrawType(commandBuffer, 0, "vkCmdDrawIndexedIndirectCountAMD()");
@@ -3810,6 +3943,7 @@ bool BestPractices::PreCallValidateCmdDrawIndexedIndirectCountKHR(VkCommandBuffe
                                                                   VkDeviceSize offset, VkBuffer countBuffer,
                                                                   VkDeviceSize countBufferOffset, uint32_t maxDrawCount,
                                                                   uint32_t stride) const {
+    ZoneScoped;
     bool skip = ValidateCmdDrawType(commandBuffer, "vkCmdDrawIndexedIndirectCountKHR");
 
     return skip;
@@ -3819,6 +3953,7 @@ void BestPractices::PostCallRecordCmdDrawIndexedIndirectCountKHR(VkCommandBuffer
                                                                  VkDeviceSize offset, VkBuffer countBuffer,
                                                                  VkDeviceSize countBufferOffset, uint32_t maxDrawCount,
                                                                  uint32_t stride) {
+    ZoneScoped;
     StateTracker::PostCallRecordCmdDrawIndexedIndirectCountKHR(commandBuffer, buffer, offset, countBuffer, countBufferOffset,
                                                                maxDrawCount, stride);
     RecordCmdDrawType(commandBuffer, 0, "vkCmdDrawIndexedIndirectCountKHR()");
@@ -3828,6 +3963,7 @@ bool BestPractices::PreCallValidateCmdDrawIndirectByteCountEXT(VkCommandBuffer c
                                                                uint32_t firstInstance, VkBuffer counterBuffer,
                                                                VkDeviceSize counterBufferOffset, uint32_t counterOffset,
                                                                uint32_t vertexStride) const {
+    ZoneScoped;
     bool skip = ValidateCmdDrawType(commandBuffer, "vkCmdDrawIndirectByteCountEXT");
 
     return skip;
@@ -3837,6 +3973,7 @@ void BestPractices::PostCallRecordCmdDrawIndirectByteCountEXT(VkCommandBuffer co
                                                               uint32_t firstInstance, VkBuffer counterBuffer,
                                                               VkDeviceSize counterBufferOffset, uint32_t counterOffset,
                                                               uint32_t vertexStride) {
+    ZoneScoped;
     StateTracker::PostCallRecordCmdDrawIndirectByteCountEXT(commandBuffer, instanceCount, firstInstance, counterBuffer,
                                                             counterBufferOffset, counterOffset, vertexStride);
     RecordCmdDrawType(commandBuffer, 0, "vkCmdDrawIndirectByteCountEXT()");
@@ -3845,6 +3982,7 @@ void BestPractices::PostCallRecordCmdDrawIndirectByteCountEXT(VkCommandBuffer co
 bool BestPractices::PreCallValidateCmdDrawIndirectCount(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset,
                                                         VkBuffer countBuffer, VkDeviceSize countBufferOffset, uint32_t maxDrawCount,
                                                         uint32_t stride) const {
+    ZoneScoped;
     bool skip = ValidateCmdDrawType(commandBuffer, "vkCmdDrawIndirectCount");
 
     return skip;
@@ -3853,6 +3991,7 @@ bool BestPractices::PreCallValidateCmdDrawIndirectCount(VkCommandBuffer commandB
 void BestPractices::PostCallRecordCmdDrawIndirectCount(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset,
                                                        VkBuffer countBuffer, VkDeviceSize countBufferOffset, uint32_t maxDrawCount,
                                                        uint32_t stride) {
+    ZoneScoped;
     StateTracker::PostCallRecordCmdDrawIndirectCount(commandBuffer, buffer, offset, countBuffer, countBufferOffset, maxDrawCount,
                                                      stride);
     RecordCmdDrawType(commandBuffer, 0, "vkCmdDrawIndirectCount()");
@@ -3861,6 +4000,7 @@ void BestPractices::PostCallRecordCmdDrawIndirectCount(VkCommandBuffer commandBu
 bool BestPractices::PreCallValidateCmdDrawIndirectCountAMD(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset,
                                                            VkBuffer countBuffer, VkDeviceSize countBufferOffset,
                                                            uint32_t maxDrawCount, uint32_t stride) const {
+    ZoneScoped;
     bool skip = ValidateCmdDrawType(commandBuffer, "vkCmdDrawIndirectCountAMD");
 
     return skip;
@@ -3869,6 +4009,7 @@ bool BestPractices::PreCallValidateCmdDrawIndirectCountAMD(VkCommandBuffer comma
 void BestPractices::PostCallRecordCmdDrawIndirectCountAMD(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset,
                                                           VkBuffer countBuffer, VkDeviceSize countBufferOffset,
                                                           uint32_t maxDrawCount, uint32_t stride) {
+    ZoneScoped;
     StateTracker::PostCallRecordCmdDrawIndirectCountAMD(commandBuffer, buffer, offset, countBuffer, countBufferOffset, maxDrawCount,
                                                         stride);
     RecordCmdDrawType(commandBuffer, 0, "vkCmdDrawIndirectCountAMD()");
@@ -3877,6 +4018,7 @@ void BestPractices::PostCallRecordCmdDrawIndirectCountAMD(VkCommandBuffer comman
 bool BestPractices::PreCallValidateCmdDrawIndirectCountKHR(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset,
                                                            VkBuffer countBuffer, VkDeviceSize countBufferOffset,
                                                            uint32_t maxDrawCount, uint32_t stride) const {
+    ZoneScoped;
     bool skip = ValidateCmdDrawType(commandBuffer, "vkCmdDrawIndirectCountKHR");
 
     return skip;
@@ -3885,6 +4027,7 @@ bool BestPractices::PreCallValidateCmdDrawIndirectCountKHR(VkCommandBuffer comma
 void BestPractices::PostCallRecordCmdDrawIndirectCountKHR(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset,
                                                           VkBuffer countBuffer, VkDeviceSize countBufferOffset,
                                                           uint32_t maxDrawCount, uint32_t stride) {
+    ZoneScoped;
     StateTracker::PostCallRecordCmdDrawIndirectCountKHR(commandBuffer, buffer, offset, countBuffer, countBufferOffset, maxDrawCount,
                                                         stride);
     RecordCmdDrawType(commandBuffer, 0, "vkCmdDrawIndirectCountKHR()");
@@ -3894,6 +4037,7 @@ bool BestPractices::PreCallValidateCmdDrawMeshTasksIndirectCountNV(VkCommandBuff
                                                                    VkDeviceSize offset, VkBuffer countBuffer,
                                                                    VkDeviceSize countBufferOffset, uint32_t maxDrawCount,
                                                                    uint32_t stride) const {
+    ZoneScoped;
     bool skip = ValidateCmdDrawType(commandBuffer, "vkCmdDrawMeshTasksIndirectCountNV");
 
     return skip;
@@ -3903,6 +4047,7 @@ void BestPractices::PostCallRecordCmdDrawMeshTasksIndirectCountNV(VkCommandBuffe
                                                                   VkDeviceSize offset, VkBuffer countBuffer,
                                                                   VkDeviceSize countBufferOffset, uint32_t maxDrawCount,
                                                                   uint32_t stride) {
+    ZoneScoped;
     StateTracker::PostCallRecordCmdDrawMeshTasksIndirectCountNV(commandBuffer, buffer, offset, countBuffer, countBufferOffset,
                                                                 maxDrawCount, stride);
     RecordCmdDrawType(commandBuffer, 0, "vkCmdDrawMeshTasksIndirectCountNV()");
@@ -3910,6 +4055,7 @@ void BestPractices::PostCallRecordCmdDrawMeshTasksIndirectCountNV(VkCommandBuffe
 
 bool BestPractices::PreCallValidateCmdDrawMeshTasksIndirectNV(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset,
                                                               uint32_t drawCount, uint32_t stride) const {
+    ZoneScoped;
     bool skip = ValidateCmdDrawType(commandBuffer, "vkCmdDrawMeshTasksIndirectNV");
 
     return skip;
@@ -3917,17 +4063,20 @@ bool BestPractices::PreCallValidateCmdDrawMeshTasksIndirectNV(VkCommandBuffer co
 
 void BestPractices::PostCallRecordCmdDrawMeshTasksIndirectNV(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset,
                                                              uint32_t drawCount, uint32_t stride) {
+    ZoneScoped;
     StateTracker::PostCallRecordCmdDrawMeshTasksIndirectNV(commandBuffer, buffer, offset, drawCount, stride);
     RecordCmdDrawType(commandBuffer, 0, "vkCmdDrawMeshTasksIndirectNV()");
 }
 
 bool BestPractices::PreCallValidateCmdDrawMeshTasksNV(VkCommandBuffer commandBuffer, uint32_t taskCount, uint32_t firstTask) const {
+    ZoneScoped;
     bool skip = ValidateCmdDrawType(commandBuffer, "vkCmdDrawMeshTasksNV");
 
     return skip;
 }
 
 void BestPractices::PostCallRecordCmdDrawMeshTasksNV(VkCommandBuffer commandBuffer, uint32_t taskCount, uint32_t firstTask) {
+    ZoneScoped;
     StateTracker::PostCallRecordCmdDrawMeshTasksNV(commandBuffer, taskCount, firstTask);
     RecordCmdDrawType(commandBuffer, 0, "vkCmdDrawMeshTasksNV()");
 }
@@ -3936,6 +4085,7 @@ bool BestPractices::PreCallValidateCmdDrawMultiIndexedEXT(VkCommandBuffer comman
                                                           const VkMultiDrawIndexedInfoEXT* pIndexInfo, uint32_t instanceCount,
                                                           uint32_t firstInstance, uint32_t stride,
                                                           const int32_t* pVertexOffset) const {
+    ZoneScoped;
     bool skip = ValidateCmdDrawType(commandBuffer, "vkCmdDrawMultiIndexedEXT");
 
     return skip;
@@ -3944,6 +4094,7 @@ bool BestPractices::PreCallValidateCmdDrawMultiIndexedEXT(VkCommandBuffer comman
 void BestPractices::PostCallRecordCmdDrawMultiIndexedEXT(VkCommandBuffer commandBuffer, uint32_t drawCount,
                                                          const VkMultiDrawIndexedInfoEXT* pIndexInfo, uint32_t instanceCount,
                                                          uint32_t firstInstance, uint32_t stride, const int32_t* pVertexOffset) {
+    ZoneScoped;
     StateTracker::PostCallRecordCmdDrawMultiIndexedEXT(commandBuffer, drawCount, pIndexInfo, instanceCount, firstInstance, stride,
                                                        pVertexOffset);
     uint32_t count = 0;
@@ -3956,6 +4107,7 @@ void BestPractices::PostCallRecordCmdDrawMultiIndexedEXT(VkCommandBuffer command
 bool BestPractices::PreCallValidateCmdDrawMultiEXT(VkCommandBuffer commandBuffer, uint32_t drawCount,
                                                    const VkMultiDrawInfoEXT* pVertexInfo, uint32_t instanceCount,
                                                    uint32_t firstInstance, uint32_t stride) const {
+    ZoneScoped;
     bool skip = ValidateCmdDrawType(commandBuffer, "vkCmdDrawMultiEXT");
 
     return skip;
@@ -3964,6 +4116,7 @@ bool BestPractices::PreCallValidateCmdDrawMultiEXT(VkCommandBuffer commandBuffer
 void BestPractices::PostCallRecordCmdDrawMultiEXT(VkCommandBuffer commandBuffer, uint32_t drawCount,
                                                   const VkMultiDrawInfoEXT* pVertexInfo, uint32_t instanceCount,
                                                   uint32_t firstInstance, uint32_t stride) {
+    ZoneScoped;
     StateTracker::PostCallRecordCmdDrawMultiEXT(commandBuffer, drawCount, pVertexInfo, instanceCount, firstInstance, stride);
     uint32_t count = 0;
     for (uint32_t i = 0; i < drawCount; ++i) {
@@ -3974,6 +4127,7 @@ void BestPractices::PostCallRecordCmdDrawMultiEXT(VkCommandBuffer commandBuffer,
 
 void BestPractices::ValidateBoundDescriptorSets(bp_state::CommandBuffer& cb_state, VkPipelineBindPoint bind_point,
                                                 const char* function_name) {
+    ZoneScoped;
     auto lvl_bind_point = ConvertToLvlBindPoint(bind_point);
     auto& last_bound = cb_state.lastBound[lvl_bind_point];
 
@@ -4025,24 +4179,28 @@ void BestPractices::ValidateBoundDescriptorSets(bp_state::CommandBuffer& cb_stat
 
 void BestPractices::PreCallRecordCmdDraw(VkCommandBuffer commandBuffer, uint32_t vertexCount, uint32_t instanceCount,
                                          uint32_t firstVertex, uint32_t firstInstance) {
+    ZoneScoped;
     const auto cb_node = GetWrite<bp_state::CommandBuffer>(commandBuffer);
     ValidateBoundDescriptorSets(*cb_node, VK_PIPELINE_BIND_POINT_GRAPHICS, "vkCmdDraw()");
 }
 
 void BestPractices::PreCallRecordCmdDrawIndirect(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset,
                                                  uint32_t drawCount, uint32_t stride) {
+    ZoneScoped;
     const auto cb_node = GetWrite<bp_state::CommandBuffer>(commandBuffer);
     ValidateBoundDescriptorSets(*cb_node, VK_PIPELINE_BIND_POINT_GRAPHICS, "vkCmdDrawIndirect()");
 }
 
 void BestPractices::PreCallRecordCmdDrawIndexedIndirect(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset,
                                                         uint32_t drawCount, uint32_t stride) {
+    ZoneScoped;
     const auto cb_node = GetWrite<bp_state::CommandBuffer>(commandBuffer);
     ValidateBoundDescriptorSets(*cb_node, VK_PIPELINE_BIND_POINT_GRAPHICS, "vkCmdDrawIndexedIndirect()");
 }
 
 bool BestPractices::PreCallValidateCmdDispatch(VkCommandBuffer commandBuffer, uint32_t groupCountX, uint32_t groupCountY,
                                                uint32_t groupCountZ) const {
+    ZoneScoped;
     bool skip = false;
 
     if ((groupCountX == 0) || (groupCountY == 0) || (groupCountZ == 0)) {
@@ -4056,6 +4214,7 @@ bool BestPractices::PreCallValidateCmdDispatch(VkCommandBuffer commandBuffer, ui
 }
 
 bool BestPractices::PreCallValidateCmdEndRenderPass2(VkCommandBuffer commandBuffer, const VkSubpassEndInfo* pSubpassEndInfo) const {
+    ZoneScoped;
     bool skip = false;
     skip |= StateTracker::PreCallValidateCmdEndRenderPass2(commandBuffer, pSubpassEndInfo);
     skip |= ValidateCmdEndRenderPass(commandBuffer);
@@ -4069,6 +4228,7 @@ bool BestPractices::PreCallValidateCmdEndRenderPass2(VkCommandBuffer commandBuff
 
 bool BestPractices::PreCallValidateCmdEndRenderPass2KHR(VkCommandBuffer commandBuffer,
                                                         const VkSubpassEndInfo* pSubpassEndInfo) const {
+    ZoneScoped;
     bool skip = false;
     skip |= StateTracker::PreCallValidateCmdEndRenderPass2KHR(commandBuffer, pSubpassEndInfo);
     skip |= ValidateCmdEndRenderPass(commandBuffer);
@@ -4081,6 +4241,7 @@ bool BestPractices::PreCallValidateCmdEndRenderPass2KHR(VkCommandBuffer commandB
 }
 
 bool BestPractices::PreCallValidateCmdEndRenderPass(VkCommandBuffer commandBuffer) const {
+    ZoneScoped;
     bool skip = false;
     skip |= StateTracker::PreCallValidateCmdEndRenderPass(commandBuffer);
     skip |= ValidateCmdEndRenderPass(commandBuffer);
@@ -4093,6 +4254,7 @@ bool BestPractices::PreCallValidateCmdEndRenderPass(VkCommandBuffer commandBuffe
 }
 
 bool BestPractices::PreCallValidateCmdEndRendering(VkCommandBuffer commandBuffer) const {
+    ZoneScoped;
     bool skip = false;
     skip |= StateTracker::PreCallValidateCmdEndRendering(commandBuffer);
     if (VendorCheckEnabled(kBPVendorNVIDIA)) {
@@ -4104,6 +4266,7 @@ bool BestPractices::PreCallValidateCmdEndRendering(VkCommandBuffer commandBuffer
 }
 
 bool BestPractices::PreCallValidateCmdEndRenderingKHR(VkCommandBuffer commandBuffer) const {
+    ZoneScoped;
     bool skip = false;
     skip |= StateTracker::PreCallValidateCmdEndRenderingKHR(commandBuffer);
     if (VendorCheckEnabled(kBPVendorNVIDIA)) {
@@ -4115,6 +4278,7 @@ bool BestPractices::PreCallValidateCmdEndRenderingKHR(VkCommandBuffer commandBuf
 }
 
 bool BestPractices::ValidateCmdEndRenderPass(VkCommandBuffer commandBuffer) const {
+    ZoneScoped;
     bool skip = false;
     const auto cmd = GetRead<bp_state::CommandBuffer>(commandBuffer);
 
@@ -4205,17 +4369,20 @@ bool BestPractices::ValidateCmdEndRenderPass(VkCommandBuffer commandBuffer) cons
 }
 
 void BestPractices::PreCallRecordCmdDispatch(VkCommandBuffer commandBuffer, uint32_t x, uint32_t y, uint32_t z) {
+    ZoneScoped;
     const auto cb_node = GetWrite<bp_state::CommandBuffer>(commandBuffer);
     ValidateBoundDescriptorSets(*cb_node, VK_PIPELINE_BIND_POINT_COMPUTE, "vkCmdDispatch()");
 }
 
 void BestPractices::PreCallRecordCmdDispatchIndirect(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset) {
+    ZoneScoped;
     const auto cb_node = GetWrite<bp_state::CommandBuffer>(commandBuffer);
     ValidateBoundDescriptorSets(*cb_node, VK_PIPELINE_BIND_POINT_COMPUTE, "vkCmdDispatchIndirect()");
 }
 
 bool BestPractices::ValidateGetPhysicalDeviceDisplayPlanePropertiesKHRQuery(VkPhysicalDevice physicalDevice,
                                                                             const char* api_name) const {
+    ZoneScoped;
     bool skip = false;
     const auto bp_pd_state = Get<bp_state::PhysicalDevice>(physicalDevice);
 
@@ -4233,6 +4400,7 @@ bool BestPractices::ValidateGetPhysicalDeviceDisplayPlanePropertiesKHRQuery(VkPh
 
 bool BestPractices::PreCallValidateGetDisplayPlaneSupportedDisplaysKHR(VkPhysicalDevice physicalDevice, uint32_t planeIndex,
                                                                        uint32_t* pDisplayCount, VkDisplayKHR* pDisplays) const {
+    ZoneScoped;
     bool skip = false;
 
     skip |= ValidateGetPhysicalDeviceDisplayPlanePropertiesKHRQuery(physicalDevice, "vkGetDisplayPlaneSupportedDisplaysKHR");
@@ -4243,6 +4411,7 @@ bool BestPractices::PreCallValidateGetDisplayPlaneSupportedDisplaysKHR(VkPhysica
 bool BestPractices::PreCallValidateGetDisplayPlaneCapabilitiesKHR(VkPhysicalDevice physicalDevice, VkDisplayModeKHR mode,
                                                                   uint32_t planeIndex,
                                                                   VkDisplayPlaneCapabilitiesKHR* pCapabilities) const {
+    ZoneScoped;
     bool skip = false;
 
     skip |= ValidateGetPhysicalDeviceDisplayPlanePropertiesKHRQuery(physicalDevice, "vkGetDisplayPlaneCapabilitiesKHR");
@@ -4253,6 +4422,7 @@ bool BestPractices::PreCallValidateGetDisplayPlaneCapabilitiesKHR(VkPhysicalDevi
 bool BestPractices::PreCallValidateGetDisplayPlaneCapabilities2KHR(VkPhysicalDevice physicalDevice,
                                                                    const VkDisplayPlaneInfo2KHR* pDisplayPlaneInfo,
                                                                    VkDisplayPlaneCapabilities2KHR* pCapabilities) const {
+    ZoneScoped;
     bool skip = false;
 
     skip |= ValidateGetPhysicalDeviceDisplayPlanePropertiesKHRQuery(physicalDevice, "vkGetDisplayPlaneCapabilities2KHR");
@@ -4262,6 +4432,7 @@ bool BestPractices::PreCallValidateGetDisplayPlaneCapabilities2KHR(VkPhysicalDev
 
 bool BestPractices::PreCallValidateGetSwapchainImagesKHR(VkDevice device, VkSwapchainKHR swapchain, uint32_t* pSwapchainImageCount,
                                                          VkImage* pSwapchainImages) const {
+    ZoneScoped;
     bool skip = false;
 
     auto swapchain_state = Get<bp_state::Swapchain>(swapchain);
@@ -4293,6 +4464,7 @@ bool BestPractices::ValidateCommonGetPhysicalDeviceQueueFamilyProperties(const P
                                                                          uint32_t requested_queue_family_property_count,
                                                                          const CALL_STATE call_state,
                                                                          const char* caller_name) const {
+    ZoneScoped;
     bool skip = false;
     // Verify that for each physical device, this command is called first with NULL pQueueFamilyProperties in order to get count
     if (UNCALLED == call_state) {
@@ -4319,6 +4491,7 @@ bool BestPractices::ValidateCommonGetPhysicalDeviceQueueFamilyProperties(const P
 
 bool BestPractices::PreCallValidateBindAccelerationStructureMemoryNV(
     VkDevice device, uint32_t bindInfoCount, const VkBindAccelerationStructureMemoryInfoNV* pBindInfos) const {
+    ZoneScoped;
     bool skip = false;
 
     for (uint32_t i = 0; i < bindInfoCount; i++) {
@@ -4341,6 +4514,7 @@ bool BestPractices::PreCallValidateBindAccelerationStructureMemoryNV(
 bool BestPractices::PreCallValidateGetPhysicalDeviceQueueFamilyProperties(VkPhysicalDevice physicalDevice,
                                                                           uint32_t* pQueueFamilyPropertyCount,
                                                                           VkQueueFamilyProperties* pQueueFamilyProperties) const {
+    ZoneScoped;
     const auto bp_pd_state = Get<bp_state::PhysicalDevice>(physicalDevice);
     if (pQueueFamilyProperties && bp_pd_state) {
         return ValidateCommonGetPhysicalDeviceQueueFamilyProperties(bp_pd_state.get(), *pQueueFamilyPropertyCount,
@@ -4353,6 +4527,7 @@ bool BestPractices::PreCallValidateGetPhysicalDeviceQueueFamilyProperties(VkPhys
 bool BestPractices::PreCallValidateGetPhysicalDeviceQueueFamilyProperties2(VkPhysicalDevice physicalDevice,
                                                                            uint32_t* pQueueFamilyPropertyCount,
                                                                            VkQueueFamilyProperties2* pQueueFamilyProperties) const {
+    ZoneScoped;
     const auto bp_pd_state = Get<bp_state::PhysicalDevice>(physicalDevice);
     if (pQueueFamilyProperties && bp_pd_state) {
         return ValidateCommonGetPhysicalDeviceQueueFamilyProperties(bp_pd_state.get(), *pQueueFamilyPropertyCount,
@@ -4364,6 +4539,7 @@ bool BestPractices::PreCallValidateGetPhysicalDeviceQueueFamilyProperties2(VkPhy
 
 bool BestPractices::PreCallValidateGetPhysicalDeviceQueueFamilyProperties2KHR(
     VkPhysicalDevice physicalDevice, uint32_t* pQueueFamilyPropertyCount, VkQueueFamilyProperties2* pQueueFamilyProperties) const {
+    ZoneScoped;
     const auto bp_pd_state = Get<bp_state::PhysicalDevice>(physicalDevice);
     if (pQueueFamilyProperties && bp_pd_state) {
         return ValidateCommonGetPhysicalDeviceQueueFamilyProperties(bp_pd_state.get(), *pQueueFamilyPropertyCount,
@@ -4376,6 +4552,7 @@ bool BestPractices::PreCallValidateGetPhysicalDeviceQueueFamilyProperties2KHR(
 bool BestPractices::PreCallValidateGetPhysicalDeviceSurfaceFormatsKHR(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface,
                                                                       uint32_t* pSurfaceFormatCount,
                                                                       VkSurfaceFormatKHR* pSurfaceFormats) const {
+    ZoneScoped;
     if (!pSurfaceFormats) return false;
     const auto bp_pd_state = Get<bp_state::PhysicalDevice>(physicalDevice);
     const auto& call_state = bp_pd_state->vkGetPhysicalDeviceSurfaceFormatsKHRState;
@@ -4400,6 +4577,7 @@ bool BestPractices::PreCallValidateGetPhysicalDeviceSurfaceFormatsKHR(VkPhysical
 
 bool BestPractices::PreCallValidateQueueBindSparse(VkQueue queue, uint32_t bindInfoCount, const VkBindSparseInfo* pBindInfo,
                                                    VkFence fence) const {
+    ZoneScoped;
     bool skip = false;
 
     for (uint32_t bind_idx = 0; bind_idx < bindInfoCount; bind_idx++) {
@@ -4490,6 +4668,7 @@ bool BestPractices::PreCallValidateQueueBindSparse(VkQueue queue, uint32_t bindI
 
 void BestPractices::ManualPostCallRecordQueueBindSparse(VkQueue queue, uint32_t bindInfoCount, const VkBindSparseInfo* pBindInfo,
                                                         VkFence fence, VkResult result) {
+    ZoneScoped;
     if (result != VK_SUCCESS) {
         return;
     }
@@ -4513,6 +4692,7 @@ void BestPractices::ManualPostCallRecordQueueBindSparse(VkQueue queue, uint32_t 
 
 bool BestPractices::ClearAttachmentsIsFullClear(const bp_state::CommandBuffer& cmd, uint32_t rectCount,
                                                 const VkClearRect* pRects) const {
+    ZoneScoped;
     if (cmd.createInfo.level == VK_COMMAND_BUFFER_LEVEL_SECONDARY) {
         // We don't know the accurate render area in a secondary,
         // so assume we clear the entire frame buffer.
@@ -4534,6 +4714,7 @@ bool BestPractices::ClearAttachmentsIsFullClear(const bp_state::CommandBuffer& c
 
 bool BestPractices::ValidateClearAttachment(const bp_state::CommandBuffer& cmd, uint32_t fb_attachment, uint32_t color_attachment,
                                             VkImageAspectFlags aspects, bool secondary) const {
+    ZoneScoped;
     const RENDER_PASS_STATE* rp = cmd.activeRenderPass.get();
     bool skip = false;
 
@@ -4604,6 +4785,7 @@ bool BestPractices::ValidateClearAttachment(const bp_state::CommandBuffer& cmd, 
 bool BestPractices::PreCallValidateCmdClearAttachments(VkCommandBuffer commandBuffer, uint32_t attachmentCount,
                                                        const VkClearAttachment* pAttachments, uint32_t rectCount,
                                                        const VkClearRect* pRects) const {
+    ZoneScoped;
     bool skip = false;
     const auto cb_node = GetRead<bp_state::CommandBuffer>(commandBuffer);
     if (!cb_node) return skip;
@@ -4732,6 +4914,7 @@ bool BestPractices::PreCallValidateCmdClearAttachments(VkCommandBuffer commandBu
 
 bool BestPractices::ValidateCmdResolveImage(VkCommandBuffer command_buffer, VkImage src_image, VkImage dst_image,
                                             CMD_TYPE cmd_type) const {
+    ZoneScoped;
     bool skip = false;
     const char* func_name = CommandTypeString(cmd_type);
     auto src_image_type = Get<IMAGE_STATE>(src_image)->createInfo.imageType;
@@ -4755,6 +4938,7 @@ bool BestPractices::ValidateCmdResolveImage(VkCommandBuffer command_buffer, VkIm
 bool BestPractices::PreCallValidateCmdResolveImage(VkCommandBuffer commandBuffer, VkImage srcImage, VkImageLayout srcImageLayout,
                                                    VkImage dstImage, VkImageLayout dstImageLayout, uint32_t regionCount,
                                                    const VkImageResolve* pRegions) const {
+    ZoneScoped;
     bool skip = false;
     skip |= ValidateCmdResolveImage(commandBuffer, srcImage, dstImage, CMD_RESOLVEIMAGE);
     return skip;
@@ -4762,6 +4946,7 @@ bool BestPractices::PreCallValidateCmdResolveImage(VkCommandBuffer commandBuffer
 
 bool BestPractices::PreCallValidateCmdResolveImage2KHR(VkCommandBuffer commandBuffer,
                                                        const VkResolveImageInfo2KHR* pResolveImageInfo) const {
+    ZoneScoped;
     bool skip = false;
     skip |= ValidateCmdResolveImage(commandBuffer, pResolveImageInfo->srcImage, pResolveImageInfo->dstImage, CMD_RESOLVEIMAGE2KHR);
     return skip;
@@ -4769,6 +4954,7 @@ bool BestPractices::PreCallValidateCmdResolveImage2KHR(VkCommandBuffer commandBu
 
 bool BestPractices::PreCallValidateCmdResolveImage2(VkCommandBuffer commandBuffer,
                                                     const VkResolveImageInfo2* pResolveImageInfo) const {
+    ZoneScoped;
     bool skip = false;
     skip |= ValidateCmdResolveImage(commandBuffer, pResolveImageInfo->srcImage, pResolveImageInfo->dstImage, CMD_RESOLVEIMAGE2);
     return skip;
@@ -4777,6 +4963,7 @@ bool BestPractices::PreCallValidateCmdResolveImage2(VkCommandBuffer commandBuffe
 void BestPractices::PreCallRecordCmdResolveImage(VkCommandBuffer commandBuffer, VkImage srcImage, VkImageLayout srcImageLayout,
                                                  VkImage dstImage, VkImageLayout dstImageLayout, uint32_t regionCount,
                                                  const VkImageResolve* pRegions) {
+    ZoneScoped;
     auto cb = GetWrite<bp_state::CommandBuffer>(commandBuffer);
     auto& funcs = cb->queue_submit_functions;
     auto src = Get<bp_state::Image>(srcImage);
@@ -4791,6 +4978,7 @@ void BestPractices::PreCallRecordCmdResolveImage(VkCommandBuffer commandBuffer, 
 
 void BestPractices::PreCallRecordCmdResolveImage2KHR(VkCommandBuffer commandBuffer,
                                                      const VkResolveImageInfo2KHR* pResolveImageInfo) {
+    ZoneScoped;
     auto cb = GetWrite<bp_state::CommandBuffer>(commandBuffer);
     auto& funcs = cb->queue_submit_functions;
     auto src = Get<bp_state::Image>(pResolveImageInfo->srcImage);
@@ -4806,6 +4994,7 @@ void BestPractices::PreCallRecordCmdResolveImage2KHR(VkCommandBuffer commandBuff
 }
 
 void BestPractices::PreCallRecordCmdResolveImage2(VkCommandBuffer commandBuffer, const VkResolveImageInfo2* pResolveImageInfo) {
+    ZoneScoped;
     auto cb = GetWrite<bp_state::CommandBuffer>(commandBuffer);
     auto& funcs = cb->queue_submit_functions;
     auto src = Get<bp_state::Image>(pResolveImageInfo->srcImage);
@@ -4823,6 +5012,7 @@ void BestPractices::PreCallRecordCmdResolveImage2(VkCommandBuffer commandBuffer,
 void BestPractices::PreCallRecordCmdClearColorImage(VkCommandBuffer commandBuffer, VkImage image, VkImageLayout imageLayout,
                                                     const VkClearColorValue* pColor, uint32_t rangeCount,
                                                     const VkImageSubresourceRange* pRanges) {
+    ZoneScoped;
     auto cb = GetWrite<bp_state::CommandBuffer>(commandBuffer);
     auto& funcs = cb->queue_submit_functions;
     auto dst = Get<bp_state::Image>(image);
@@ -4839,6 +5029,7 @@ void BestPractices::PreCallRecordCmdClearColorImage(VkCommandBuffer commandBuffe
 void BestPractices::PreCallRecordCmdClearDepthStencilImage(VkCommandBuffer commandBuffer, VkImage image, VkImageLayout imageLayout,
                                                            const VkClearDepthStencilValue* pDepthStencil, uint32_t rangeCount,
                                                            const VkImageSubresourceRange* pRanges) {
+    ZoneScoped;
     ValidationStateTracker::PreCallRecordCmdClearDepthStencilImage(commandBuffer, image, imageLayout, pDepthStencil, rangeCount,
                                                                    pRanges);
 
@@ -4859,6 +5050,7 @@ void BestPractices::PreCallRecordCmdClearDepthStencilImage(VkCommandBuffer comma
 void BestPractices::PreCallRecordCmdCopyImage(VkCommandBuffer commandBuffer, VkImage srcImage, VkImageLayout srcImageLayout,
                                               VkImage dstImage, VkImageLayout dstImageLayout, uint32_t regionCount,
                                               const VkImageCopy* pRegions) {
+    ZoneScoped;
     ValidationStateTracker::PreCallRecordCmdCopyImage(commandBuffer, srcImage, srcImageLayout, dstImage, dstImageLayout,
                                                       regionCount, pRegions);
 
@@ -4876,6 +5068,7 @@ void BestPractices::PreCallRecordCmdCopyImage(VkCommandBuffer commandBuffer, VkI
 void BestPractices::PreCallRecordCmdCopyBufferToImage(VkCommandBuffer commandBuffer, VkBuffer srcBuffer, VkImage dstImage,
                                                       VkImageLayout dstImageLayout, uint32_t regionCount,
                                                       const VkBufferImageCopy* pRegions) {
+    ZoneScoped;
     auto cb = GetWrite<bp_state::CommandBuffer>(commandBuffer);
     auto& funcs = cb->queue_submit_functions;
     auto dst = Get<bp_state::Image>(dstImage);
@@ -4888,6 +5081,7 @@ void BestPractices::PreCallRecordCmdCopyBufferToImage(VkCommandBuffer commandBuf
 
 void BestPractices::PreCallRecordCmdCopyImageToBuffer(VkCommandBuffer commandBuffer, VkImage srcImage, VkImageLayout srcImageLayout,
                                                       VkBuffer dstBuffer, uint32_t regionCount, const VkBufferImageCopy* pRegions) {
+    ZoneScoped;
     auto cb = GetWrite<bp_state::CommandBuffer>(commandBuffer);
     auto& funcs = cb->queue_submit_functions;
     auto src = Get<bp_state::Image>(srcImage);
@@ -4901,6 +5095,7 @@ void BestPractices::PreCallRecordCmdCopyImageToBuffer(VkCommandBuffer commandBuf
 void BestPractices::PreCallRecordCmdBlitImage(VkCommandBuffer commandBuffer, VkImage srcImage, VkImageLayout srcImageLayout,
                                               VkImage dstImage, VkImageLayout dstImageLayout, uint32_t regionCount,
                                               const VkImageBlit* pRegions, VkFilter filter) {
+    ZoneScoped;
     auto cb = GetWrite<bp_state::CommandBuffer>(commandBuffer);
     auto& funcs = cb->queue_submit_functions;
     auto src = Get<bp_state::Image>(srcImage);
@@ -4915,6 +5110,7 @@ void BestPractices::PreCallRecordCmdBlitImage(VkCommandBuffer commandBuffer, VkI
 template <typename RegionType>
 bool BestPractices::ValidateCmdBlitImage(VkCommandBuffer command_buffer, uint32_t region_count, const RegionType* regions,
                                          CMD_TYPE cmd_type) const {
+    ZoneScoped;
     bool skip = false;
     const char* func_name = CommandTypeString(cmd_type);
     for (uint32_t i = 0; i < region_count; i++) {
@@ -4950,6 +5146,7 @@ bool BestPractices::PreCallValidateCmdBlitImage2(VkCommandBuffer commandBuffer, 
 
 bool BestPractices::PreCallValidateCreateSampler(VkDevice device, const VkSamplerCreateInfo* pCreateInfo,
                                                  const VkAllocationCallbacks* pAllocator, VkSampler* pSampler) const {
+    ZoneScoped;
     bool skip = false;
 
     if (VendorCheckEnabled(kBPVendorArm)) {
@@ -5015,6 +5212,7 @@ void BestPractices::PreCallRecordCreateGraphicsPipelines(VkDevice device, VkPipe
                                                          const VkGraphicsPipelineCreateInfo* pCreateInfos,
                                                          const VkAllocationCallbacks* pAllocator, VkPipeline* pPipelines,
                                                          void* cgpl_state) {
+    ZoneScoped;
     ValidationStateTracker::PreCallRecordCreateGraphicsPipelines(device, pipelineCache, createInfoCount, pCreateInfos, pAllocator,
                                                                  pPipelines);
     // AMD best practice
@@ -5024,6 +5222,7 @@ void BestPractices::PreCallRecordCreateGraphicsPipelines(VkDevice device, VkPipe
 bool BestPractices::PreCallValidateUpdateDescriptorSets(VkDevice device, uint32_t descriptorWriteCount,
                                                         const VkWriteDescriptorSet* pDescriptorWrites, uint32_t descriptorCopyCount,
                                                         const VkCopyDescriptorSet* pDescriptorCopies) const {
+    ZoneScoped;
     bool skip = false;
     if (VendorCheckEnabled(kBPVendorAMD)) {
         if (descriptorCopyCount > 0) {
@@ -5040,6 +5239,7 @@ bool BestPractices::PreCallValidateCreateDescriptorUpdateTemplate(VkDevice devic
                                                                   const VkDescriptorUpdateTemplateCreateInfo* pCreateInfo,
                                                                   const VkAllocationCallbacks* pAllocator,
                                                                   VkDescriptorUpdateTemplate* pDescriptorUpdateTemplate) const {
+    ZoneScoped;
     bool skip = false;
     if (VendorCheckEnabled(kBPVendorAMD)) {
         skip |= LogPerformanceWarning(device, kVUID_BestPractices_UpdateDescriptors_PreferNonTemplate,
@@ -5054,6 +5254,7 @@ bool BestPractices::PreCallValidateCreateDescriptorUpdateTemplate(VkDevice devic
 bool BestPractices::PreCallValidateCmdClearColorImage(VkCommandBuffer commandBuffer, VkImage image, VkImageLayout imageLayout,
                                                       const VkClearColorValue* pColor, uint32_t rangeCount,
                                                       const VkImageSubresourceRange* pRanges) const {
+    ZoneScoped;
     bool skip = false;
 
     auto dst = Get<bp_state::Image>(image);
@@ -5076,6 +5277,7 @@ bool BestPractices::PreCallValidateCmdClearDepthStencilImage(VkCommandBuffer com
                                                              VkImageLayout imageLayout,
                                                              const VkClearDepthStencilValue* pDepthStencil, uint32_t rangeCount,
                                                              const VkImageSubresourceRange* pRanges) const {
+    ZoneScoped;
     bool skip = false;
     if (VendorCheckEnabled(kBPVendorAMD)) {
         skip |= LogPerformanceWarning(
@@ -5098,6 +5300,7 @@ bool BestPractices::PreCallValidateCmdClearDepthStencilImage(VkCommandBuffer com
 bool BestPractices::PreCallValidateCreatePipelineLayout(VkDevice device, const VkPipelineLayoutCreateInfo* pCreateInfo,
                                                         const VkAllocationCallbacks* pAllocator,
                                                         VkPipelineLayout* pPipelineLayout) const {
+    ZoneScoped;
     bool skip = false;
     if (VendorCheckEnabled(kBPVendorAMD)) {
         uint32_t descriptor_size = enabled_features.core.robustBufferAccess ? 4 : 2;
@@ -5204,6 +5407,7 @@ bool BestPractices::PreCallValidateCreatePipelineLayout(VkDevice device, const V
 bool BestPractices::PreCallValidateCmdCopyImage(VkCommandBuffer commandBuffer, VkImage srcImage, VkImageLayout srcImageLayout,
                                                 VkImage dstImage, VkImageLayout dstImageLayout, uint32_t regionCount,
                                                 const VkImageCopy* pRegions) const {
+    ZoneScoped;
     bool skip = false;
     std::stringstream src_image_hex;
     std::stringstream dst_image_hex;
@@ -5234,6 +5438,7 @@ bool BestPractices::PreCallValidateCmdCopyImage(VkCommandBuffer commandBuffer, V
 
 bool BestPractices::PreCallValidateCmdBindPipeline(VkCommandBuffer commandBuffer, VkPipelineBindPoint pipelineBindPoint,
                                                    VkPipeline pipeline) const {
+    ZoneScoped;
     bool skip = false;
 
     auto cb = Get<bp_state::CommandBuffer>(commandBuffer);
@@ -5268,6 +5473,7 @@ void BestPractices::ManualPostCallRecordQueueSubmit(VkQueue queue, uint32_t subm
 }
 
 bool BestPractices::PreCallValidateQueuePresentKHR(VkQueue queue, const VkPresentInfoKHR* pPresentInfo) const {
+    ZoneScoped;
     bool skip = false;
 
     if (VendorCheckEnabled(kBPVendorAMD) || VendorCheckEnabled(kBPVendorNVIDIA)) {
@@ -5291,6 +5497,7 @@ void BestPractices::PostCallRecordCmdPipelineBarrier(VkCommandBuffer commandBuff
                                                      const VkBufferMemoryBarrier* pBufferMemoryBarriers,
                                                      uint32_t imageMemoryBarrierCount,
                                                      const VkImageMemoryBarrier* pImageMemoryBarriers) {
+    ZoneScoped;
     ValidationStateTracker::PostCallRecordCmdPipelineBarrier(commandBuffer, srcStageMask, dstStageMask, dependencyFlags,
                                                              memoryBarrierCount, pMemoryBarriers, bufferMemoryBarrierCount,
                                                              pBufferMemoryBarriers, imageMemoryBarrierCount, pImageMemoryBarriers);
@@ -5303,6 +5510,7 @@ void BestPractices::PostCallRecordCmdPipelineBarrier(VkCommandBuffer commandBuff
 }
 
 void BestPractices::PostCallRecordCmdPipelineBarrier2(VkCommandBuffer commandBuffer, const VkDependencyInfo* pDependencyInfo) {
+    ZoneScoped;
     ValidationStateTracker::PostCallRecordCmdPipelineBarrier2(commandBuffer, pDependencyInfo);
 
     for (uint32_t i = 0; i < pDependencyInfo->imageMemoryBarrierCount; ++i) {
@@ -5311,6 +5519,7 @@ void BestPractices::PostCallRecordCmdPipelineBarrier2(VkCommandBuffer commandBuf
 }
 
 void BestPractices::PostCallRecordCmdPipelineBarrier2KHR(VkCommandBuffer commandBuffer, const VkDependencyInfo* pDependencyInfo) {
+    ZoneScoped;
     ValidationStateTracker::PostCallRecordCmdPipelineBarrier2KHR(commandBuffer, pDependencyInfo);
 
     for (uint32_t i = 0; i < pDependencyInfo->imageMemoryBarrierCount; ++i) {
@@ -5320,6 +5529,7 @@ void BestPractices::PostCallRecordCmdPipelineBarrier2KHR(VkCommandBuffer command
 
 template <typename ImageMemoryBarrier>
 void BestPractices::RecordCmdPipelineBarrierImageBarrier(VkCommandBuffer commandBuffer, const ImageMemoryBarrier& barrier) {
+    ZoneScoped;
     auto cb = Get<bp_state::CommandBuffer>(commandBuffer);
     assert(cb);
 
@@ -5345,6 +5555,7 @@ void BestPractices::RecordCmdPipelineBarrierImageBarrier(VkCommandBuffer command
 
 bool BestPractices::PreCallValidateCreateSemaphore(VkDevice device, const VkSemaphoreCreateInfo* pCreateInfo,
                                                    const VkAllocationCallbacks* pAllocator, VkSemaphore* pSemaphore) const {
+    ZoneScoped;
     bool skip = false;
     if (VendorCheckEnabled(kBPVendorAMD) || VendorCheckEnabled(kBPVendorNVIDIA)) {
         if (Count<SEMAPHORE_STATE>() > kMaxRecommendedSemaphoreObjectsSizeAMD) {
@@ -5361,6 +5572,7 @@ bool BestPractices::PreCallValidateCreateSemaphore(VkDevice device, const VkSema
 
 bool BestPractices::PreCallValidateCreateFence(VkDevice device, const VkFenceCreateInfo* pCreateInfo,
                                                const VkAllocationCallbacks* pAllocator, VkFence* pFence) const {
+    ZoneScoped;
     bool skip = false;
     if (VendorCheckEnabled(kBPVendorAMD) || VendorCheckEnabled(kBPVendorNVIDIA)) {
         if (Count<FENCE_STATE>() > kMaxRecommendedFenceObjectsSizeAMD) {
@@ -5378,6 +5590,7 @@ bool BestPractices::PreCallValidateCreateFence(VkDevice device, const VkFenceCre
 void BestPractices::PostTransformLRUCacheModel::resize(size_t size) { _entries.resize(size); }
 
 bool BestPractices::PostTransformLRUCacheModel::query_cache(uint32_t value) {
+    ZoneScoped;
     // look for a cache hit
     auto hit = std::find_if(_entries.begin(), _entries.end(), [value](const CacheEntry& entry) { return entry.value == value; });
     if (hit != _entries.end()) {
@@ -5402,6 +5615,7 @@ bool BestPractices::PostTransformLRUCacheModel::query_cache(uint32_t value) {
 
 bool BestPractices::PreCallValidateAcquireNextImageKHR(VkDevice device, VkSwapchainKHR swapchain, uint64_t timeout,
                                                        VkSemaphore semaphore, VkFence fence, uint32_t* pImageIndex) const {
+    ZoneScoped;
     auto swapchain_data = Get<SWAPCHAIN_NODE>(swapchain);
     bool skip = false;
     if (swapchain_data && swapchain_data->images.size() == 0) {
@@ -5425,6 +5639,7 @@ void BestPractices::CommonPostCallRecordGetPhysicalDeviceQueueFamilyProperties(C
 void BestPractices::PostCallRecordGetPhysicalDeviceQueueFamilyProperties(VkPhysicalDevice physicalDevice,
                                                                          uint32_t* pQueueFamilyPropertyCount,
                                                                          VkQueueFamilyProperties* pQueueFamilyProperties) {
+    ZoneScoped;
     ValidationStateTracker::PostCallRecordGetPhysicalDeviceQueueFamilyProperties(physicalDevice, pQueueFamilyPropertyCount,
                                                                                  pQueueFamilyProperties);
     auto bp_pd_state = Get<bp_state::PhysicalDevice>(physicalDevice);
@@ -5437,6 +5652,7 @@ void BestPractices::PostCallRecordGetPhysicalDeviceQueueFamilyProperties(VkPhysi
 void BestPractices::PostCallRecordGetPhysicalDeviceQueueFamilyProperties2(VkPhysicalDevice physicalDevice,
                                                                           uint32_t* pQueueFamilyPropertyCount,
                                                                           VkQueueFamilyProperties2* pQueueFamilyProperties) {
+    ZoneScoped;
     ValidationStateTracker::PostCallRecordGetPhysicalDeviceQueueFamilyProperties2(physicalDevice, pQueueFamilyPropertyCount,
                                                                                   pQueueFamilyProperties);
     auto bp_pd_state = Get<bp_state::PhysicalDevice>(physicalDevice);
@@ -5449,6 +5665,7 @@ void BestPractices::PostCallRecordGetPhysicalDeviceQueueFamilyProperties2(VkPhys
 void BestPractices::PostCallRecordGetPhysicalDeviceQueueFamilyProperties2KHR(VkPhysicalDevice physicalDevice,
                                                                              uint32_t* pQueueFamilyPropertyCount,
                                                                              VkQueueFamilyProperties2* pQueueFamilyProperties) {
+    ZoneScoped;
     ValidationStateTracker::PostCallRecordGetPhysicalDeviceQueueFamilyProperties2KHR(physicalDevice, pQueueFamilyPropertyCount,
                                                                                      pQueueFamilyProperties);
     auto bp_pd_state = Get<bp_state::PhysicalDevice>(physicalDevice);
@@ -5459,6 +5676,7 @@ void BestPractices::PostCallRecordGetPhysicalDeviceQueueFamilyProperties2KHR(VkP
 }
 
 void BestPractices::PostCallRecordGetPhysicalDeviceFeatures(VkPhysicalDevice physicalDevice, VkPhysicalDeviceFeatures* pFeatures) {
+    ZoneScoped;
     ValidationStateTracker::PostCallRecordGetPhysicalDeviceFeatures(physicalDevice, pFeatures);
     auto bp_pd_state = Get<bp_state::PhysicalDevice>(physicalDevice);
     if (bp_pd_state) {
@@ -5468,6 +5686,7 @@ void BestPractices::PostCallRecordGetPhysicalDeviceFeatures(VkPhysicalDevice phy
 
 void BestPractices::PostCallRecordGetPhysicalDeviceFeatures2(VkPhysicalDevice physicalDevice,
                                                              VkPhysicalDeviceFeatures2* pFeatures) {
+    ZoneScoped;
     ValidationStateTracker::PostCallRecordGetPhysicalDeviceFeatures2(physicalDevice, pFeatures);
     auto bp_pd_state = Get<bp_state::PhysicalDevice>(physicalDevice);
     if (bp_pd_state) {
@@ -5477,6 +5696,7 @@ void BestPractices::PostCallRecordGetPhysicalDeviceFeatures2(VkPhysicalDevice ph
 
 void BestPractices::PostCallRecordGetPhysicalDeviceFeatures2KHR(VkPhysicalDevice physicalDevice,
                                                                 VkPhysicalDeviceFeatures2* pFeatures) {
+    ZoneScoped;
     ValidationStateTracker::PostCallRecordGetPhysicalDeviceFeatures2KHR(physicalDevice, pFeatures);
     auto bp_pd_state = Get<bp_state::PhysicalDevice>(physicalDevice);
     if (bp_pd_state) {
@@ -5488,6 +5708,7 @@ void BestPractices::ManualPostCallRecordGetPhysicalDeviceSurfaceCapabilitiesKHR(
                                                                                 VkSurfaceKHR surface,
                                                                                 VkSurfaceCapabilitiesKHR* pSurfaceCapabilities,
                                                                                 VkResult result) {
+    ZoneScoped;
     auto bp_pd_state = Get<bp_state::PhysicalDevice>(physicalDevice);
     if (bp_pd_state) {
         bp_pd_state->vkGetPhysicalDeviceSurfaceCapabilitiesKHRState = QUERY_DETAILS;
@@ -5497,6 +5718,7 @@ void BestPractices::ManualPostCallRecordGetPhysicalDeviceSurfaceCapabilitiesKHR(
 void BestPractices::ManualPostCallRecordGetPhysicalDeviceSurfaceCapabilities2KHR(
     VkPhysicalDevice physicalDevice, const VkPhysicalDeviceSurfaceInfo2KHR* pSurfaceInfo,
     VkSurfaceCapabilities2KHR* pSurfaceCapabilities, VkResult result) {
+    ZoneScoped;
     auto bp_pd_state = Get<bp_state::PhysicalDevice>(physicalDevice);
     if (bp_pd_state) {
         bp_pd_state->vkGetPhysicalDeviceSurfaceCapabilitiesKHRState = QUERY_DETAILS;
@@ -5507,6 +5729,7 @@ void BestPractices::ManualPostCallRecordGetPhysicalDeviceSurfaceCapabilities2EXT
                                                                                  VkSurfaceKHR surface,
                                                                                  VkSurfaceCapabilities2EXT* pSurfaceCapabilities,
                                                                                  VkResult result) {
+    ZoneScoped;
     auto bp_pd_state = Get<bp_state::PhysicalDevice>(physicalDevice);
     if (bp_pd_state) {
         bp_pd_state->vkGetPhysicalDeviceSurfaceCapabilitiesKHRState = QUERY_DETAILS;
@@ -5516,6 +5739,7 @@ void BestPractices::ManualPostCallRecordGetPhysicalDeviceSurfaceCapabilities2EXT
 void BestPractices::ManualPostCallRecordGetPhysicalDeviceSurfacePresentModesKHR(VkPhysicalDevice physicalDevice,
                                                                                 VkSurfaceKHR surface, uint32_t* pPresentModeCount,
                                                                                 VkPresentModeKHR* pPresentModes, VkResult result) {
+    ZoneScoped;
     auto bp_pd_data = Get<bp_state::PhysicalDevice>(physicalDevice);
     if (bp_pd_data) {
         auto& call_state = bp_pd_data->vkGetPhysicalDeviceSurfacePresentModesKHRState;
@@ -5536,6 +5760,7 @@ void BestPractices::ManualPostCallRecordGetPhysicalDeviceSurfacePresentModesKHR(
 void BestPractices::ManualPostCallRecordGetPhysicalDeviceSurfaceFormatsKHR(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface,
                                                                            uint32_t* pSurfaceFormatCount,
                                                                            VkSurfaceFormatKHR* pSurfaceFormats, VkResult result) {
+    ZoneScoped;
     auto bp_pd_data = Get<bp_state::PhysicalDevice>(physicalDevice);
     if (bp_pd_data) {
         auto& call_state = bp_pd_data->vkGetPhysicalDeviceSurfaceFormatsKHRState;
@@ -5558,6 +5783,7 @@ void BestPractices::ManualPostCallRecordGetPhysicalDeviceSurfaceFormats2KHR(VkPh
                                                                             const VkPhysicalDeviceSurfaceInfo2KHR* pSurfaceInfo,
                                                                             uint32_t* pSurfaceFormatCount,
                                                                             VkSurfaceFormat2KHR* pSurfaceFormats, VkResult result) {
+    ZoneScoped;
     auto bp_pd_data = Get<bp_state::PhysicalDevice>(physicalDevice);
     if (bp_pd_data) {
         if (*pSurfaceFormatCount) {
@@ -5578,6 +5804,7 @@ void BestPractices::ManualPostCallRecordGetPhysicalDeviceDisplayPlanePropertiesK
                                                                                    uint32_t* pPropertyCount,
                                                                                    VkDisplayPlanePropertiesKHR* pProperties,
                                                                                    VkResult result) {
+    ZoneScoped;
     auto bp_pd_data = Get<bp_state::PhysicalDevice>(physicalDevice);
     if (bp_pd_data) {
         if (*pPropertyCount) {
@@ -5596,6 +5823,7 @@ void BestPractices::ManualPostCallRecordGetPhysicalDeviceDisplayPlanePropertiesK
 void BestPractices::ManualPostCallRecordGetSwapchainImagesKHR(VkDevice device, VkSwapchainKHR swapchain,
                                                               uint32_t* pSwapchainImageCount, VkImage* pSwapchainImages,
                                                               VkResult result) {
+    ZoneScoped;
     auto swapchain_state = Get<bp_state::Swapchain>(swapchain);
     if (swapchain_state && (pSwapchainImages || *pSwapchainImageCount)) {
         if (swapchain_state->vkGetSwapchainImagesKHRState < QUERY_DETAILS) {
@@ -5605,6 +5833,7 @@ void BestPractices::ManualPostCallRecordGetSwapchainImagesKHR(VkDevice device, V
 }
 
 void BestPractices::PreCallRecordQueueSubmit(VkQueue queue, uint32_t submitCount, const VkSubmitInfo* pSubmits, VkFence fence) {
+    ZoneScoped;
     ValidationStateTracker::PreCallRecordQueueSubmit(queue, submitCount, pSubmits, fence);
 
     auto queue_state = Get<QUEUE_STATE>(queue);

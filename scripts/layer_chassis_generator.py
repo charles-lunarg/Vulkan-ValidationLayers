@@ -691,6 +691,7 @@ void OutputLayerStatusInfo(ValidationObject *context) {
 // Non-code-generated chassis API functions
 
 VKAPI_ATTR PFN_vkVoidFunction VKAPI_CALL GetDeviceProcAddr(VkDevice device, const char *funcName) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!ApiParentExtensionEnabled(funcName, &layer_data->device_extensions)) {
         return nullptr;
@@ -709,6 +710,7 @@ VKAPI_ATTR PFN_vkVoidFunction VKAPI_CALL GetDeviceProcAddr(VkDevice device, cons
 }
 
 VKAPI_ATTR PFN_vkVoidFunction VKAPI_CALL GetInstanceProcAddr(VkInstance instance, const char *funcName) {
+    ZoneScoped;
     const auto &item = name_to_funcptr_map.find(funcName);
     if (item != name_to_funcptr_map.end()) {
         return reinterpret_cast<PFN_vkVoidFunction>(item->second.funcptr);
@@ -720,6 +722,7 @@ VKAPI_ATTR PFN_vkVoidFunction VKAPI_CALL GetInstanceProcAddr(VkInstance instance
 }
 
 VKAPI_ATTR PFN_vkVoidFunction VKAPI_CALL GetPhysicalDeviceProcAddr(VkInstance instance, const char *funcName) {
+    ZoneScoped;
     const auto &item = name_to_funcptr_map.find(funcName);
     if (item != name_to_funcptr_map.end()) {
         if (item->second.function_type != kFuncTypePdev) {
@@ -761,6 +764,7 @@ VKAPI_ATTR VkResult VKAPI_CALL EnumerateDeviceExtensionProperties(VkPhysicalDevi
 
 VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo *pCreateInfo, const VkAllocationCallbacks *pAllocator,
                                               VkInstance *pInstance) {
+    ZoneScoped;
     VkLayerInstanceCreateInfo* chain_info = get_chain_info(pCreateInfo, VK_LAYER_LINK_INFO);
 
     assert(chain_info->u.pLayerInfo);
@@ -855,11 +859,14 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo *pCreat
         auto lock = intercept->WriteLock();
         intercept->PreCallRecordCreateInstance(pCreateInfo, pAllocator, pInstance);
     }
-
-    VkResult result = fpCreateInstance(pCreateInfo, pAllocator, pInstance);
-    if (result != VK_SUCCESS) {
-        cleanup_allocations();
-        return result;
+    VkResult result = VK_SUCCESS;
+    {
+        ZoneScopedN("Call Down CreateInstance");
+        result = fpCreateInstance(pCreateInfo, pAllocator, pInstance);
+        if (result != VK_SUCCESS) {
+            cleanup_allocations();
+            return result;
+        }
     }
     auto framework = GetLayerDataPtr(get_dispatch_key(*pInstance), layer_data_map);
 
@@ -900,6 +907,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo *pCreat
 }
 
 VKAPI_ATTR void VKAPI_CALL DestroyInstance(VkInstance instance, const VkAllocationCallbacks *pAllocator) {
+    ZoneScoped;
     dispatch_key key = get_dispatch_key(instance);
     auto layer_data = GetLayerDataPtr(key, layer_data_map);
     ActivateInstanceDebugCallbacks(layer_data->report_data);
@@ -912,8 +920,10 @@ VKAPI_ATTR void VKAPI_CALL DestroyInstance(VkInstance instance, const VkAllocati
         auto lock = intercept->WriteLock();
         intercept->PreCallRecordDestroyInstance(instance, pAllocator);
     }
-
-    layer_data->instance_dispatch_table.DestroyInstance(instance, pAllocator);
+    {
+        ZoneScopedN("Call Down DestroyInstance");
+        layer_data->instance_dispatch_table.DestroyInstance(instance, pAllocator);
+    }
 
     """ + postcallrecord_loop + """
         auto lock = intercept->WriteLock();
@@ -933,6 +943,7 @@ VKAPI_ATTR void VKAPI_CALL DestroyInstance(VkInstance instance, const VkAllocati
 
 VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice gpu, const VkDeviceCreateInfo *pCreateInfo,
                                             const VkAllocationCallbacks *pAllocator, VkDevice *pDevice) {
+    ZoneScoped;
     VkLayerDeviceCreateInfo *chain_info = get_chain_info(pCreateInfo, VK_LAYER_LINK_INFO);
 
     auto instance_interceptor = GetLayerDataPtr(get_dispatch_key(gpu), layer_data_map);
@@ -970,10 +981,13 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice gpu, const VkDevice
         auto lock = intercept->WriteLock();
         intercept->PreCallRecordCreateDevice(gpu, pCreateInfo, pAllocator, pDevice, &modified_create_info);
     }
-
-    VkResult result = fpCreateDevice(gpu, reinterpret_cast<VkDeviceCreateInfo *>(&modified_create_info), pAllocator, pDevice);
-    if (result != VK_SUCCESS) {
-        return result;
+    VkResult result = VK_SUCCESS;
+    {
+        ZoneScopedN("Call Down CreateDevice");
+        result = fpCreateDevice(gpu, reinterpret_cast<VkDeviceCreateInfo *>(&modified_create_info), pAllocator, pDevice);
+        if (result != VK_SUCCESS) {
+            return result;
+        }
     }
 
     auto device_interceptor = GetLayerDataPtr(get_dispatch_key(*pDevice), layer_data_map);
@@ -1063,6 +1077,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice gpu, const VkDevice
 //       impossible for the caller to use this device handle further. IOW, this is our _only_ chance to (potentially)
 //       dispatch the driver's DestroyDevice function.
 VKAPI_ATTR void VKAPI_CALL DestroyDevice(VkDevice device, const VkAllocationCallbacks *pAllocator) {
+    ZoneScoped;
     dispatch_key key = get_dispatch_key(device);
     auto layer_data = GetLayerDataPtr(key, layer_data_map);
     """ + precallvalidate_loop + """
@@ -1073,8 +1088,10 @@ VKAPI_ATTR void VKAPI_CALL DestroyDevice(VkDevice device, const VkAllocationCall
         auto lock = intercept->WriteLock();
         intercept->PreCallRecordDestroyDevice(device, pAllocator);
     }
-
-    layer_data->device_dispatch_table.DestroyDevice(device, pAllocator);
+    {
+        ZoneScopedN("Call Down DestroyDevice");
+        layer_data->device_dispatch_table.DestroyDevice(device, pAllocator);
+    }
 
     """ + postcallrecord_loop + """
         auto lock = intercept->WriteLock();
@@ -1097,6 +1114,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateGraphicsPipelines(
     const VkGraphicsPipelineCreateInfo*         pCreateInfos,
     const VkAllocationCallbacks*                pAllocator,
     VkPipeline*                                 pPipelines) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     bool skip = false;
 
@@ -1133,6 +1151,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateComputePipelines(
     const VkComputePipelineCreateInfo*          pCreateInfos,
     const VkAllocationCallbacks*                pAllocator,
     VkPipeline*                                 pPipelines) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     bool skip = false;
 
@@ -1168,6 +1187,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateRayTracingPipelinesNV(
     const VkRayTracingPipelineCreateInfoNV*     pCreateInfos,
     const VkAllocationCallbacks*                pAllocator,
     VkPipeline*                                 pPipelines) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     bool skip = false;
 
@@ -1204,6 +1224,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateRayTracingPipelinesKHR(
     const VkRayTracingPipelineCreateInfoKHR*    pCreateInfos,
     const VkAllocationCallbacks*                pAllocator,
     VkPipeline*                                 pPipelines) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     bool skip = false;
 
@@ -1238,6 +1259,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreatePipelineLayout(
     const VkPipelineLayoutCreateInfo*           pCreateInfo,
     const VkAllocationCallbacks*                pAllocator,
     VkPipelineLayout*                           pPipelineLayout) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     bool skip = false;
 
@@ -1267,6 +1289,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateShaderModule(
     const VkShaderModuleCreateInfo*             pCreateInfo,
     const VkAllocationCallbacks*                pAllocator,
     VkShaderModule*                             pShaderModule) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     bool skip = false;
 
@@ -1294,6 +1317,7 @@ VKAPI_ATTR VkResult VKAPI_CALL AllocateDescriptorSets(
     VkDevice                                    device,
     const VkDescriptorSetAllocateInfo*          pAllocateInfo,
     VkDescriptorSet*                            pDescriptorSets) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     bool skip = false;
 
@@ -1324,6 +1348,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateBuffer(
     const VkBufferCreateInfo*                   pCreateInfo,
     const VkAllocationCallbacks*                pAllocator,
     VkBuffer*                                   pBuffer) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     bool skip = false;
 
@@ -1354,6 +1379,7 @@ VKAPI_ATTR VkResult VKAPI_CALL GetPhysicalDeviceToolPropertiesEXT(
     VkPhysicalDevice                            physicalDevice,
     uint32_t*                                   pToolCount,
     VkPhysicalDeviceToolPropertiesEXT*          pToolProperties) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     bool skip = false;
 
@@ -1409,6 +1435,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateValidationCacheEXT(
     const VkValidationCacheCreateInfoEXT*       pCreateInfo,
     const VkAllocationCallbacks*                pAllocator,
     VkValidationCacheEXT*                       pValidationCache) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     VkResult result = VK_SUCCESS;
 
@@ -1424,6 +1451,7 @@ VKAPI_ATTR void VKAPI_CALL DestroyValidationCacheEXT(
     VkDevice                                    device,
     VkValidationCacheEXT                        validationCache,
     const VkAllocationCallbacks*                pAllocator) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
 
     ValidationObject *validation_data = layer_data->GetValidationObject(layer_data->object_dispatch, LayerObjectTypeCoreValidation);
@@ -1438,6 +1466,7 @@ VKAPI_ATTR VkResult VKAPI_CALL MergeValidationCachesEXT(
     VkValidationCacheEXT                        dstCache,
     uint32_t                                    srcCacheCount,
     const VkValidationCacheEXT*                 pSrcCaches) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     VkResult result = VK_SUCCESS;
 
@@ -1454,6 +1483,7 @@ VKAPI_ATTR VkResult VKAPI_CALL GetValidationCacheDataEXT(
     VkValidationCacheEXT                        validationCache,
     size_t*                                     pDataSize,
     void*                                       pData) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     VkResult result = VK_SUCCESS;
 
@@ -1782,6 +1812,7 @@ VVL_EXPORT VKAPI_ATTR VkResult VKAPI_CALL vkEnumerateDeviceExtensionProperties(V
             helper_content += '    InterceptIdCount,\n'
             helper_content += '} InterceptId;\n\n'
             helper_content += 'void ValidationObject::InitObjectDispatchVectors() {\n'
+            helper_content += '    ZoneScoped;\n'
             helper_content += self.init_object_dispatch_vector
             helper_content += '\n\n'
             helper_content += '    intercept_vectors.resize(InterceptIdCount);\n\n'
@@ -1940,6 +1971,7 @@ VVL_EXPORT VKAPI_ATTR VkResult VKAPI_CALL vkEnumerateDeviceExtensionProperties(V
             decls = self.makeCDecls(cmdinfo.elem)
             self.appendSection('command', '')
             self.appendSection('command', '%s {' % decls[0][:-1])
+            self.appendSection('command', '    ZoneScoped;')
             # Setup common to call wrappers. First parameter is always dispatchable
             dispatchable_name = cmdinfo.elem.find('param/name').text
             self.appendSection('command', '    auto layer_data = GetLayerDataPtr(get_dispatch_key(%s), layer_data_map);' % (dispatchable_name))

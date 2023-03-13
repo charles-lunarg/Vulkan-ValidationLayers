@@ -66,6 +66,7 @@ static VkImageCreateInfo GetSwapchainImpliedImageCreateInfo(VkSwapchainCreateInf
 bool CoreChecks::ValidateSwapchainPresentModesCreateInfo(VkPresentModeKHR present_mode, const char *func_name,
                                                          VkSwapchainCreateInfoKHR const *create_info,
                                                          const SURFACE_STATE *surface_state) const {
+    ZoneScoped;
     bool skip = false;
     std::vector<VkPresentModeKHR> present_modes{};
     if (surface_state) {
@@ -128,6 +129,7 @@ bool CoreChecks::ValidateSwapchainPresentScalingCreateInfo(VkPresentModeKHR pres
                                                            VkSurfaceCapabilitiesKHR *capabilities,
                                                            VkSwapchainCreateInfoKHR const *create_info,
                                                            const SURFACE_STATE *surface_state) const {
+    ZoneScoped;
     bool skip = false;
     auto pres_scale_ci = LvlFindInChain<VkSwapchainPresentScalingCreateInfoEXT>(create_info->pNext);
     if ((!pres_scale_ci) || (pres_scale_ci && (pres_scale_ci->scalingBehavior == 0))) {
@@ -301,6 +303,7 @@ bool CoreChecks::ValidateSwapchainPresentScalingCreateInfo(VkPresentModeKHR pres
 
 bool CoreChecks::ValidateCreateSwapchain(const char *func_name, VkSwapchainCreateInfoKHR const *pCreateInfo,
                                          const SURFACE_STATE *surface_state, const SWAPCHAIN_NODE *old_swapchain_state) const {
+    ZoneScoped;
     // All physical devices and queue families are required to be able to present to any native window on Android; require the
     // application to have established support on any other platform.
     if (!instance_extensions.vk_khr_android_surface) {
@@ -704,6 +707,7 @@ bool CoreChecks::ValidateCreateSwapchain(const char *func_name, VkSwapchainCreat
 
 bool CoreChecks::PreCallValidateCreateSwapchainKHR(VkDevice device, const VkSwapchainCreateInfoKHR *pCreateInfo,
                                                    const VkAllocationCallbacks *pAllocator, VkSwapchainKHR *pSwapchain) const {
+    ZoneScoped;
     auto surface_state = Get<SURFACE_STATE>(pCreateInfo->surface);
     auto old_swapchain_state = Get<SWAPCHAIN_NODE>(pCreateInfo->oldSwapchain);
     return ValidateCreateSwapchain("vkCreateSwapchainKHR()", pCreateInfo, surface_state.get(), old_swapchain_state.get());
@@ -711,6 +715,7 @@ bool CoreChecks::PreCallValidateCreateSwapchainKHR(VkDevice device, const VkSwap
 
 void CoreChecks::PreCallRecordDestroySwapchainKHR(VkDevice device, VkSwapchainKHR swapchain,
                                                   const VkAllocationCallbacks *pAllocator) {
+    ZoneScoped;
     if (swapchain) {
         auto swapchain_data = Get<SWAPCHAIN_NODE>(swapchain);
         if (swapchain_data) {
@@ -725,6 +730,7 @@ void CoreChecks::PreCallRecordDestroySwapchainKHR(VkDevice device, VkSwapchainKH
 
 void CoreChecks::PostCallRecordGetSwapchainImagesKHR(VkDevice device, VkSwapchainKHR swapchain, uint32_t *pSwapchainImageCount,
                                                      VkImage *pSwapchainImages, VkResult result) {
+    ZoneScoped;
     // This function will run twice. The first is to get pSwapchainImageCount. The second is to get pSwapchainImages.
     // The first time in StateTracker::PostCallRecordGetSwapchainImagesKHR only generates the container's size.
     // The second time in StateTracker::PostCallRecordGetSwapchainImagesKHR will create VKImage and IMAGE_STATE.
@@ -755,6 +761,7 @@ void CoreChecks::PostCallRecordGetSwapchainImagesKHR(VkDevice device, VkSwapchai
 }
 
 bool CoreChecks::PreCallValidateQueuePresentKHR(VkQueue queue, const VkPresentInfoKHR *pPresentInfo) const {
+    ZoneScoped;
     bool skip = false;
     auto queue_state = Get<QUEUE_STATE>(queue);
 
@@ -1001,6 +1008,7 @@ bool CoreChecks::PreCallValidateQueuePresentKHR(VkQueue queue, const VkPresentIn
 
 bool CoreChecks::PreCallValidateReleaseSwapchainImagesEXT(VkDevice device,
                                                           const VkReleaseSwapchainImagesInfoEXT *pReleaseInfo) const {
+    ZoneScoped;
     bool skip = false;
     bool image_in_use = false;
     auto swapchain_state = Get<SWAPCHAIN_NODE>(pReleaseInfo->swapchain);
@@ -1036,6 +1044,7 @@ bool CoreChecks::PreCallValidateCreateSharedSwapchainsKHR(VkDevice device, uint3
                                                           const VkSwapchainCreateInfoKHR *pCreateInfos,
                                                           const VkAllocationCallbacks *pAllocator,
                                                           VkSwapchainKHR *pSwapchains) const {
+    ZoneScoped;
     bool skip = false;
     if (pCreateInfos) {
         for (uint32_t i = 0; i < swapchainCount; i++) {
@@ -1053,6 +1062,7 @@ bool CoreChecks::PreCallValidateCreateSharedSwapchainsKHR(VkDevice device, uint3
 bool CoreChecks::ValidateAcquireNextImage(VkDevice device, const AcquireVersion version, VkSwapchainKHR swapchain, uint64_t timeout,
                                           VkSemaphore semaphore, VkFence fence, uint32_t *pImageIndex, const char *func_name,
                                           const char *semaphore_type_vuid) const {
+    ZoneScoped;
     bool skip = false;
 
     auto semaphore_state = Get<SEMAPHORE_STATE>(semaphore);
@@ -1144,6 +1154,7 @@ bool CoreChecks::PreCallValidateAcquireNextImageKHR(VkDevice device, VkSwapchain
 
 bool CoreChecks::PreCallValidateAcquireNextImage2KHR(VkDevice device, const VkAcquireNextImageInfoKHR *pAcquireInfo,
                                                      uint32_t *pImageIndex) const {
+    ZoneScoped;
     bool skip = false;
     const LogObjectList objlist(pAcquireInfo->swapchain);
     skip |= ValidateDeviceMaskToPhysicalDeviceCount(pAcquireInfo->deviceMask, objlist,
@@ -1157,6 +1168,7 @@ bool CoreChecks::PreCallValidateAcquireNextImage2KHR(VkDevice device, const VkAc
 
 bool CoreChecks::PreCallValidateWaitForPresentKHR(VkDevice device, VkSwapchainKHR swapchain, uint64_t presentId,
                                                   uint64_t timeout) const {
+    ZoneScoped;
     bool skip = false;
     if (!enabled_features.present_wait_features.presentWait) {
         skip |= LogError(swapchain, "VUID-vkWaitForPresentKHR-presentWait-06234",
@@ -1174,6 +1186,7 @@ bool CoreChecks::PreCallValidateWaitForPresentKHR(VkDevice device, VkSwapchainKH
 
 bool CoreChecks::PreCallValidateDestroySurfaceKHR(VkInstance instance, VkSurfaceKHR surface,
                                                   const VkAllocationCallbacks *pAllocator) const {
+    ZoneScoped;
     auto surface_state = Get<SURFACE_STATE>(surface);
     bool skip = false;
     if ((surface_state) && (surface_state->swapchain)) {
@@ -1187,6 +1200,7 @@ bool CoreChecks::PreCallValidateDestroySurfaceKHR(VkInstance instance, VkSurface
 bool CoreChecks::PreCallValidateGetPhysicalDeviceWaylandPresentationSupportKHR(VkPhysicalDevice physicalDevice,
                                                                                uint32_t queueFamilyIndex,
                                                                                struct wl_display *display) const {
+    ZoneScoped;
     auto pd_state = Get<PHYSICAL_DEVICE_STATE>(physicalDevice);
     return ValidateQueueFamilyIndex(pd_state.get(), queueFamilyIndex,
                                     "VUID-vkGetPhysicalDeviceWaylandPresentationSupportKHR-queueFamilyIndex-01306",
@@ -1197,6 +1211,7 @@ bool CoreChecks::PreCallValidateGetPhysicalDeviceWaylandPresentationSupportKHR(V
 #ifdef VK_USE_PLATFORM_WIN32_KHR
 bool CoreChecks::PreCallValidateGetPhysicalDeviceWin32PresentationSupportKHR(VkPhysicalDevice physicalDevice,
                                                                              uint32_t queueFamilyIndex) const {
+    ZoneScoped;
     auto pd_state = Get<PHYSICAL_DEVICE_STATE>(physicalDevice);
     return ValidateQueueFamilyIndex(pd_state.get(), queueFamilyIndex,
                                     "VUID-vkGetPhysicalDeviceWin32PresentationSupportKHR-queueFamilyIndex-01309",
@@ -1208,6 +1223,7 @@ bool CoreChecks::PreCallValidateGetPhysicalDeviceWin32PresentationSupportKHR(VkP
 bool CoreChecks::PreCallValidateGetPhysicalDeviceXcbPresentationSupportKHR(VkPhysicalDevice physicalDevice,
                                                                            uint32_t queueFamilyIndex, xcb_connection_t *connection,
                                                                            xcb_visualid_t visual_id) const {
+    ZoneScoped;
     auto pd_state = Get<PHYSICAL_DEVICE_STATE>(physicalDevice);
     return ValidateQueueFamilyIndex(pd_state.get(), queueFamilyIndex,
                                     "VUID-vkGetPhysicalDeviceXcbPresentationSupportKHR-queueFamilyIndex-01312",
@@ -1219,6 +1235,7 @@ bool CoreChecks::PreCallValidateGetPhysicalDeviceXcbPresentationSupportKHR(VkPhy
 bool CoreChecks::PreCallValidateGetPhysicalDeviceXlibPresentationSupportKHR(VkPhysicalDevice physicalDevice,
                                                                             uint32_t queueFamilyIndex, Display *dpy,
                                                                             VisualID visualID) const {
+    ZoneScoped;
     auto pd_state = Get<PHYSICAL_DEVICE_STATE>(physicalDevice);
     return ValidateQueueFamilyIndex(pd_state.get(), queueFamilyIndex,
                                     "VUID-vkGetPhysicalDeviceXlibPresentationSupportKHR-queueFamilyIndex-01315",
@@ -1228,6 +1245,7 @@ bool CoreChecks::PreCallValidateGetPhysicalDeviceXlibPresentationSupportKHR(VkPh
 
 bool CoreChecks::PreCallValidateGetPhysicalDeviceSurfaceSupportKHR(VkPhysicalDevice physicalDevice, uint32_t queueFamilyIndex,
                                                                    VkSurfaceKHR surface, VkBool32 *pSupported) const {
+    ZoneScoped;
     auto pd_state = Get<PHYSICAL_DEVICE_STATE>(physicalDevice);
     return ValidateQueueFamilyIndex(pd_state.get(), queueFamilyIndex,
                                     "VUID-vkGetPhysicalDeviceSurfaceSupportKHR-queueFamilyIndex-01269",
@@ -1236,6 +1254,7 @@ bool CoreChecks::PreCallValidateGetPhysicalDeviceSurfaceSupportKHR(VkPhysicalDev
 
 bool CoreChecks::PreCallValidateGetDisplayPlaneSupportedDisplaysKHR(VkPhysicalDevice physicalDevice, uint32_t planeIndex,
                                                                     uint32_t *pDisplayCount, VkDisplayKHR *pDisplays) const {
+    ZoneScoped;
     bool skip = false;
     skip |= ValidateGetPhysicalDeviceDisplayPlanePropertiesKHRQuery(physicalDevice, planeIndex,
                                                                     "vkGetDisplayPlaneSupportedDisplaysKHR");
@@ -1245,6 +1264,7 @@ bool CoreChecks::PreCallValidateGetDisplayPlaneSupportedDisplaysKHR(VkPhysicalDe
 bool CoreChecks::PreCallValidateGetDisplayPlaneCapabilitiesKHR(VkPhysicalDevice physicalDevice, VkDisplayModeKHR mode,
                                                                uint32_t planeIndex,
                                                                VkDisplayPlaneCapabilitiesKHR *pCapabilities) const {
+    ZoneScoped;
     bool skip = false;
     skip |= ValidateGetPhysicalDeviceDisplayPlanePropertiesKHRQuery(physicalDevice, planeIndex, "vkGetDisplayPlaneCapabilitiesKHR");
     return skip;
@@ -1253,6 +1273,7 @@ bool CoreChecks::PreCallValidateGetDisplayPlaneCapabilitiesKHR(VkPhysicalDevice 
 bool CoreChecks::PreCallValidateGetDisplayPlaneCapabilities2KHR(VkPhysicalDevice physicalDevice,
                                                                 const VkDisplayPlaneInfo2KHR *pDisplayPlaneInfo,
                                                                 VkDisplayPlaneCapabilities2KHR *pCapabilities) const {
+    ZoneScoped;
     bool skip = false;
     skip |= ValidateGetPhysicalDeviceDisplayPlanePropertiesKHRQuery(physicalDevice, pDisplayPlaneInfo->planeIndex,
                                                                     "vkGetDisplayPlaneCapabilities2KHR");
@@ -1262,6 +1283,7 @@ bool CoreChecks::PreCallValidateGetDisplayPlaneCapabilities2KHR(VkPhysicalDevice
 bool CoreChecks::PreCallValidateCreateDisplayPlaneSurfaceKHR(VkInstance instance, const VkDisplaySurfaceCreateInfoKHR *pCreateInfo,
                                                              const VkAllocationCallbacks *pAllocator,
                                                              VkSurfaceKHR *pSurface) const {
+    ZoneScoped;
     bool skip = false;
     const VkDisplayModeKHR display_mode = pCreateInfo->displayMode;
     const uint32_t plane_index = pCreateInfo->planeIndex;
@@ -1328,6 +1350,7 @@ bool CoreChecks::PreCallValidateCreateDisplayPlaneSurfaceKHR(VkInstance instance
 
 #ifdef VK_USE_PLATFORM_WIN32_KHR
 bool CoreChecks::PreCallValidateAcquireFullScreenExclusiveModeEXT(VkDevice device, VkSwapchainKHR swapchain) const {
+    ZoneScoped;
     bool skip = false;
 
     auto swapchain_state = Get<SWAPCHAIN_NODE>(swapchain);
@@ -1358,6 +1381,7 @@ bool CoreChecks::PreCallValidateAcquireFullScreenExclusiveModeEXT(VkDevice devic
 }
 
 bool CoreChecks::PreCallValidateReleaseFullScreenExclusiveModeEXT(VkDevice device, VkSwapchainKHR swapchain) const {
+    ZoneScoped;
     bool skip = false;
 
     const auto swapchain_state = Get<SWAPCHAIN_NODE>(swapchain);
@@ -1385,6 +1409,7 @@ bool CoreChecks::PreCallValidateReleaseFullScreenExclusiveModeEXT(VkDevice devic
 
 bool CoreChecks::ValidatePhysicalDeviceSurfaceSupport(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, const char *vuid,
                                                       const char *func_name) const {
+    ZoneScoped;
     bool skip = false;
 
     auto pd_state = Get<PHYSICAL_DEVICE_STATE>(physicalDevice);
@@ -1410,6 +1435,7 @@ bool CoreChecks::ValidatePhysicalDeviceSurfaceSupport(VkPhysicalDevice physicalD
 bool CoreChecks::PreCallValidateGetDeviceGroupSurfacePresentModes2EXT(VkDevice device,
                                                                       const VkPhysicalDeviceSurfaceInfo2KHR *pSurfaceInfo,
                                                                       VkDeviceGroupPresentModeFlagsKHR *pModes) const {
+    ZoneScoped;
     bool skip = false;
 
     if (physical_device_count == 1) {
@@ -1432,6 +1458,7 @@ bool CoreChecks::PreCallValidateGetPhysicalDeviceSurfacePresentModes2EXT(VkPhysi
                                                                          const VkPhysicalDeviceSurfaceInfo2KHR *pSurfaceInfo,
                                                                          uint32_t *pPresentModeCount,
                                                                          VkPresentModeKHR *pPresentModes) const {
+    ZoneScoped;
     bool skip = false;
 
     skip |= ValidatePhysicalDeviceSurfaceSupport(physicalDevice, pSurfaceInfo->surface,
@@ -1445,6 +1472,7 @@ bool CoreChecks::PreCallValidateGetPhysicalDeviceSurfacePresentModes2EXT(VkPhysi
 
 bool CoreChecks::PreCallValidateGetDeviceGroupSurfacePresentModesKHR(VkDevice device, VkSurfaceKHR surface,
                                                                      VkDeviceGroupPresentModeFlagsKHR *pModes) const {
+    ZoneScoped;
     bool skip = false;
 
     if (physical_device_count == 1) {
@@ -1465,6 +1493,7 @@ bool CoreChecks::PreCallValidateGetDeviceGroupSurfacePresentModesKHR(VkDevice de
 
 bool CoreChecks::PreCallValidateGetPhysicalDevicePresentRectanglesKHR(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface,
                                                                       uint32_t *pRectCount, VkRect2D *pRects) const {
+    ZoneScoped;
     bool skip = false;
 
     skip |=
@@ -1476,6 +1505,7 @@ bool CoreChecks::PreCallValidateGetPhysicalDevicePresentRectanglesKHR(VkPhysical
 
 bool CoreChecks::PreCallValidateGetPhysicalDeviceSurfaceCapabilities2EXT(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface,
                                                                          VkSurfaceCapabilities2EXT *pSurfaceCapabilities) const {
+    ZoneScoped;
     bool skip = false;
 
     skip |= ValidatePhysicalDeviceSurfaceSupport(physicalDevice, surface,
@@ -1488,6 +1518,7 @@ bool CoreChecks::PreCallValidateGetPhysicalDeviceSurfaceCapabilities2EXT(VkPhysi
 bool CoreChecks::PreCallValidateGetPhysicalDeviceSurfaceCapabilities2KHR(VkPhysicalDevice physicalDevice,
                                                                          const VkPhysicalDeviceSurfaceInfo2KHR *pSurfaceInfo,
                                                                          VkSurfaceCapabilities2KHR *pSurfaceCapabilities) const {
+    ZoneScoped;
     bool skip = false;
 
     skip |= ValidatePhysicalDeviceSurfaceSupport(physicalDevice, pSurfaceInfo->surface,
@@ -1521,6 +1552,7 @@ bool CoreChecks::PreCallValidateGetPhysicalDeviceSurfaceCapabilities2KHR(VkPhysi
 
 bool CoreChecks::PreCallValidateGetPhysicalDeviceSurfaceCapabilitiesKHR(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface,
                                                                         VkSurfaceCapabilitiesKHR *pSurfaceCapabilities) const {
+    ZoneScoped;
     bool skip = false;
 
     skip |= ValidatePhysicalDeviceSurfaceSupport(physicalDevice, surface,
@@ -1534,6 +1566,7 @@ bool CoreChecks::PreCallValidateGetPhysicalDeviceSurfaceFormats2KHR(VkPhysicalDe
                                                                     const VkPhysicalDeviceSurfaceInfo2KHR *pSurfaceInfo,
                                                                     uint32_t *pSurfaceFormatCount,
                                                                     VkSurfaceFormat2KHR *pSurfaceFormats) const {
+    ZoneScoped;
     bool skip = false;
 
     skip |= ValidatePhysicalDeviceSurfaceSupport(physicalDevice, pSurfaceInfo->surface,
@@ -1546,6 +1579,7 @@ bool CoreChecks::PreCallValidateGetPhysicalDeviceSurfaceFormats2KHR(VkPhysicalDe
 bool CoreChecks::PreCallValidateGetPhysicalDeviceSurfaceFormatsKHR(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface,
                                                                    uint32_t *pSurfaceFormatCount,
                                                                    VkSurfaceFormatKHR *pSurfaceFormats) const {
+    ZoneScoped;
     bool skip = false;
 
     skip |= ValidatePhysicalDeviceSurfaceSupport(physicalDevice, surface, "VUID-vkGetPhysicalDeviceSurfaceFormatsKHR-surface-06211",
@@ -1557,6 +1591,7 @@ bool CoreChecks::PreCallValidateGetPhysicalDeviceSurfaceFormatsKHR(VkPhysicalDev
 bool CoreChecks::PreCallValidateGetPhysicalDeviceSurfacePresentModesKHR(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface,
                                                                         uint32_t *pPresentModeCount,
                                                                         VkPresentModeKHR *pPresentModes) const {
+    ZoneScoped;
     bool skip = false;
 
     skip |= ValidatePhysicalDeviceSurfaceSupport(physicalDevice, surface,
@@ -1568,6 +1603,7 @@ bool CoreChecks::PreCallValidateGetPhysicalDeviceSurfacePresentModesKHR(VkPhysic
 
 bool CoreChecks::ValidateGetPhysicalDeviceDisplayPlanePropertiesKHRQuery(VkPhysicalDevice physicalDevice, uint32_t planeIndex,
                                                                          const char *api_name) const {
+    ZoneScoped;
     bool skip = false;
     auto pd_state = Get<PHYSICAL_DEVICE_STATE>(physicalDevice);
     if (pd_state->vkGetPhysicalDeviceDisplayPlanePropertiesKHR_called) {

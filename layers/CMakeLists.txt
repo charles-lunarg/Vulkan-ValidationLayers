@@ -60,6 +60,12 @@ target_include_directories(VkLayer_utils PUBLIC
     generated # Needed otherwise VkLayer_utils won't install properly.
 )
 
+target_link_libraries(VkLayer_utils PRIVATE Tracy::TracyClient)
+if (VVL_ENABLE_TRACY_PROFILER)
+    target_compile_definitions(VkLayer_utils PUBLIC TRACY_ENABLE)
+endif()
+
+
 find_package(robin_hood CONFIG)
 option(USE_ROBIN_HOOD_HASHING "robin_hood provides faster versions of std::unordered_map and std::unordered_set" ${robin_hood_FOUND})
 if (USE_ROBIN_HOOD_HASHING)
@@ -304,6 +310,11 @@ if (MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 8)
 endif()
 
 target_include_directories(VkLayer_khronos_validation SYSTEM PRIVATE external)
+
+target_link_libraries(VkLayer_khronos_validation PRIVATE Tracy::TracyClient)
+if (VVL_ENABLE_TRACY_PROFILER)
+    target_compile_definitions(VkLayer_khronos_validation PUBLIC TRACY_ENABLE)
+endif()
 
 # There are 2 primary deliverables for the validation layers.
 # - The actual library VkLayer_khronos_validation.(dll|so|dylib)

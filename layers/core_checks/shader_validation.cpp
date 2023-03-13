@@ -103,6 +103,7 @@ static uint32_t GetFormatType(VkFormat fmt) {
 
 bool CoreChecks::ValidateViAgainstVsInputs(const PIPELINE_STATE &pipeline, const SHADER_MODULE_STATE &module_state,
                                            const Instruction &entrypoint) const {
+    ZoneScoped;
     bool skip = false;
     safe_VkPipelineVertexInputStateCreateInfo const *vi = pipeline.vertex_input_state->input_state;
     const auto inputs = module_state.CollectInterfaceByLocation(entrypoint, spv::StorageClassInput);
@@ -164,6 +165,7 @@ bool CoreChecks::ValidateViAgainstVsInputs(const PIPELINE_STATE &pipeline, const
 bool CoreChecks::ValidateFsOutputsAgainstDynamicRenderingRenderPass(const SHADER_MODULE_STATE &module_state,
                                                                     const Instruction &entrypoint,
                                                                     const PIPELINE_STATE &pipeline) const {
+    ZoneScoped;
     bool skip = false;
 
     struct Attachment {
@@ -223,6 +225,7 @@ bool CoreChecks::ValidateFsOutputsAgainstDynamicRenderingRenderPass(const SHADER
 // Validate use of input attachments against subpass structure
 bool CoreChecks::ValidateShaderInputAttachment(const SHADER_MODULE_STATE &module_state, const PIPELINE_STATE &pipeline,
                                                const ResourceInterfaceVariable &variable) const {
+    ZoneScoped;
     bool skip = false;
     assert(variable.is_input_attachment);
 
@@ -274,6 +277,7 @@ bool CoreChecks::ValidateShaderInputAttachment(const SHADER_MODULE_STATE &module
 
 bool CoreChecks::ValidateConservativeRasterization(const SHADER_MODULE_STATE &module_state, const Instruction &entrypoint,
                                                    const PIPELINE_STATE &pipeline) const {
+    ZoneScoped;
     bool skip = false;
 
     // only new to validate if property is not enabled
@@ -323,6 +327,7 @@ bool CoreChecks::ValidateConservativeRasterization(const SHADER_MODULE_STATE &mo
 
 bool CoreChecks::ValidateFsOutputsAgainstRenderPass(const SHADER_MODULE_STATE &module_state, const Instruction &entrypoint,
                                                     const PIPELINE_STATE &pipeline, uint32_t subpass_index) const {
+    ZoneScoped;
     bool skip = false;
 
     struct Attachment {
@@ -419,6 +424,7 @@ bool CoreChecks::ValidateFsOutputsAgainstRenderPass(const SHADER_MODULE_STATE &m
 PushConstantByteState CoreChecks::ValidatePushConstantSetUpdate(const std::vector<uint8_t> &push_constant_data_update,
                                                                 const SHADER_MODULE_STATE::StructInfo &push_constant_used_in_shader,
                                                                 uint32_t &out_issue_index) const {
+    ZoneScoped;
     const auto *used_bytes = push_constant_used_in_shader.GetUsedbytes();
     const auto used_bytes_size = used_bytes->size();
     if (used_bytes_size == 0) return PC_Byte_Updated;
@@ -455,6 +461,7 @@ PushConstantByteState CoreChecks::ValidatePushConstantSetUpdate(const std::vecto
 
 bool CoreChecks::ValidatePushConstantUsage(const PIPELINE_STATE &pipeline, const SHADER_MODULE_STATE &module_state,
                                            safe_VkPipelineShaderStageCreateInfo const *create_info, const std::string &vuid) const {
+    ZoneScoped;
     bool skip = false;
     // Temp workaround to prevent false positive errors
     // https://github.com/KhronosGroup/Vulkan-ValidationLayers/issues/2450
@@ -508,6 +515,7 @@ bool CoreChecks::ValidatePushConstantUsage(const PIPELINE_STATE &pipeline, const
 
 bool CoreChecks::ValidateBuiltinLimits(const SHADER_MODULE_STATE &module_state, const Instruction &entrypoint,
                                        const PIPELINE_STATE &pipeline) const {
+    ZoneScoped;
     bool skip = false;
 
     // Currently all builtin tested are only found in fragment shaders
@@ -550,6 +558,7 @@ bool CoreChecks::ValidateBuiltinLimits(const SHADER_MODULE_STATE &module_state, 
 // Validate that data for each specialization entry is fully contained within the buffer.
 bool CoreChecks::ValidateSpecializations(const SHADER_MODULE_STATE &module_state, const safe_VkSpecializationInfo *spec,
                                          const PIPELINE_STATE &pipeline) const {
+    ZoneScoped;
     bool skip = false;
     if (spec) {
         for (auto i = 0u; i < spec->mapEntryCount; i++) {
@@ -590,6 +599,7 @@ bool CoreChecks::ValidateSpecializations(const SHADER_MODULE_STATE &module_state
 // TODO (jbolz): Can this return a const reference?
 static std::set<uint32_t> TypeToDescriptorTypeSet(const SHADER_MODULE_STATE &module_state, uint32_t type_id,
                                                   uint32_t &descriptor_count, bool is_khr) {
+    ZoneScoped;
     const Instruction *type = module_state.FindDef(type_id);
     bool is_storage_buffer = false;
     descriptor_count = 1;
@@ -729,6 +739,7 @@ bool CoreChecks::RequireFeature(const SHADER_MODULE_STATE &module_state, VkBool3
 
 bool CoreChecks::ValidateShaderStageGroupNonUniform(const SHADER_MODULE_STATE &module_state, VkShaderStageFlagBits stage,
                                                     const Instruction &insn) const {
+    ZoneScoped;
     bool skip = false;
 
     // Check anything using a group operation (which currently is only OpGroupNonUnifrom* operations)
@@ -785,6 +796,7 @@ bool CoreChecks::ValidateShaderStageGroupNonUniform(const SHADER_MODULE_STATE &m
 }
 
 bool CoreChecks::ValidateMemoryScope(const SHADER_MODULE_STATE &module_state, const Instruction &insn) const {
+    ZoneScoped;
     bool skip = false;
 
     const auto &entry = OpcodeMemoryScopePosition(insn.Opcode());
@@ -814,6 +826,7 @@ bool CoreChecks::ValidateMemoryScope(const SHADER_MODULE_STATE &module_state, co
 
 bool CoreChecks::ValidateShaderStageInputOutputLimits(const SHADER_MODULE_STATE &module_state, VkShaderStageFlagBits stage,
                                                       const PIPELINE_STATE &pipeline, const Instruction &entrypoint) const {
+    ZoneScoped;
     if (stage == VK_SHADER_STAGE_COMPUTE_BIT || stage == VK_SHADER_STAGE_ALL_GRAPHICS || stage == VK_SHADER_STAGE_ALL) {
         return false;
     }
@@ -1190,6 +1203,7 @@ bool CoreChecks::ValidateShaderStageInputOutputLimits(const SHADER_MODULE_STATE 
 
 bool CoreChecks::ValidateShaderStorageImageFormatsVariables(const SHADER_MODULE_STATE &module_state,
                                                             const Instruction *insn) const {
+    ZoneScoped;
     bool skip = false;
     // Go through all variables for images and check decorations
     assert(insn->Opcode() == spv::OpVariable);
@@ -1238,6 +1252,7 @@ bool CoreChecks::ValidateShaderStorageImageFormatsVariables(const SHADER_MODULE_
 
 bool CoreChecks::ValidateShaderStageMaxResources(const SHADER_MODULE_STATE &module_state, VkShaderStageFlagBits stage,
                                                  const PIPELINE_STATE &pipeline) const {
+    ZoneScoped;
     bool skip = false;
     uint32_t total_resources = 0;
 
@@ -1375,6 +1390,7 @@ VkComponentTypeNV GetComponentType(const Instruction *insn) {
 // in SPIRV-Tools (e.g. due to specialization constant usage).
 bool CoreChecks::ValidateCooperativeMatrix(const SHADER_MODULE_STATE &module_state,
                                            safe_VkPipelineShaderStageCreateInfo const *create_info) const {
+    ZoneScoped;
     bool skip = false;
 
     // Map SPIR-V result ID to specialization constant id (SpecId decoration value)
@@ -1548,6 +1564,7 @@ bool CoreChecks::ValidateCooperativeMatrix(const SHADER_MODULE_STATE &module_sta
 
 bool CoreChecks::ValidateShaderResolveQCOM(const SHADER_MODULE_STATE &module_state, VkShaderStageFlagBits stage,
                                            const PIPELINE_STATE &pipeline) const {
+    ZoneScoped;
     bool skip = false;
 
     // If the pipeline's subpass description contains flag VK_SUBPASS_DESCRIPTION_FRAGMENT_REGION_BIT_QCOM,
@@ -1580,6 +1597,7 @@ bool CoreChecks::ValidateShaderResolveQCOM(const SHADER_MODULE_STATE &module_sta
 
 bool CoreChecks::ValidateShaderSubgroupSizeControl(const SHADER_MODULE_STATE &module_state,
                                                    VkPipelineShaderStageCreateFlags flags) const {
+    ZoneScoped;
     bool skip = false;
 
     if ((flags & VK_PIPELINE_SHADER_STAGE_CREATE_ALLOW_VARYING_SUBGROUP_SIZE_BIT_EXT) != 0 &&
@@ -1602,6 +1620,7 @@ bool CoreChecks::ValidateShaderSubgroupSizeControl(const SHADER_MODULE_STATE &mo
 }
 
 bool CoreChecks::ValidateAtomicsTypes(const SHADER_MODULE_STATE &module_state) const {
+    ZoneScoped;
     bool skip = false;
 
     // "If sparseImageInt64Atomics is enabled, shaderImageInt64Atomics must be enabled"
@@ -1870,6 +1889,7 @@ bool CoreChecks::ValidateAtomicsTypes(const SHADER_MODULE_STATE &module_state) c
 
 bool CoreChecks::ValidateExecutionModes(const SHADER_MODULE_STATE &module_state, const Instruction &entrypoint,
                                         VkShaderStageFlagBits stage, const PIPELINE_STATE &pipeline) const {
+    ZoneScoped;
     auto entrypoint_id = entrypoint.Word(2);
 
     // The first denorm execution mode encountered, along with its bit width.
@@ -2220,6 +2240,7 @@ static VkDescriptorSetLayoutBinding const *GetDescriptorBinding(PIPELINE_LAYOUT_
 bool CoreChecks::ValidatePointSizeShaderState(const PIPELINE_STATE &pipeline, const SHADER_MODULE_STATE &module_state,
                                               const SHADER_MODULE_STATE::EntryPoint &entrypoint,
                                               VkShaderStageFlagBits stage) const {
+    ZoneScoped;
     bool skip = false;
     // vkspec.html#primsrast-points describes which is the final stage that needs to check for points
     //
@@ -2301,6 +2322,7 @@ bool CoreChecks::ValidatePointSizeShaderState(const PIPELINE_STATE &pipeline, co
 bool CoreChecks::ValidatePrimitiveRateShaderState(const PIPELINE_STATE &pipeline, const SHADER_MODULE_STATE &module_state,
                                                   const SHADER_MODULE_STATE::EntryPoint &entrypoint,
                                                   VkShaderStageFlagBits stage) const {
+    ZoneScoped;
     bool skip = false;
 
     const auto viewport_state = pipeline.ViewportState();
@@ -2341,6 +2363,7 @@ bool CoreChecks::ValidatePrimitiveRateShaderState(const PIPELINE_STATE &pipeline
 }
 
 bool CoreChecks::ValidateDecorations(const SHADER_MODULE_STATE &module_state, const PIPELINE_STATE &pipeline) const {
+    ZoneScoped;
     bool skip = false;
 
     std::vector<const Instruction *> xfb_streams;
@@ -2450,6 +2473,7 @@ bool CoreChecks::ValidateDecorations(const SHADER_MODULE_STATE &module_state, co
 }
 
 bool CoreChecks::ValidateComputeSharedMemory(const SHADER_MODULE_STATE &module_state, uint32_t total_shared_size) const {
+    ZoneScoped;
     bool skip = false;
 
     // If not found before with spec constants, find here
@@ -2492,6 +2516,7 @@ bool CoreChecks::ValidateComputeSharedMemory(const SHADER_MODULE_STATE &module_s
 }
 
 bool CoreChecks::ValidateShaderModuleId(const PIPELINE_STATE &pipeline) const {
+    ZoneScoped;
     bool skip = false;
     for (const auto &stage_ci : pipeline.shader_stages_ci) {
         const auto module_identifier = LvlFindInChain<VkPipelineShaderStageModuleIdentifierCreateInfoEXT>(stage_ci.pNext);
@@ -2601,6 +2626,7 @@ static void GetVariableInfo(const SHADER_MODULE_STATE &module_state, const Instr
 }
 
 bool CoreChecks::ValidateVariables(const SHADER_MODULE_STATE &module_state) const {
+    ZoneScoped;
     bool skip = false;
 
     for (const Instruction *insn : module_state.GetVariableInstructions()) {
@@ -2701,6 +2727,7 @@ bool CoreChecks::ValidateShaderDescriptorVariable(const SHADER_MODULE_STATE &mod
                                                   const PIPELINE_STATE &pipeline,
                                                   const std::vector<ResourceInterfaceVariable> &descriptor_variables,
                                                   const std::string &vuid_layout_mismatch) const {
+    ZoneScoped;
     bool skip = false;
     for (const auto &variable : descriptor_variables) {
         const auto &binding =
@@ -2773,6 +2800,7 @@ bool CoreChecks::ValidateShaderDescriptorVariable(const SHADER_MODULE_STATE &mod
 }
 
 bool CoreChecks::ValidateTransformFeedback(const SHADER_MODULE_STATE &module_state, const PIPELINE_STATE &pipeline) const {
+    ZoneScoped;
     bool skip = false;
 
     // Temp workaround to prevent false positive errors
@@ -2824,6 +2852,7 @@ bool CoreChecks::ValidateTransformFeedback(const SHADER_MODULE_STATE &module_sta
 
 // Checks for both TexelOffset and TexelGatherOffset limits
 bool CoreChecks::ValidateTexelOffsetLimits(const SHADER_MODULE_STATE &module_state, const Instruction &insn) const {
+    ZoneScoped;
     bool skip = false;
 
     const uint32_t opcode = insn.Opcode();
@@ -2909,6 +2938,7 @@ bool CoreChecks::ValidateTexelOffsetLimits(const SHADER_MODULE_STATE &module_sta
 }
 
 bool CoreChecks::ValidateShaderClock(const SHADER_MODULE_STATE &module_state, const Instruction &insn) const {
+    ZoneScoped;
     bool skip = false;
 
     switch (insn.Opcode()) {
@@ -2932,6 +2962,7 @@ bool CoreChecks::ValidateShaderClock(const SHADER_MODULE_STATE &module_state, co
 }
 
 bool CoreChecks::ValidateImageWrite(const SHADER_MODULE_STATE &module_state, const Instruction &insn) const {
+    ZoneScoped;
     bool skip = false;
 
     if (insn.Opcode() == spv::OpImageWrite) {
@@ -2960,6 +2991,7 @@ bool CoreChecks::ValidateImageWrite(const SHADER_MODULE_STATE &module_state, con
 }
 
 bool CoreChecks::ValidatePipelineShaderStage(const PIPELINE_STATE &pipeline, const PipelineStageState &stage_state) const {
+    ZoneScoped;
     bool skip = false;
     const auto *create_info = stage_state.create_info;
     const SHADER_MODULE_STATE &module_state = *stage_state.module_state.get();
@@ -3202,7 +3234,6 @@ bool CoreChecks::ValidatePipelineShaderStage(const PIPELINE_STATE &pipeline, con
         skip |= ValidateMemoryScope(module_state, insn);
         skip |= ValidateImageWrite(module_state, insn);
     }
-
     skip |= ValidateTransformFeedback(module_state, pipeline);
     skip |= ValidateShaderStageInputOutputLimits(module_state, stage, pipeline, entrypoint);
     skip |= ValidateShaderStageMaxResources(module_state, stage, pipeline);
@@ -3280,6 +3311,7 @@ bool CoreChecks::ValidateInterfaceBetweenStages(const SHADER_MODULE_STATE &produ
                                                 VkShaderStageFlagBits producer_stage, const SHADER_MODULE_STATE &consumer,
                                                 const Instruction &consumer_entrypoint, VkShaderStageFlagBits consumer_stage,
                                                 uint32_t pipe_index) const {
+    ZoneScoped;
     bool skip = false;
 
     auto outputs = producer.CollectInterfaceByLocation(producer_entrypoint, spv::StorageClassOutput);
@@ -3425,6 +3457,7 @@ bool CoreChecks::ValidateInterfaceBetweenStages(const SHADER_MODULE_STATE &produ
 // Validate that the shaders used by the given pipeline and store the active_slots
 //  that are actually used by the pipeline into pPipeline->active_slots
 bool CoreChecks::ValidateGraphicsPipelineShaderState(const PIPELINE_STATE &pipeline) const {
+    ZoneScoped;
     bool skip = false;
 
     if (!(pipeline.pre_raster_state || pipeline.fragment_shader_state)) {
@@ -3489,6 +3522,7 @@ bool CoreChecks::ValidateGraphicsPipelineShaderState(const PIPELINE_STATE &pipel
 
 bool CoreChecks::ValidateGraphicsPipelineShaderDynamicState(const PIPELINE_STATE &pipeline, const CMD_BUFFER_STATE &cb_state,
                                                             const char *caller, const DrawDispatchVuid &vuid) const {
+    ZoneScoped;
     bool skip = false;
 
     for (auto &stage_state : pipeline.stage_states) {
@@ -3572,6 +3606,7 @@ static ValidationCache *GetValidationCacheInfo(VkShaderModuleCreateInfo const *p
 
 bool CoreChecks::PreCallValidateCreateShaderModule(VkDevice device, const VkShaderModuleCreateInfo *pCreateInfo,
                                                    const VkAllocationCallbacks *pAllocator, VkShaderModule *pShaderModule) const {
+    ZoneScoped;
     bool skip = false;
     spv_result_t spv_valid = SPV_SUCCESS;
 
@@ -3628,6 +3663,7 @@ bool CoreChecks::PreCallValidateCreateShaderModule(VkDevice device, const VkShad
 
 bool CoreChecks::PreCallValidateGetShaderModuleIdentifierEXT(VkDevice device, VkShaderModule shaderModule,
                                                              VkShaderModuleIdentifierEXT *pIdentifier) const {
+    ZoneScoped;
     bool skip = false;
     if (!(enabled_features.shader_module_identifier_features.shaderModuleIdentifier)) {
         skip |= LogError(shaderModule, "VUID-vkGetShaderModuleIdentifierEXT-shaderModuleIdentifier-06884",
@@ -3638,6 +3674,7 @@ bool CoreChecks::PreCallValidateGetShaderModuleIdentifierEXT(VkDevice device, Vk
 
 bool CoreChecks::PreCallValidateGetShaderModuleCreateInfoIdentifierEXT(VkDevice device, const VkShaderModuleCreateInfo *pCreateInfo,
                                                                        VkShaderModuleIdentifierEXT *pIdentifier) const {
+    ZoneScoped;
     bool skip = false;
     if (!(enabled_features.shader_module_identifier_features.shaderModuleIdentifier)) {
         skip |= LogError(
@@ -3650,6 +3687,7 @@ bool CoreChecks::PreCallValidateGetShaderModuleCreateInfoIdentifierEXT(VkDevice 
 bool CoreChecks::ValidateComputeWorkGroupSizes(const SHADER_MODULE_STATE &module_state, const Instruction &entrypoint,
                                                const PipelineStageState &stage_state, uint32_t local_size_x, uint32_t local_size_y,
                                                uint32_t local_size_z) const {
+    ZoneScoped;
     bool skip = false;
     // If spec constants were used then the local size are already found if possible
     if (local_size_x == 0) {
@@ -3786,6 +3824,7 @@ bool CoreChecks::ValidateComputeWorkGroupSizes(const SHADER_MODULE_STATE &module
 bool CoreChecks::ValidateTaskMeshWorkGroupSizes(const SHADER_MODULE_STATE &module_state, const Instruction &entrypoint,
                                                 const PipelineStageState &stage_state, uint32_t local_size_x, uint32_t local_size_y,
                                                 uint32_t local_size_z) const {
+    ZoneScoped;
     bool skip = false;
     // If spec constants were used then the local size are already found if possible
     if (local_size_x == 0) {

@@ -33,6 +33,7 @@ bool CoreChecks::VerifyBoundMemoryIsValid(const DEVICE_MEMORY_STATE *mem_state, 
 template <typename LocType>
 bool CoreChecks::VerifyBoundMemoryIsValid(const DEVICE_MEMORY_STATE *mem_state, const LogObjectList &objlist,
                                           const VulkanTypedHandle &typed_handle, const LocType &location) const {
+    ZoneScoped;
     bool result = false;
     auto type_name = object_string[typed_handle.type];
     if (!mem_state) {
@@ -51,6 +52,7 @@ bool CoreChecks::VerifyBoundMemoryIsValid(const DEVICE_MEMORY_STATE *mem_state, 
 // Check to see if memory was ever bound to this image
 template <typename HandleT, typename LocType>
 bool CoreChecks::ValidateMemoryIsBoundToImage(HandleT handle, const IMAGE_STATE &image_state, const LocType &location) const {
+    ZoneScoped;
     bool result = false;
     if (image_state.create_from_swapchain != VK_NULL_HANDLE) {
         if (!image_state.bind_swapchain) {
@@ -103,6 +105,7 @@ template bool CoreChecks::ValidateMemoryIsBoundToImage<VkCommandBuffer, CoreChec
 // Check to see if host-visible memory was bound to this buffer
 bool CoreChecks::ValidateHostVisibleMemoryIsBoundToBuffer(const BUFFER_STATE &buffer_state, const char *api_name,
                                                           const char *error_code) const {
+    ZoneScoped;
     bool result = false;
     result |= ValidateMemoryIsBoundToBuffer(device, buffer_state, api_name, error_code);
     if (!result) {
@@ -126,6 +129,7 @@ bool CoreChecks::ValidateHostVisibleMemoryIsBoundToBuffer(const BUFFER_STATE &bu
 //  Add reference off of objInfo
 // TODO: We may need to refactor or pass in multiple valid usage statements to handle multiple valid usage conditions.
 bool CoreChecks::ValidateSetMemBinding(VkDeviceMemory mem, const BINDABLE &mem_binding, const char *apiName) const {
+    ZoneScoped;
     bool skip = false;
     // It's an error to bind an object to NULL memory
     if (mem != VK_NULL_HANDLE) {
@@ -192,6 +196,7 @@ bool CoreChecks::ValidateSetMemBinding(VkDeviceMemory mem, const BINDABLE &mem_b
 }
 
 bool CoreChecks::IsZeroAllocationSizeAllowed(const VkMemoryAllocateInfo *pAllocateInfo) const {
+    ZoneScoped;
     const VkExternalMemoryHandleTypeFlags ignored_allocation = VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_TEXTURE_BIT |
                                                                VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_TEXTURE_KMT_BIT |
                                                                VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D12_RESOURCE_BIT;
@@ -230,6 +235,7 @@ bool CoreChecks::IsZeroAllocationSizeAllowed(const VkMemoryAllocateInfo *pAlloca
 
 bool CoreChecks::PreCallValidateAllocateMemory(VkDevice device, const VkMemoryAllocateInfo *pAllocateInfo,
                                                const VkAllocationCallbacks *pAllocator, VkDeviceMemory *pMemory) const {
+    ZoneScoped;
     bool skip = false;
     if (Count<DEVICE_MEMORY_STATE>() >= phys_dev_props.limits.maxMemoryAllocationCount) {
         skip |= LogError(device, "VUID-vkAllocateMemory-maxMemoryAllocationCount-04101",
@@ -362,6 +368,7 @@ bool CoreChecks::PreCallValidateAllocateMemory(VkDevice device, const VkMemoryAl
 }
 
 bool CoreChecks::PreCallValidateFreeMemory(VkDevice device, VkDeviceMemory mem, const VkAllocationCallbacks *pAllocator) const {
+    ZoneScoped;
     auto mem_info = Get<DEVICE_MEMORY_STATE>(mem);
     bool skip = false;
     if (mem_info) {
@@ -375,6 +382,7 @@ bool CoreChecks::PreCallValidateFreeMemory(VkDevice device, VkDeviceMemory mem, 
 //  1. Not zero
 //  2. Within the size of the memory allocation
 bool CoreChecks::ValidateMapMemRange(const DEVICE_MEMORY_STATE *mem_info, VkDeviceSize offset, VkDeviceSize size) const {
+    ZoneScoped;
     bool skip = false;
     assert(mem_info);
     const auto mem = mem_info->mem();
@@ -409,6 +417,7 @@ bool CoreChecks::ValidateMapMemRange(const DEVICE_MEMORY_STATE *mem_info, VkDevi
 
 bool CoreChecks::ValidateInsertMemoryRange(const VulkanTypedHandle &typed_handle, const DEVICE_MEMORY_STATE *mem_info,
                                            VkDeviceSize memoryOffset, const char *api_name) const {
+    ZoneScoped;
     bool skip = false;
 
     if (memoryOffset >= mem_info->alloc_info.allocationSize) {
@@ -455,6 +464,7 @@ bool CoreChecks::ValidateInsertBufferMemoryRange(VkBuffer buffer, const DEVICE_M
 
 bool CoreChecks::ValidateMemoryTypes(const DEVICE_MEMORY_STATE *mem_info, const uint32_t memory_type_bits, const char *funcName,
                                      const char *msgCode) const {
+    ZoneScoped;
     bool skip = false;
     if (((1 << mem_info->alloc_info.memoryTypeIndex) & memory_type_bits) == 0) {
         skip = LogError(mem_info->mem(), msgCode,
@@ -468,6 +478,7 @@ bool CoreChecks::ValidateMemoryTypes(const DEVICE_MEMORY_STATE *mem_info, const 
 
 bool CoreChecks::ValidateBindBufferMemory(VkBuffer buffer, VkDeviceMemory mem, VkDeviceSize memoryOffset, const void *pNext,
                                           const char *api_name) const {
+    ZoneScoped;
     auto buffer_state = Get<BUFFER_STATE>(buffer);
     const bool bind_buffer_mem_2 = strcmp(api_name, "vkBindBufferMemory()") != 0;
 
@@ -685,12 +696,14 @@ bool CoreChecks::ValidateBindBufferMemory(VkBuffer buffer, VkDeviceMemory mem, V
 
 bool CoreChecks::PreCallValidateBindBufferMemory(VkDevice device, VkBuffer buffer, VkDeviceMemory mem,
                                                  VkDeviceSize memoryOffset) const {
+    ZoneScoped;
     const char *api_name = "vkBindBufferMemory()";
     return ValidateBindBufferMemory(buffer, mem, memoryOffset, nullptr, api_name);
 }
 
 bool CoreChecks::PreCallValidateBindBufferMemory2(VkDevice device, uint32_t bindInfoCount,
                                                   const VkBindBufferMemoryInfo *pBindInfos) const {
+    ZoneScoped;
     char api_name[64];
     bool skip = false;
 
@@ -704,6 +717,7 @@ bool CoreChecks::PreCallValidateBindBufferMemory2(VkDevice device, uint32_t bind
 
 bool CoreChecks::PreCallValidateBindBufferMemory2KHR(VkDevice device, uint32_t bindInfoCount,
                                                      const VkBindBufferMemoryInfo *pBindInfos) const {
+    ZoneScoped;
     char api_name[64];
     bool skip = false;
 
@@ -717,6 +731,7 @@ bool CoreChecks::PreCallValidateBindBufferMemory2KHR(VkDevice device, uint32_t b
 
 bool CoreChecks::PreCallValidateGetImageMemoryRequirements(VkDevice device, VkImage image,
                                                            VkMemoryRequirements *pMemoryRequirements) const {
+    ZoneScoped;
     bool skip = false;
     if (IsExtEnabled(device_extensions.vk_android_external_memory_android_hardware_buffer)) {
         skip |= ValidateGetImageMemoryRequirementsANDROID(image, "vkGetImageMemoryRequirements()");
@@ -736,6 +751,7 @@ bool CoreChecks::PreCallValidateGetImageMemoryRequirements(VkDevice device, VkIm
 }
 
 bool CoreChecks::ValidateGetImageMemoryRequirements2(const VkImageMemoryRequirementsInfo2 *pInfo, const char *func_name) const {
+    ZoneScoped;
     bool skip = false;
     if (IsExtEnabled(device_extensions.vk_android_external_memory_android_hardware_buffer)) {
         skip |= ValidateGetImageMemoryRequirementsANDROID(pInfo->image, func_name);
@@ -818,6 +834,7 @@ bool CoreChecks::PreCallValidateGetImageMemoryRequirements2KHR(VkDevice device, 
 
 bool CoreChecks::PreCallValidateMapMemory(VkDevice device, VkDeviceMemory mem, VkDeviceSize offset, VkDeviceSize size,
                                           VkFlags flags, void **ppData) const {
+    ZoneScoped;
     bool skip = false;
     auto mem_info = Get<DEVICE_MEMORY_STATE>(mem);
     if (mem_info) {
@@ -841,6 +858,7 @@ bool CoreChecks::PreCallValidateMapMemory(VkDevice device, VkDeviceMemory mem, V
 }
 
 bool CoreChecks::PreCallValidateUnmapMemory(VkDevice device, VkDeviceMemory mem) const {
+    ZoneScoped;
     bool skip = false;
     auto mem_info = Get<DEVICE_MEMORY_STATE>(mem);
     if (mem_info && !mem_info->mapped_range.size) {
@@ -852,6 +870,7 @@ bool CoreChecks::PreCallValidateUnmapMemory(VkDevice device, VkDeviceMemory mem)
 }
 
 bool CoreChecks::ValidateMemoryIsMapped(const char *funcName, uint32_t memRangeCount, const VkMappedMemoryRange *pMemRanges) const {
+    ZoneScoped;
     bool skip = false;
     for (uint32_t i = 0; i < memRangeCount; ++i) {
         auto mem_info = Get<DEVICE_MEMORY_STATE>(pMemRanges[i].memory);
@@ -889,6 +908,7 @@ bool CoreChecks::ValidateMemoryIsMapped(const char *funcName, uint32_t memRangeC
 
 bool CoreChecks::ValidateMappedMemoryRangeDeviceLimits(const char *func_name, uint32_t mem_range_count,
                                                        const VkMappedMemoryRange *mem_ranges) const {
+    ZoneScoped;
     bool skip = false;
     for (uint32_t i = 0; i < mem_range_count; ++i) {
         const uint64_t atom_size = phys_dev_props.limits.nonCoherentAtomSize;
@@ -934,6 +954,7 @@ bool CoreChecks::ValidateMappedMemoryRangeDeviceLimits(const char *func_name, ui
 
 bool CoreChecks::PreCallValidateFlushMappedMemoryRanges(VkDevice device, uint32_t memRangeCount,
                                                         const VkMappedMemoryRange *pMemRanges) const {
+    ZoneScoped;
     bool skip = false;
     skip |= ValidateMappedMemoryRangeDeviceLimits("vkFlushMappedMemoryRanges", memRangeCount, pMemRanges);
     skip |= ValidateMemoryIsMapped("vkFlushMappedMemoryRanges", memRangeCount, pMemRanges);
@@ -942,6 +963,7 @@ bool CoreChecks::PreCallValidateFlushMappedMemoryRanges(VkDevice device, uint32_
 
 bool CoreChecks::PreCallValidateInvalidateMappedMemoryRanges(VkDevice device, uint32_t memRangeCount,
                                                              const VkMappedMemoryRange *pMemRanges) const {
+    ZoneScoped;
     bool skip = false;
     skip |= ValidateMappedMemoryRangeDeviceLimits("vkInvalidateMappedMemoryRanges", memRangeCount, pMemRanges);
     skip |= ValidateMemoryIsMapped("vkInvalidateMappedMemoryRanges", memRangeCount, pMemRanges);
@@ -949,6 +971,7 @@ bool CoreChecks::PreCallValidateInvalidateMappedMemoryRanges(VkDevice device, ui
 }
 
 bool CoreChecks::PreCallValidateGetDeviceMemoryCommitment(VkDevice device, VkDeviceMemory mem, VkDeviceSize *pCommittedMem) const {
+    ZoneScoped;
     bool skip = false;
     auto mem_info = Get<DEVICE_MEMORY_STATE>(mem);
 
@@ -966,6 +989,7 @@ bool CoreChecks::PreCallValidateGetDeviceMemoryCommitment(VkDevice device, VkDev
 
 bool CoreChecks::ValidateBindImageMemory(uint32_t bindInfoCount, const VkBindImageMemoryInfo *pBindInfos,
                                          const char *api_name) const {
+    ZoneScoped;
     bool skip = false;
 
     const bool bind_image_mem_2 = strcmp(api_name, "vkBindImageMemory()") != 0;
@@ -1510,6 +1534,7 @@ bool CoreChecks::ValidateBindImageMemory(uint32_t bindInfoCount, const VkBindIma
 
 bool CoreChecks::PreCallValidateBindImageMemory(VkDevice device, VkImage image, VkDeviceMemory mem,
                                                 VkDeviceSize memoryOffset) const {
+    ZoneScoped;
     bool skip = false;
     auto image_state = Get<IMAGE_STATE>(image);
     if (image_state) {
@@ -1532,6 +1557,7 @@ bool CoreChecks::PreCallValidateBindImageMemory(VkDevice device, VkImage image, 
 
 void CoreChecks::PostCallRecordBindImageMemory(VkDevice device, VkImage image, VkDeviceMemory mem, VkDeviceSize memoryOffset,
                                                VkResult result) {
+    ZoneScoped;
     if (VK_SUCCESS != result) return;
 
     StateTracker::PostCallRecordBindImageMemory(device, image, mem, memoryOffset, result);
@@ -1548,6 +1574,7 @@ bool CoreChecks::PreCallValidateBindImageMemory2(VkDevice device, uint32_t bindI
 
 void CoreChecks::PostCallRecordBindImageMemory2(VkDevice device, uint32_t bindInfoCount, const VkBindImageMemoryInfo *pBindInfos,
                                                 VkResult result) {
+    ZoneScoped;
     if (VK_SUCCESS != result) return;
     StateTracker::PostCallRecordBindImageMemory2(device, bindInfoCount, pBindInfos, result);
 
@@ -1566,6 +1593,7 @@ bool CoreChecks::PreCallValidateBindImageMemory2KHR(VkDevice device, uint32_t bi
 
 void CoreChecks::PostCallRecordBindImageMemory2KHR(VkDevice device, uint32_t bindInfoCount, const VkBindImageMemoryInfo *pBindInfos,
                                                    VkResult result) {
+    ZoneScoped;
     if (VK_SUCCESS != result) return;
     StateTracker::PostCallRecordBindImageMemory2KHR(device, bindInfoCount, pBindInfos, result);
     for (uint32_t i = 0; i < bindInfoCount; i++) {
@@ -1578,6 +1606,7 @@ void CoreChecks::PostCallRecordBindImageMemory2KHR(VkDevice device, uint32_t bin
 
 bool CoreChecks::ValidateSparseMemoryBind(const VkSparseMemoryBind &bind, VkDeviceSize resource_size, const char *func_name,
                                           const char *parameter_name) const {
+    ZoneScoped;
     bool skip = false;
     auto mem_info = Get<DEVICE_MEMORY_STATE>(bind.memory);
     if (mem_info) {
@@ -1625,6 +1654,7 @@ bool CoreChecks::ValidateSparseMemoryBind(const VkSparseMemoryBind &bind, VkDevi
 bool CoreChecks::ValidateImageSubresourceSparseImageMemoryBind(IMAGE_STATE const &image_state,
                                                                VkImageSubresource const &subresource, uint32_t image_idx,
                                                                uint32_t bind_idx) const {
+    ZoneScoped;
     bool skip =
         ValidateImageAspectMask(image_state.image(), image_state.createInfo.format, subresource.aspectMask, image_state.disjoint,
                                 "vkQueueSparseBind()", "VUID-VkSparseImageMemoryBind-subresource-01106");
@@ -1651,6 +1681,7 @@ bool CoreChecks::ValidateImageSubresourceSparseImageMemoryBind(IMAGE_STATE const
 // This will only be called after we are sure the image was created with VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT
 bool CoreChecks::ValidateSparseImageMemoryBind(IMAGE_STATE const *image_state, VkSparseImageMemoryBind const &bind,
                                                uint32_t image_idx, uint32_t bind_idx) const {
+    ZoneScoped;
     bool skip = false;
 
     auto const mem_info = Get<DEVICE_MEMORY_STATE>(bind.memory);
@@ -1738,6 +1769,7 @@ bool CoreChecks::ValidateSparseImageMemoryBind(IMAGE_STATE const *image_state, V
 
 bool CoreChecks::ValidateGetBufferDeviceAddress(VkDevice device, const VkBufferDeviceAddressInfo *pInfo,
                                                 const char *apiName) const {
+    ZoneScoped;
     bool skip = false;
 
     if (!enabled_features.core12.bufferDeviceAddress && !enabled_features.buffer_device_address_ext_features.bufferDeviceAddress) {
@@ -1784,6 +1816,7 @@ bool CoreChecks::PreCallValidateGetBufferDeviceAddress(VkDevice device, const Vk
 
 bool CoreChecks::ValidateGetBufferOpaqueCaptureAddress(VkDevice device, const VkBufferDeviceAddressInfo *pInfo,
                                                        const char *apiName) const {
+    ZoneScoped;
     bool skip = false;
 
     if (!enabled_features.core12.bufferDeviceAddress) {
@@ -1812,6 +1845,7 @@ bool CoreChecks::PreCallValidateGetBufferOpaqueCaptureAddress(VkDevice device, c
 
 bool CoreChecks::ValidateGetDeviceMemoryOpaqueCaptureAddress(VkDevice device, const VkDeviceMemoryOpaqueCaptureAddressInfo *pInfo,
                                                              const char *apiName) const {
+    ZoneScoped;
     bool skip = false;
 
     if (!enabled_features.core12.bufferDeviceAddress) {

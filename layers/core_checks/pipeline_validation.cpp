@@ -30,6 +30,7 @@ bool CoreChecks::ValidatePipelineLibraryFlags(const VkGraphicsPipelineLibraryFla
                                               const VkPipelineLibraryCreateInfoKHR &link_info,
                                               const VkPipelineRenderingCreateInfo *rendering_struct, uint32_t pipe_index,
                                               int lib_index, const char *vuid) const {
+    ZoneScoped;
     const bool current_pipeline = lib_index == -1;
     bool skip = false;
 
@@ -86,6 +87,7 @@ bool CoreChecks::ValidatePipelineLibraryFlags(const VkGraphicsPipelineLibraryFla
 
 bool CoreChecks::ValidatePipelineDerivatives(std::vector<std::shared_ptr<PIPELINE_STATE>> const &pipelines,
                                              uint32_t pipe_index) const {
+    ZoneScoped;
     bool skip = false;
     const auto &pipeline = *pipelines[pipe_index].get();
     // If create derivative bit is set, check that we've specified a base
@@ -123,6 +125,7 @@ bool CoreChecks::ValidatePipelineDerivatives(std::vector<std::shared_ptr<PIPELIN
 }
 
 bool CoreChecks::ValidatePipeline(const PIPELINE_STATE &pipeline) const {
+    ZoneScoped;
     bool skip = false;
     safe_VkSubpassDescription2 *subpass_desc = nullptr;
 
@@ -318,6 +321,7 @@ bool CoreChecks::ValidatePipeline(const PIPELINE_STATE &pipeline) const {
 }
 
 bool CoreChecks::ValidateGraphicsPipelineLibrary(const PIPELINE_STATE &pipeline) const {
+    ZoneScoped;
     bool skip = false;
 
     // If VK_EXT_graphics_pipeline_library is not enabled, a complete set of state must be defined at this point
@@ -773,6 +777,7 @@ bool CoreChecks::ValidateGraphicsPipelineLibrary(const PIPELINE_STATE &pipeline)
 bool CoreChecks::ValidatePipelineVertexDivisors(const safe_VkPipelineVertexInputStateCreateInfo &input_state,
                                                 const std::vector<VkVertexInputBindingDescription> &binding_descriptions,
                                                 const uint32_t pipe_index) const {
+    ZoneScoped;
     bool skip = false;
     const auto divisor_state_info = LvlFindInChain<VkPipelineVertexInputDivisorStateCreateInfoEXT>(input_state.pNext);
     if (divisor_state_info) {
@@ -836,6 +841,7 @@ bool CoreChecks::ValidatePipelineVertexDivisors(const safe_VkPipelineVertexInput
 
 bool CoreChecks::ValidatePipelineCacheControlFlags(VkPipelineCreateFlags flags, uint32_t index, const char *caller_name,
                                                    const char *vuid) const {
+    ZoneScoped;
     bool skip = false;
     if (enabled_features.core13.pipelineCreationCacheControl == VK_FALSE) {
         const VkPipelineCreateFlags invalid_flags =
@@ -853,6 +859,7 @@ bool CoreChecks::ValidatePipelineCacheControlFlags(VkPipelineCreateFlags flags, 
 }
 
 bool CoreChecks::ValidatePipelineProtectedAccessFlags(VkPipelineCreateFlags flags, uint32_t index) const {
+    ZoneScoped;
     bool skip = false;
     if (enabled_features.pipeline_protected_access_features.pipelineProtectedAccess == VK_FALSE) {
         const VkPipelineCreateFlags invalid_flags =
@@ -881,6 +888,7 @@ bool CoreChecks::ValidatePipelineProtectedAccessFlags(VkPipelineCreateFlags flag
 bool CoreChecks::PreCallValidateCreatePipelineCache(VkDevice device, const VkPipelineCacheCreateInfo *pCreateInfo,
                                                     const VkAllocationCallbacks *pAllocator,
                                                     VkPipelineCache *pPipelineCache) const {
+    ZoneScoped;
     bool skip = false;
     if (enabled_features.core13.pipelineCreationCacheControl == VK_FALSE) {
         if ((pCreateInfo->flags & VK_PIPELINE_CACHE_CREATE_EXTERNALLY_SYNCHRONIZED_BIT_EXT) != 0) {
@@ -896,6 +904,7 @@ bool CoreChecks::PreCallValidateCreateGraphicsPipelines(VkDevice device, VkPipel
                                                         const VkGraphicsPipelineCreateInfo *pCreateInfos,
                                                         const VkAllocationCallbacks *pAllocator, VkPipeline *pPipelines,
                                                         void *cgpl_state_data) const {
+    ZoneScoped;
     bool skip = StateTracker::PreCallValidateCreateGraphicsPipelines(device, pipelineCache, count, pCreateInfos, pAllocator,
                                                                      pPipelines, cgpl_state_data);
     create_graphics_pipeline_api_state *cgpl_state = reinterpret_cast<create_graphics_pipeline_api_state *>(cgpl_state_data);
@@ -964,6 +973,7 @@ bool CoreChecks::PreCallValidateCreateComputePipelines(VkDevice device, VkPipeli
                                                        const VkComputePipelineCreateInfo *pCreateInfos,
                                                        const VkAllocationCallbacks *pAllocator, VkPipeline *pPipelines,
                                                        void *ccpl_state_data) const {
+    ZoneScoped;
     bool skip = StateTracker::PreCallValidateCreateComputePipelines(device, pipelineCache, count, pCreateInfos, pAllocator,
                                                                     pPipelines, ccpl_state_data);
 
@@ -984,6 +994,7 @@ bool CoreChecks::PreCallValidateCreateComputePipelines(VkDevice device, VkPipeli
 bool CoreChecks::ValidateRayTracingPipeline(const PIPELINE_STATE &pipeline,
                                             const safe_VkRayTracingPipelineCreateInfoCommon &create_info,
                                             VkPipelineCreateFlags flags, bool isKHR) const {
+    ZoneScoped;
     bool skip = false;
 
     if (isKHR) {
@@ -1131,6 +1142,7 @@ bool CoreChecks::PreCallValidateCreateRayTracingPipelinesNV(VkDevice device, VkP
                                                             const VkRayTracingPipelineCreateInfoNV *pCreateInfos,
                                                             const VkAllocationCallbacks *pAllocator, VkPipeline *pPipelines,
                                                             void *crtpl_state_data) const {
+    ZoneScoped;
     bool skip = StateTracker::PreCallValidateCreateRayTracingPipelinesNV(device, pipelineCache, count, pCreateInfos, pAllocator,
                                                                          pPipelines, crtpl_state_data);
 
@@ -1173,6 +1185,7 @@ bool CoreChecks::PreCallValidateCreateRayTracingPipelinesKHR(VkDevice device, Vk
                                                              const VkRayTracingPipelineCreateInfoKHR *pCreateInfos,
                                                              const VkAllocationCallbacks *pAllocator, VkPipeline *pPipelines,
                                                              void *crtpl_state_data) const {
+    ZoneScoped;
     bool skip = StateTracker::PreCallValidateCreateRayTracingPipelinesKHR(device, deferredOperation, pipelineCache, count,
                                                                           pCreateInfos, pAllocator, pPipelines, crtpl_state_data);
 
@@ -1261,6 +1274,7 @@ bool CoreChecks::PreCallValidateCreateRayTracingPipelinesKHR(VkDevice device, Vk
 bool CoreChecks::PreCallValidateGetPipelineExecutablePropertiesKHR(VkDevice device, const VkPipelineInfoKHR *pPipelineInfo,
                                                                    uint32_t *pExecutableCount,
                                                                    VkPipelineExecutablePropertiesKHR *pProperties) const {
+    ZoneScoped;
     bool skip = false;
     skip |= ValidatePipelineExecutableInfo(device, nullptr, "vkGetPipelineExecutablePropertiesKHR",
                                            "VUID-vkGetPipelineExecutablePropertiesKHR-pipelineExecutableInfo-03270");
@@ -1269,6 +1283,7 @@ bool CoreChecks::PreCallValidateGetPipelineExecutablePropertiesKHR(VkDevice devi
 
 bool CoreChecks::ValidatePipelineExecutableInfo(VkDevice device, const VkPipelineExecutableInfoKHR *pExecutableInfo,
                                                 const char *caller_name, const char *feature_vuid) const {
+    ZoneScoped;
     bool skip = false;
 
     if (!enabled_features.pipeline_exe_props_features.pipelineExecutableInfo) {
@@ -1300,6 +1315,7 @@ bool CoreChecks::PreCallValidateGetPipelineExecutableStatisticsKHR(VkDevice devi
                                                                    const VkPipelineExecutableInfoKHR *pExecutableInfo,
                                                                    uint32_t *pStatisticCount,
                                                                    VkPipelineExecutableStatisticKHR *pStatistics) const {
+    ZoneScoped;
     bool skip = false;
     skip |= ValidatePipelineExecutableInfo(device, pExecutableInfo, "vkGetPipelineExecutableStatisticsKHR",
                                            "VUID-vkGetPipelineExecutableStatisticsKHR-pipelineExecutableInfo-03272");
@@ -1317,6 +1333,7 @@ bool CoreChecks::PreCallValidateGetPipelineExecutableStatisticsKHR(VkDevice devi
 bool CoreChecks::PreCallValidateGetPipelineExecutableInternalRepresentationsKHR(
     VkDevice device, const VkPipelineExecutableInfoKHR *pExecutableInfo, uint32_t *pInternalRepresentationCount,
     VkPipelineExecutableInternalRepresentationKHR *pStatistics) const {
+    ZoneScoped;
     bool skip = false;
     skip |= ValidatePipelineExecutableInfo(device, pExecutableInfo, "vkGetPipelineExecutableInternalRepresentationsKHR",
                                            "VUID-vkGetPipelineExecutableInternalRepresentationsKHR-pipelineExecutableInfo-03276");
@@ -1333,6 +1350,7 @@ bool CoreChecks::PreCallValidateGetPipelineExecutableInternalRepresentationsKHR(
 
 bool CoreChecks::PreCallValidateDestroyPipeline(VkDevice device, VkPipeline pipeline,
                                                 const VkAllocationCallbacks *pAllocator) const {
+    ZoneScoped;
     auto pipeline_state = Get<PIPELINE_STATE>(pipeline);
     bool skip = false;
     if (pipeline_state) {
@@ -1342,6 +1360,7 @@ bool CoreChecks::PreCallValidateDestroyPipeline(VkDevice device, VkPipeline pipe
 }
 
 bool CoreChecks::ValidateGraphicsPipelineBlendEnable(const PIPELINE_STATE &pipeline) const {
+    ZoneScoped;
     bool skip = false;
     const auto *color_blend_state = pipeline.ColorBlendState();
     const auto &rp_state = pipeline.RenderPassState();
@@ -1389,6 +1408,7 @@ bool CoreChecks::ValidateGraphicsPipelineBlendEnable(const PIPELINE_STATE &pipel
 }
 
 bool CoreChecks::ValidateGraphicsPipelineInputAssemblyState(const PIPELINE_STATE &pipeline) const {
+    ZoneScoped;
     bool skip = false;
 
     // if vertex_input_state is not set, will be null
@@ -1471,6 +1491,7 @@ bool CoreChecks::ValidateGraphicsPipelineInputAssemblyState(const PIPELINE_STATE
 }
 
 bool CoreChecks::ValidateGraphicsPipelinePreRasterState(const PIPELINE_STATE &pipeline) const {
+    ZoneScoped;
     bool skip = false;
     // Only validate once during creation
     if (pipeline.OwnsSubState(pipeline.pre_raster_state)) {
@@ -1571,6 +1592,7 @@ bool CoreChecks::ValidateGraphicsPipelinePreRasterState(const PIPELINE_STATE &pi
 
 bool CoreChecks::ValidateGraphicsPipelineColorBlendState(const PIPELINE_STATE &pipeline,
                                                          const safe_VkSubpassDescription2 *subpass_desc) const {
+    ZoneScoped;
     bool skip = false;
     const auto color_blend_state = pipeline.ColorBlendState();
     if (color_blend_state) {
@@ -1740,6 +1762,7 @@ bool CoreChecks::ValidateGraphicsPipelineColorBlendState(const PIPELINE_STATE &p
 
 bool CoreChecks::ValidateGraphicsPipelineRasterizationState(const PIPELINE_STATE &pipeline,
                                                             const safe_VkSubpassDescription2 *subpass_desc) const {
+    ZoneScoped;
     bool skip = false;
     const auto raster_state = pipeline.RasterizationState();
     if (raster_state) {
@@ -1939,6 +1962,7 @@ bool CoreChecks::ValidateGraphicsPipelineRasterizationState(const PIPELINE_STATE
 }
 
 bool CoreChecks::ValidateSampleLocationsInfo(const VkSampleLocationsInfoEXT *pSampleLocationsInfo, const char *apiName) const {
+    ZoneScoped;
     bool skip = false;
     const VkSampleCountFlagBits sample_count = pSampleLocationsInfo->sampleLocationsPerPixel;
     const uint32_t sample_total_size = pSampleLocationsInfo->sampleLocationGridSize.width *
@@ -1962,6 +1986,7 @@ bool CoreChecks::ValidateSampleLocationsInfo(const VkSampleLocationsInfoEXT *pSa
 
 bool CoreChecks::ValidateGraphicsPipelineMultisampleState(const PIPELINE_STATE &pipeline,
                                                           const safe_VkSubpassDescription2 *subpass_desc) const {
+    ZoneScoped;
     bool skip = false;
     const auto *multisample_state = pipeline.MultisampleState();
     if (subpass_desc && multisample_state) {
@@ -2344,6 +2369,7 @@ bool CoreChecks::ValidateGraphicsPipelineMultisampleState(const PIPELINE_STATE &
 }
 
 bool CoreChecks::ValidateGraphicsPipelineDepthStencilState(const PIPELINE_STATE &pipeline) const {
+    ZoneScoped;
     bool skip = false;
     const auto ds_state = pipeline.DepthStencilState();
     const auto &rp_state = pipeline.RenderPassState();
@@ -2378,6 +2404,7 @@ bool CoreChecks::ValidateGraphicsPipelineDepthStencilState(const PIPELINE_STATE 
 }
 
 bool CoreChecks::ValidateGraphicsPipelineDynamicState(const PIPELINE_STATE &pipeline) const {
+    ZoneScoped;
     bool skip = false;
     if (pipeline.create_info_shaders & VK_SHADER_STAGE_MESH_BIT_EXT) {
         if (pipeline.IsDynamic(VK_DYNAMIC_STATE_PRIMITIVE_TOPOLOGY) ||
@@ -2784,6 +2811,7 @@ bool CoreChecks::ValidateGraphicsPipelineDynamicState(const PIPELINE_STATE &pipe
 }
 
 bool CoreChecks::ValidateGraphicsPipelineFragmentShadingRateState(const PIPELINE_STATE &pipeline) const {
+    ZoneScoped;
     bool skip = false;
     const VkPipelineFragmentShadingRateStateCreateInfoKHR *fragment_shading_rate_state =
         LvlFindInChain<VkPipelineFragmentShadingRateStateCreateInfoKHR>(pipeline.PNext());
@@ -2915,6 +2943,7 @@ bool CoreChecks::ValidateGraphicsPipelineFragmentShadingRateState(const PIPELINE
 }
 
 bool CoreChecks::ValidateGraphicsPipelineDynamicRendering(const PIPELINE_STATE &pipeline) const {
+    ZoneScoped;
     bool skip = false;
     const auto rendering_struct = LvlFindInChain<VkPipelineRenderingCreateInfo>(pipeline.PNext());
     if (rendering_struct) {
@@ -3080,6 +3109,7 @@ bool CoreChecks::ValidateGraphicsPipelineDynamicRendering(const PIPELINE_STATE &
 }
 
 bool CoreChecks::ValidateGraphicsPipelineBindPoint(const CMD_BUFFER_STATE *cb_state, const PIPELINE_STATE &pipeline) const {
+    ZoneScoped;
     bool skip = false;
 
     if (cb_state->inheritedViewportDepths.size() != 0) {
@@ -3113,6 +3143,7 @@ bool CoreChecks::ValidateGraphicsPipelineBindPoint(const CMD_BUFFER_STATE *cb_st
 
 bool CoreChecks::PreCallValidateCmdBindPipeline(VkCommandBuffer commandBuffer, VkPipelineBindPoint pipelineBindPoint,
                                                 VkPipeline pipeline) const {
+    ZoneScoped;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     assert(cb_state);
 
@@ -3300,6 +3331,7 @@ bool CoreChecks::PreCallValidateCmdBindPipeline(VkCommandBuffer commandBuffer, V
 // TODO add vkCmdBindPipeline bind_point validation using this call.
 bool CoreChecks::ValidatePipelineBindPoint(const CMD_BUFFER_STATE *cb_state, VkPipelineBindPoint bind_point, const char *func_name,
                                            const std::map<VkPipelineBindPoint, std::string> &bind_errors) const {
+    ZoneScoped;
     bool skip = false;
     auto pool = cb_state->command_pool;
     if (pool) {  // The loss of a pool in a recording cmd is reported in DestroyCommandPool
@@ -3325,6 +3357,7 @@ bool CoreChecks::ValidatePipelineBindPoint(const CMD_BUFFER_STATE *cb_state, VkP
 // Validate draw-time state related to the PSO
 bool CoreChecks::ValidatePipelineDrawtimeState(const LAST_BOUND_STATE &state, const CMD_BUFFER_STATE &cb_state, CMD_TYPE cmd_type,
                                                const PIPELINE_STATE &pipeline) const {
+    ZoneScoped;
     bool skip = false;
     const auto &current_vtx_bfr_binding_info = cb_state.current_vertex_buffer_binding_info.vertex_buffer_bindings;
     const DrawDispatchVuid &vuid = GetDrawDispatchVuid(cmd_type);

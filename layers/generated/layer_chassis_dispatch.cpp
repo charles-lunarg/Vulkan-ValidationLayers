@@ -385,6 +385,7 @@ void CopyCreatePipelineFeedbackData(const void *src_chain, const void *dst_chain
 VkResult DispatchCreateGraphicsPipelines(VkDevice device, VkPipelineCache pipelineCache, uint32_t createInfoCount,
                                          const VkGraphicsPipelineCreateInfo *pCreateInfos,
                                          const VkAllocationCallbacks *pAllocator, VkPipeline *pPipelines) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CreateGraphicsPipelines(device, pipelineCache, createInfoCount,
                                                                                            pCreateInfos, pAllocator, pPipelines);
@@ -485,6 +486,7 @@ static void UpdateCreateRenderPassState(ValidationObject *layer_data, const T *p
 
 VkResult DispatchCreateRenderPass(VkDevice device, const VkRenderPassCreateInfo *pCreateInfo,
                                   const VkAllocationCallbacks *pAllocator, VkRenderPass *pRenderPass) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     VkResult result = layer_data->device_dispatch_table.CreateRenderPass(device, pCreateInfo, pAllocator, pRenderPass);
     if (!wrap_handles) return result;
@@ -498,6 +500,7 @@ VkResult DispatchCreateRenderPass(VkDevice device, const VkRenderPassCreateInfo 
 
 VkResult DispatchCreateRenderPass2KHR(VkDevice device, const VkRenderPassCreateInfo2 *pCreateInfo,
                                       const VkAllocationCallbacks *pAllocator, VkRenderPass *pRenderPass) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     VkResult result = layer_data->device_dispatch_table.CreateRenderPass2KHR(device, pCreateInfo, pAllocator, pRenderPass);
     if (!wrap_handles) return result;
@@ -511,6 +514,7 @@ VkResult DispatchCreateRenderPass2KHR(VkDevice device, const VkRenderPassCreateI
 
 VkResult DispatchCreateRenderPass2(VkDevice device, const VkRenderPassCreateInfo2 *pCreateInfo,
                                       const VkAllocationCallbacks *pAllocator, VkRenderPass *pRenderPass) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     VkResult result = layer_data->device_dispatch_table.CreateRenderPass2(device, pCreateInfo, pAllocator, pRenderPass);
     if (!wrap_handles) return result;
@@ -523,6 +527,7 @@ VkResult DispatchCreateRenderPass2(VkDevice device, const VkRenderPassCreateInfo
 }
 
 void DispatchDestroyRenderPass(VkDevice device, VkRenderPass renderPass, const VkAllocationCallbacks *pAllocator) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DestroyRenderPass(device, renderPass, pAllocator);
     uint64_t renderPass_id = CastToUint64(renderPass);
@@ -542,6 +547,7 @@ void DispatchDestroyRenderPass(VkDevice device, VkRenderPass renderPass, const V
 
 VkResult DispatchCreateSwapchainKHR(VkDevice device, const VkSwapchainCreateInfoKHR *pCreateInfo,
                                     const VkAllocationCallbacks *pAllocator, VkSwapchainKHR *pSwapchain) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CreateSwapchainKHR(device, pCreateInfo, pAllocator, pSwapchain);
     safe_VkSwapchainCreateInfoKHR *local_pCreateInfo = nullptr;
@@ -563,6 +569,7 @@ VkResult DispatchCreateSwapchainKHR(VkDevice device, const VkSwapchainCreateInfo
 
 VkResult DispatchCreateSharedSwapchainsKHR(VkDevice device, uint32_t swapchainCount, const VkSwapchainCreateInfoKHR *pCreateInfos,
                                            const VkAllocationCallbacks *pAllocator, VkSwapchainKHR *pSwapchains) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles)
         return layer_data->device_dispatch_table.CreateSharedSwapchainsKHR(device, swapchainCount, pCreateInfos, pAllocator,
@@ -596,6 +603,7 @@ VkResult DispatchCreateSharedSwapchainsKHR(VkDevice device, uint32_t swapchainCo
 
 VkResult DispatchGetSwapchainImagesKHR(VkDevice device, VkSwapchainKHR swapchain, uint32_t *pSwapchainImageCount,
                                        VkImage *pSwapchainImages) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles)
         return layer_data->device_dispatch_table.GetSwapchainImagesKHR(device, swapchain, pSwapchainImageCount, pSwapchainImages);
@@ -621,6 +629,7 @@ VkResult DispatchGetSwapchainImagesKHR(VkDevice device, VkSwapchainKHR swapchain
 }
 
 void DispatchDestroySwapchainKHR(VkDevice device, VkSwapchainKHR swapchain, const VkAllocationCallbacks *pAllocator) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DestroySwapchainKHR(device, swapchain, pAllocator);
     WriteLockGuard lock(dispatch_lock);
@@ -645,6 +654,7 @@ void DispatchDestroySwapchainKHR(VkDevice device, VkSwapchainKHR swapchain, cons
 }
 
 VkResult DispatchQueuePresentKHR(VkQueue queue, const VkPresentInfoKHR *pPresentInfo) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(queue), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.QueuePresentKHR(queue, pPresentInfo);
     safe_VkPresentInfoKHR *local_pPresentInfo = nullptr;
@@ -678,6 +688,7 @@ VkResult DispatchQueuePresentKHR(VkQueue queue, const VkPresentInfoKHR *pPresent
 }
 
 void DispatchDestroyDescriptorPool(VkDevice device, VkDescriptorPool descriptorPool, const VkAllocationCallbacks *pAllocator) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DestroyDescriptorPool(device, descriptorPool, pAllocator);
     WriteLockGuard lock(dispatch_lock);
@@ -702,6 +713,7 @@ void DispatchDestroyDescriptorPool(VkDevice device, VkDescriptorPool descriptorP
 }
 
 VkResult DispatchResetDescriptorPool(VkDevice device, VkDescriptorPool descriptorPool, VkDescriptorPoolResetFlags flags) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.ResetDescriptorPool(device, descriptorPool, flags);
     VkDescriptorPool local_descriptor_pool = VK_NULL_HANDLE;
@@ -723,6 +735,7 @@ VkResult DispatchResetDescriptorPool(VkDevice device, VkDescriptorPool descripto
 
 VkResult DispatchAllocateDescriptorSets(VkDevice device, const VkDescriptorSetAllocateInfo *pAllocateInfo,
                                         VkDescriptorSet *pDescriptorSets) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.AllocateDescriptorSets(device, pAllocateInfo, pDescriptorSets);
     safe_VkDescriptorSetAllocateInfo *local_pAllocateInfo = nullptr;
@@ -757,6 +770,7 @@ VkResult DispatchAllocateDescriptorSets(VkDevice device, const VkDescriptorSetAl
 
 VkResult DispatchFreeDescriptorSets(VkDevice device, VkDescriptorPool descriptorPool, uint32_t descriptorSetCount,
                                     const VkDescriptorSet *pDescriptorSets) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles)
         return layer_data->device_dispatch_table.FreeDescriptorSets(device, descriptorPool, descriptorSetCount, pDescriptorSets);
@@ -791,6 +805,7 @@ VkResult DispatchFreeDescriptorSets(VkDevice device, VkDescriptorPool descriptor
 VkResult DispatchCreateDescriptorUpdateTemplate(VkDevice device, const VkDescriptorUpdateTemplateCreateInfo *pCreateInfo,
                                                 const VkAllocationCallbacks *pAllocator,
                                                 VkDescriptorUpdateTemplate *pDescriptorUpdateTemplate) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles)
         return layer_data->device_dispatch_table.CreateDescriptorUpdateTemplate(device, pCreateInfo, pAllocator,
@@ -826,6 +841,7 @@ VkResult DispatchCreateDescriptorUpdateTemplate(VkDevice device, const VkDescrip
 VkResult DispatchCreateDescriptorUpdateTemplateKHR(VkDevice device, const VkDescriptorUpdateTemplateCreateInfo *pCreateInfo,
                                                    const VkAllocationCallbacks *pAllocator,
                                                    VkDescriptorUpdateTemplate *pDescriptorUpdateTemplate) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles)
         return layer_data->device_dispatch_table.CreateDescriptorUpdateTemplateKHR(device, pCreateInfo, pAllocator,
@@ -861,6 +877,7 @@ VkResult DispatchCreateDescriptorUpdateTemplateKHR(VkDevice device, const VkDesc
 // This is the core version of this routine.  The extension version is below.
 void DispatchDestroyDescriptorUpdateTemplate(VkDevice device, VkDescriptorUpdateTemplate descriptorUpdateTemplate,
                                              const VkAllocationCallbacks *pAllocator) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles)
         return layer_data->device_dispatch_table.DestroyDescriptorUpdateTemplate(device, descriptorUpdateTemplate, pAllocator);
@@ -882,6 +899,7 @@ void DispatchDestroyDescriptorUpdateTemplate(VkDevice device, VkDescriptorUpdate
 // This is the extension version of this routine.  The core version is above.
 void DispatchDestroyDescriptorUpdateTemplateKHR(VkDevice device, VkDescriptorUpdateTemplate descriptorUpdateTemplate,
                                                 const VkAllocationCallbacks *pAllocator) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles)
         return layer_data->device_dispatch_table.DestroyDescriptorUpdateTemplateKHR(device, descriptorUpdateTemplate, pAllocator);
@@ -1018,6 +1036,7 @@ void *BuildUnwrappedUpdateTemplateBuffer(ValidationObject *layer_data, uint64_t 
 
 void DispatchUpdateDescriptorSetWithTemplate(VkDevice device, VkDescriptorSet descriptorSet,
                                              VkDescriptorUpdateTemplate descriptorUpdateTemplate, const void *pData) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles)
         return layer_data->device_dispatch_table.UpdateDescriptorSetWithTemplate(device, descriptorSet, descriptorUpdateTemplate,
@@ -1036,6 +1055,7 @@ void DispatchUpdateDescriptorSetWithTemplate(VkDevice device, VkDescriptorSet de
 
 void DispatchUpdateDescriptorSetWithTemplateKHR(VkDevice device, VkDescriptorSet descriptorSet,
                                                 VkDescriptorUpdateTemplate descriptorUpdateTemplate, const void *pData) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles)
         return layer_data->device_dispatch_table.UpdateDescriptorSetWithTemplateKHR(device, descriptorSet, descriptorUpdateTemplate,
@@ -1055,6 +1075,7 @@ void DispatchUpdateDescriptorSetWithTemplateKHR(VkDevice device, VkDescriptorSet
 void DispatchCmdPushDescriptorSetWithTemplateKHR(VkCommandBuffer commandBuffer,
                                                  VkDescriptorUpdateTemplate descriptorUpdateTemplate, VkPipelineLayout layout,
                                                  uint32_t set, const void *pData) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles)
         return layer_data->device_dispatch_table.CmdPushDescriptorSetWithTemplateKHR(commandBuffer, descriptorUpdateTemplate,
@@ -1074,6 +1095,7 @@ void DispatchCmdPushDescriptorSetWithTemplateKHR(VkCommandBuffer commandBuffer,
 
 VkResult DispatchGetPhysicalDeviceDisplayPropertiesKHR(VkPhysicalDevice physicalDevice, uint32_t *pPropertyCount,
                                                        VkDisplayPropertiesKHR *pProperties) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     VkResult result =
         layer_data->instance_dispatch_table.GetPhysicalDeviceDisplayPropertiesKHR(physicalDevice, pPropertyCount, pProperties);
@@ -1088,6 +1110,7 @@ VkResult DispatchGetPhysicalDeviceDisplayPropertiesKHR(VkPhysicalDevice physical
 
 VkResult DispatchGetPhysicalDeviceDisplayProperties2KHR(VkPhysicalDevice physicalDevice, uint32_t *pPropertyCount,
                                                         VkDisplayProperties2KHR *pProperties) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     VkResult result =
         layer_data->instance_dispatch_table.GetPhysicalDeviceDisplayProperties2KHR(physicalDevice, pPropertyCount, pProperties);
@@ -1103,6 +1126,7 @@ VkResult DispatchGetPhysicalDeviceDisplayProperties2KHR(VkPhysicalDevice physica
 
 VkResult DispatchGetPhysicalDeviceDisplayPlanePropertiesKHR(VkPhysicalDevice physicalDevice, uint32_t *pPropertyCount,
                                                             VkDisplayPlanePropertiesKHR *pProperties) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     VkResult result =
         layer_data->instance_dispatch_table.GetPhysicalDeviceDisplayPlanePropertiesKHR(physicalDevice, pPropertyCount, pProperties);
@@ -1118,6 +1142,7 @@ VkResult DispatchGetPhysicalDeviceDisplayPlanePropertiesKHR(VkPhysicalDevice phy
 
 VkResult DispatchGetPhysicalDeviceDisplayPlaneProperties2KHR(VkPhysicalDevice physicalDevice, uint32_t *pPropertyCount,
                                                              VkDisplayPlaneProperties2KHR *pProperties) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     VkResult result = layer_data->instance_dispatch_table.GetPhysicalDeviceDisplayPlaneProperties2KHR(physicalDevice,
                                                                                                       pPropertyCount, pProperties);
@@ -1133,6 +1158,7 @@ VkResult DispatchGetPhysicalDeviceDisplayPlaneProperties2KHR(VkPhysicalDevice ph
 
 VkResult DispatchGetDisplayPlaneSupportedDisplaysKHR(VkPhysicalDevice physicalDevice, uint32_t planeIndex, uint32_t *pDisplayCount,
                                                      VkDisplayKHR *pDisplays) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     VkResult result = layer_data->instance_dispatch_table.GetDisplayPlaneSupportedDisplaysKHR(physicalDevice, planeIndex,
                                                                                               pDisplayCount, pDisplays);
@@ -1147,6 +1173,7 @@ VkResult DispatchGetDisplayPlaneSupportedDisplaysKHR(VkPhysicalDevice physicalDe
 
 VkResult DispatchGetDisplayModePropertiesKHR(VkPhysicalDevice physicalDevice, VkDisplayKHR display, uint32_t *pPropertyCount,
                                              VkDisplayModePropertiesKHR *pProperties) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     if (!wrap_handles)
         return layer_data->instance_dispatch_table.GetDisplayModePropertiesKHR(physicalDevice, display, pPropertyCount,
@@ -1166,6 +1193,7 @@ VkResult DispatchGetDisplayModePropertiesKHR(VkPhysicalDevice physicalDevice, Vk
 
 VkResult DispatchGetDisplayModeProperties2KHR(VkPhysicalDevice physicalDevice, VkDisplayKHR display, uint32_t *pPropertyCount,
                                               VkDisplayModeProperties2KHR *pProperties) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     if (!wrap_handles)
         return layer_data->instance_dispatch_table.GetDisplayModeProperties2KHR(physicalDevice, display, pPropertyCount,
@@ -1190,6 +1218,7 @@ VkResult DispatchEnumerateDeviceExtensionProperties(
     uint32_t*                                   pPropertyCount,
     VkExtensionProperties*                      pProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     VkResult result = layer_data->instance_dispatch_table.EnumerateDeviceExtensionProperties(physicalDevice, pLayerName, pPropertyCount, pProperties);
 
@@ -1197,6 +1226,7 @@ VkResult DispatchEnumerateDeviceExtensionProperties(
 }
 
 VkResult DispatchDebugMarkerSetObjectTagEXT(VkDevice device, const VkDebugMarkerObjectTagInfoEXT *pTagInfo) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DebugMarkerSetObjectTagEXT(device, pTagInfo);
     safe_VkDebugMarkerObjectTagInfoEXT local_tag_info(pTagInfo);
@@ -1212,6 +1242,7 @@ VkResult DispatchDebugMarkerSetObjectTagEXT(VkDevice device, const VkDebugMarker
 }
 
 VkResult DispatchDebugMarkerSetObjectNameEXT(VkDevice device, const VkDebugMarkerObjectNameInfoEXT *pNameInfo) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DebugMarkerSetObjectNameEXT(device, pNameInfo);
     safe_VkDebugMarkerObjectNameInfoEXT local_name_info(pNameInfo);
@@ -1228,6 +1259,7 @@ VkResult DispatchDebugMarkerSetObjectNameEXT(VkDevice device, const VkDebugMarke
 
 // VK_EXT_debug_utils
 VkResult DispatchSetDebugUtilsObjectTagEXT(VkDevice device, const VkDebugUtilsObjectTagInfoEXT *pTagInfo) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.SetDebugUtilsObjectTagEXT(device, pTagInfo);
     safe_VkDebugUtilsObjectTagInfoEXT local_tag_info(pTagInfo);
@@ -1243,6 +1275,7 @@ VkResult DispatchSetDebugUtilsObjectTagEXT(VkDevice device, const VkDebugUtilsOb
 }
 
 VkResult DispatchSetDebugUtilsObjectNameEXT(VkDevice device, const VkDebugUtilsObjectNameInfoEXT *pNameInfo) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.SetDebugUtilsObjectNameEXT(device, pNameInfo);
     safe_VkDebugUtilsObjectNameInfoEXT local_name_info(pNameInfo);
@@ -1262,6 +1295,7 @@ VkResult DispatchGetPhysicalDeviceToolPropertiesEXT(
     uint32_t*                                   pToolCount,
     VkPhysicalDeviceToolPropertiesEXT*          pToolProperties)
 {
+    ZoneScoped;
     VkResult result = VK_SUCCESS;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     if (layer_data->instance_dispatch_table.GetPhysicalDeviceToolPropertiesEXT == nullptr) {
@@ -1293,6 +1327,7 @@ VkResult DispatchSetPrivateDataEXT(
     VkPrivateDataSlotEXT                        privateDataSlot,
     uint64_t                                    data)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.SetPrivateDataEXT(device, objectType, objectHandle, privateDataSlot, data);
     privateDataSlot = layer_data->Unwrap(privateDataSlot);
@@ -1310,6 +1345,7 @@ VkResult DispatchSetPrivateData(
     VkPrivateDataSlot                           privateDataSlot,
     uint64_t                                    data)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.SetPrivateData(device, objectType, objectHandle, privateDataSlot, data);
     privateDataSlot = layer_data->Unwrap(privateDataSlot);
@@ -1327,6 +1363,7 @@ void DispatchGetPrivateDataEXT(
     VkPrivateDataSlotEXT                        privateDataSlot,
     uint64_t*                                   pData)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetPrivateDataEXT(device, objectType, objectHandle, privateDataSlot, pData);
     privateDataSlot = layer_data->Unwrap(privateDataSlot);
@@ -1343,7 +1380,8 @@ void DispatchGetPrivateData(
     VkPrivateDataSlot                           privateDataSlot,
     uint64_t*                                   pData)
 {
-    auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
+   ZoneScoped;
+     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetPrivateData(device, objectType, objectHandle, privateDataSlot, pData);
     privateDataSlot = layer_data->Unwrap(privateDataSlot);
     if (NotDispatchableHandle(objectType)) {
@@ -1365,6 +1403,7 @@ WriteLockGuard dispatch_cb_write_lock() {
 }
 
 VkResult DispatchAllocateCommandBuffers(VkDevice device, const VkCommandBufferAllocateInfo* pAllocateInfo, VkCommandBuffer* pCommandBuffers) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.AllocateCommandBuffers(device, pAllocateInfo, pCommandBuffers);
     safe_VkCommandBufferAllocateInfo var_local_pAllocateInfo;
@@ -1387,6 +1426,7 @@ VkResult DispatchAllocateCommandBuffers(VkDevice device, const VkCommandBufferAl
 }
 
 void DispatchFreeCommandBuffers(VkDevice device, VkCommandPool commandPool, uint32_t commandBufferCount, const VkCommandBuffer* pCommandBuffers) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.FreeCommandBuffers(device, commandPool, commandBufferCount, pCommandBuffers);
     commandPool = layer_data->Unwrap(commandPool);
@@ -1398,6 +1438,7 @@ void DispatchFreeCommandBuffers(VkDevice device, VkCommandPool commandPool, uint
 }
 
 void DispatchDestroyCommandPool(VkDevice device, VkCommandPool commandPool, const VkAllocationCallbacks* pAllocator) {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DestroyCommandPool(device, commandPool, pAllocator);
     uint64_t commandPool_id = CastToUint64(commandPool);
@@ -1419,6 +1460,7 @@ void DispatchDestroyCommandPool(VkDevice device, VkCommandPool commandPool, cons
 }
 
 VkResult DispatchBeginCommandBuffer(VkCommandBuffer commandBuffer, const VkCommandBufferBeginInfo* pBeginInfo) {
+    ZoneScoped;
     bool cb_is_primary;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     {
@@ -1453,6 +1495,7 @@ VkResult DispatchCreateRayTracingPipelinesKHR(
     const VkAllocationCallbacks*                pAllocator,
     VkPipeline*                                 pPipelines)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     safe_VkRayTracingPipelineCreateInfoKHR *local_pCreateInfos = (safe_VkRayTracingPipelineCreateInfoKHR *)(pCreateInfos);
     if (wrap_handles) {
@@ -1546,6 +1589,7 @@ VkResult DispatchDeferredOperationJoinKHR(
     VkDevice                                    device,
     VkDeferredOperationKHR                      operation)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (wrap_handles) {
         operation = layer_data->Unwrap(operation);
@@ -1572,6 +1616,7 @@ VkResult DispatchGetDeferredOperationResultKHR(
     VkDevice                                    device,
     VkDeferredOperationKHR                      operation)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (wrap_handles) {
         operation = layer_data->Unwrap(operation);
@@ -1602,6 +1647,7 @@ VkResult DispatchBuildAccelerationStructuresKHR(
     const VkAccelerationStructureBuildGeometryInfoKHR* pInfos,
     const VkAccelerationStructureBuildRangeInfoKHR* const* ppBuildRangeInfos)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.BuildAccelerationStructuresKHR(device, deferredOperation, infoCount, pInfos, ppBuildRangeInfos);
     safe_VkAccelerationStructureBuildGeometryInfoKHR *local_pInfos = nullptr;
@@ -1657,6 +1703,7 @@ void DispatchGetAccelerationStructureBuildSizesKHR(
     const uint32_t*                             pMaxPrimitiveCounts,
     VkAccelerationStructureBuildSizesInfoKHR*   pSizeInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetAccelerationStructureBuildSizesKHR(device, buildType, pBuildInfo, pMaxPrimitiveCounts, pSizeInfo);
     safe_VkAccelerationStructureBuildGeometryInfoKHR var_local_pBuildInfo;
@@ -1689,6 +1736,7 @@ void DispatchGetDescriptorEXT(
     size_t                                      dataSize,
     void*                                       pDescriptor)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetDescriptorEXT(device, pDescriptorInfo, dataSize, pDescriptor);
     safe_VkDescriptorGetInfoEXT var_local_pDescriptorInfo;
@@ -1774,6 +1822,7 @@ VkResult DispatchEnumeratePhysicalDevices(
     uint32_t*                                   pPhysicalDeviceCount,
     VkPhysicalDevice*                           pPhysicalDevices)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(instance), layer_data_map);
     VkResult result = layer_data->instance_dispatch_table.EnumeratePhysicalDevices(instance, pPhysicalDeviceCount, pPhysicalDevices);
 
@@ -1784,6 +1833,7 @@ void DispatchGetPhysicalDeviceFeatures(
     VkPhysicalDevice                            physicalDevice,
     VkPhysicalDeviceFeatures*                   pFeatures)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     layer_data->instance_dispatch_table.GetPhysicalDeviceFeatures(physicalDevice, pFeatures);
 
@@ -1794,6 +1844,7 @@ void DispatchGetPhysicalDeviceFormatProperties(
     VkFormat                                    format,
     VkFormatProperties*                         pFormatProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     layer_data->instance_dispatch_table.GetPhysicalDeviceFormatProperties(physicalDevice, format, pFormatProperties);
 
@@ -1808,6 +1859,7 @@ VkResult DispatchGetPhysicalDeviceImageFormatProperties(
     VkImageCreateFlags                          flags,
     VkImageFormatProperties*                    pImageFormatProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     VkResult result = layer_data->instance_dispatch_table.GetPhysicalDeviceImageFormatProperties(physicalDevice, format, type, tiling, usage, flags, pImageFormatProperties);
 
@@ -1818,6 +1870,7 @@ void DispatchGetPhysicalDeviceProperties(
     VkPhysicalDevice                            physicalDevice,
     VkPhysicalDeviceProperties*                 pProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     layer_data->instance_dispatch_table.GetPhysicalDeviceProperties(physicalDevice, pProperties);
 
@@ -1828,6 +1881,7 @@ void DispatchGetPhysicalDeviceQueueFamilyProperties(
     uint32_t*                                   pQueueFamilyPropertyCount,
     VkQueueFamilyProperties*                    pQueueFamilyProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     layer_data->instance_dispatch_table.GetPhysicalDeviceQueueFamilyProperties(physicalDevice, pQueueFamilyPropertyCount, pQueueFamilyProperties);
 
@@ -1837,6 +1891,7 @@ void DispatchGetPhysicalDeviceMemoryProperties(
     VkPhysicalDevice                            physicalDevice,
     VkPhysicalDeviceMemoryProperties*           pMemoryProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     layer_data->instance_dispatch_table.GetPhysicalDeviceMemoryProperties(physicalDevice, pMemoryProperties);
 
@@ -1846,6 +1901,7 @@ PFN_vkVoidFunction DispatchGetInstanceProcAddr(
     VkInstance                                  instance,
     const char*                                 pName)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(instance), layer_data_map);
     PFN_vkVoidFunction result = layer_data->instance_dispatch_table.GetInstanceProcAddr(instance, pName);
 
@@ -1856,6 +1912,7 @@ PFN_vkVoidFunction DispatchGetDeviceProcAddr(
     VkDevice                                    device,
     const char*                                 pName)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     PFN_vkVoidFunction result = layer_data->device_dispatch_table.GetDeviceProcAddr(device, pName);
 
@@ -1880,6 +1937,7 @@ void DispatchGetDeviceQueue(
     uint32_t                                    queueIndex,
     VkQueue*                                    pQueue)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     layer_data->device_dispatch_table.GetDeviceQueue(device, queueFamilyIndex, queueIndex, pQueue);
 
@@ -1891,6 +1949,7 @@ VkResult DispatchQueueSubmit(
     const VkSubmitInfo*                         pSubmits,
     VkFence                                     fence)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(queue), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.QueueSubmit(queue, submitCount, pSubmits, fence);
     safe_VkSubmitInfo *local_pSubmits = nullptr;
@@ -1924,6 +1983,7 @@ VkResult DispatchQueueSubmit(
 VkResult DispatchQueueWaitIdle(
     VkQueue                                     queue)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(queue), layer_data_map);
     VkResult result = layer_data->device_dispatch_table.QueueWaitIdle(queue);
 
@@ -1933,6 +1993,7 @@ VkResult DispatchQueueWaitIdle(
 VkResult DispatchDeviceWaitIdle(
     VkDevice                                    device)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     VkResult result = layer_data->device_dispatch_table.DeviceWaitIdle(device);
 
@@ -1945,6 +2006,7 @@ VkResult DispatchAllocateMemory(
     const VkAllocationCallbacks*                pAllocator,
     VkDeviceMemory*                             pMemory)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.AllocateMemory(device, pAllocateInfo, pAllocator, pMemory);
     safe_VkMemoryAllocateInfo var_local_pAllocateInfo;
@@ -1968,6 +2030,7 @@ void DispatchFreeMemory(
     VkDeviceMemory                              memory,
     const VkAllocationCallbacks*                pAllocator)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.FreeMemory(device, memory, pAllocator);
     uint64_t memory_id = CastToUint64(memory);
@@ -1989,6 +2052,7 @@ VkResult DispatchMapMemory(
     VkMemoryMapFlags                            flags,
     void**                                      ppData)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.MapMemory(device, memory, offset, size, flags, ppData);
     {
@@ -2003,6 +2067,7 @@ void DispatchUnmapMemory(
     VkDevice                                    device,
     VkDeviceMemory                              memory)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.UnmapMemory(device, memory);
     {
@@ -2017,6 +2082,7 @@ VkResult DispatchFlushMappedMemoryRanges(
     uint32_t                                    memoryRangeCount,
     const VkMappedMemoryRange*                  pMemoryRanges)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.FlushMappedMemoryRanges(device, memoryRangeCount, pMemoryRanges);
     safe_VkMappedMemoryRange *local_pMemoryRanges = nullptr;
@@ -2043,6 +2109,7 @@ VkResult DispatchInvalidateMappedMemoryRanges(
     uint32_t                                    memoryRangeCount,
     const VkMappedMemoryRange*                  pMemoryRanges)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.InvalidateMappedMemoryRanges(device, memoryRangeCount, pMemoryRanges);
     safe_VkMappedMemoryRange *local_pMemoryRanges = nullptr;
@@ -2069,6 +2136,7 @@ void DispatchGetDeviceMemoryCommitment(
     VkDeviceMemory                              memory,
     VkDeviceSize*                               pCommittedMemoryInBytes)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetDeviceMemoryCommitment(device, memory, pCommittedMemoryInBytes);
     {
@@ -2084,6 +2152,7 @@ VkResult DispatchBindBufferMemory(
     VkDeviceMemory                              memory,
     VkDeviceSize                                memoryOffset)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.BindBufferMemory(device, buffer, memory, memoryOffset);
     {
@@ -2101,6 +2170,7 @@ VkResult DispatchBindImageMemory(
     VkDeviceMemory                              memory,
     VkDeviceSize                                memoryOffset)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.BindImageMemory(device, image, memory, memoryOffset);
     {
@@ -2117,6 +2187,7 @@ void DispatchGetBufferMemoryRequirements(
     VkBuffer                                    buffer,
     VkMemoryRequirements*                       pMemoryRequirements)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetBufferMemoryRequirements(device, buffer, pMemoryRequirements);
     {
@@ -2131,6 +2202,7 @@ void DispatchGetImageMemoryRequirements(
     VkImage                                     image,
     VkMemoryRequirements*                       pMemoryRequirements)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetImageMemoryRequirements(device, image, pMemoryRequirements);
     {
@@ -2146,6 +2218,7 @@ void DispatchGetImageSparseMemoryRequirements(
     uint32_t*                                   pSparseMemoryRequirementCount,
     VkSparseImageMemoryRequirements*            pSparseMemoryRequirements)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetImageSparseMemoryRequirements(device, image, pSparseMemoryRequirementCount, pSparseMemoryRequirements);
     {
@@ -2165,6 +2238,7 @@ void DispatchGetPhysicalDeviceSparseImageFormatProperties(
     uint32_t*                                   pPropertyCount,
     VkSparseImageFormatProperties*              pProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     layer_data->instance_dispatch_table.GetPhysicalDeviceSparseImageFormatProperties(physicalDevice, format, type, samples, usage, tiling, pPropertyCount, pProperties);
 
@@ -2176,6 +2250,7 @@ VkResult DispatchQueueBindSparse(
     const VkBindSparseInfo*                     pBindInfo,
     VkFence                                     fence)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(queue), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.QueueBindSparse(queue, bindInfoCount, pBindInfo, fence);
     safe_VkBindSparseInfo *local_pBindInfo = nullptr;
@@ -2253,6 +2328,7 @@ VkResult DispatchCreateFence(
     const VkAllocationCallbacks*                pAllocator,
     VkFence*                                    pFence)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CreateFence(device, pCreateInfo, pAllocator, pFence);
     VkResult result = layer_data->device_dispatch_table.CreateFence(device, pCreateInfo, pAllocator, pFence);
@@ -2267,6 +2343,7 @@ void DispatchDestroyFence(
     VkFence                                     fence,
     const VkAllocationCallbacks*                pAllocator)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DestroyFence(device, fence, pAllocator);
     uint64_t fence_id = CastToUint64(fence);
@@ -2285,6 +2362,7 @@ VkResult DispatchResetFences(
     uint32_t                                    fenceCount,
     const VkFence*                              pFences)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.ResetFences(device, fenceCount, pFences);
     VkFence var_local_pFences[DISPATCH_MAX_STACK_ALLOCATIONS];
@@ -2307,6 +2385,7 @@ VkResult DispatchGetFenceStatus(
     VkDevice                                    device,
     VkFence                                     fence)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetFenceStatus(device, fence);
     {
@@ -2324,6 +2403,7 @@ VkResult DispatchWaitForFences(
     VkBool32                                    waitAll,
     uint64_t                                    timeout)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.WaitForFences(device, fenceCount, pFences, waitAll, timeout);
     VkFence var_local_pFences[DISPATCH_MAX_STACK_ALLOCATIONS];
@@ -2348,6 +2428,7 @@ VkResult DispatchCreateSemaphore(
     const VkAllocationCallbacks*                pAllocator,
     VkSemaphore*                                pSemaphore)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CreateSemaphore(device, pCreateInfo, pAllocator, pSemaphore);
     VkResult result = layer_data->device_dispatch_table.CreateSemaphore(device, pCreateInfo, pAllocator, pSemaphore);
@@ -2362,6 +2443,7 @@ void DispatchDestroySemaphore(
     VkSemaphore                                 semaphore,
     const VkAllocationCallbacks*                pAllocator)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DestroySemaphore(device, semaphore, pAllocator);
     uint64_t semaphore_id = CastToUint64(semaphore);
@@ -2381,6 +2463,7 @@ VkResult DispatchCreateEvent(
     const VkAllocationCallbacks*                pAllocator,
     VkEvent*                                    pEvent)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CreateEvent(device, pCreateInfo, pAllocator, pEvent);
     VkResult result = layer_data->device_dispatch_table.CreateEvent(device, pCreateInfo, pAllocator, pEvent);
@@ -2395,6 +2478,7 @@ void DispatchDestroyEvent(
     VkEvent                                     event,
     const VkAllocationCallbacks*                pAllocator)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DestroyEvent(device, event, pAllocator);
     uint64_t event_id = CastToUint64(event);
@@ -2412,6 +2496,7 @@ VkResult DispatchGetEventStatus(
     VkDevice                                    device,
     VkEvent                                     event)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetEventStatus(device, event);
     {
@@ -2426,6 +2511,7 @@ VkResult DispatchSetEvent(
     VkDevice                                    device,
     VkEvent                                     event)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.SetEvent(device, event);
     {
@@ -2440,6 +2526,7 @@ VkResult DispatchResetEvent(
     VkDevice                                    device,
     VkEvent                                     event)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.ResetEvent(device, event);
     {
@@ -2456,6 +2543,7 @@ VkResult DispatchCreateQueryPool(
     const VkAllocationCallbacks*                pAllocator,
     VkQueryPool*                                pQueryPool)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CreateQueryPool(device, pCreateInfo, pAllocator, pQueryPool);
     VkResult result = layer_data->device_dispatch_table.CreateQueryPool(device, pCreateInfo, pAllocator, pQueryPool);
@@ -2470,6 +2558,7 @@ void DispatchDestroyQueryPool(
     VkQueryPool                                 queryPool,
     const VkAllocationCallbacks*                pAllocator)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DestroyQueryPool(device, queryPool, pAllocator);
     uint64_t queryPool_id = CastToUint64(queryPool);
@@ -2493,6 +2582,7 @@ VkResult DispatchGetQueryPoolResults(
     VkDeviceSize                                stride,
     VkQueryResultFlags                          flags)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetQueryPoolResults(device, queryPool, firstQuery, queryCount, dataSize, pData, stride, flags);
     {
@@ -2509,6 +2599,7 @@ VkResult DispatchCreateBuffer(
     const VkAllocationCallbacks*                pAllocator,
     VkBuffer*                                   pBuffer)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CreateBuffer(device, pCreateInfo, pAllocator, pBuffer);
     safe_VkBufferCreateInfo var_local_pCreateInfo;
@@ -2532,6 +2623,7 @@ void DispatchDestroyBuffer(
     VkBuffer                                    buffer,
     const VkAllocationCallbacks*                pAllocator)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DestroyBuffer(device, buffer, pAllocator);
     uint64_t buffer_id = CastToUint64(buffer);
@@ -2551,6 +2643,7 @@ VkResult DispatchCreateBufferView(
     const VkAllocationCallbacks*                pAllocator,
     VkBufferView*                               pView)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CreateBufferView(device, pCreateInfo, pAllocator, pView);
     safe_VkBufferViewCreateInfo var_local_pCreateInfo;
@@ -2576,6 +2669,7 @@ void DispatchDestroyBufferView(
     VkBufferView                                bufferView,
     const VkAllocationCallbacks*                pAllocator)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DestroyBufferView(device, bufferView, pAllocator);
     uint64_t bufferView_id = CastToUint64(bufferView);
@@ -2595,6 +2689,7 @@ VkResult DispatchCreateImage(
     const VkAllocationCallbacks*                pAllocator,
     VkImage*                                    pImage)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CreateImage(device, pCreateInfo, pAllocator, pImage);
     safe_VkImageCreateInfo var_local_pCreateInfo;
@@ -2618,6 +2713,7 @@ void DispatchDestroyImage(
     VkImage                                     image,
     const VkAllocationCallbacks*                pAllocator)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DestroyImage(device, image, pAllocator);
     uint64_t image_id = CastToUint64(image);
@@ -2637,6 +2733,7 @@ void DispatchGetImageSubresourceLayout(
     const VkImageSubresource*                   pSubresource,
     VkSubresourceLayout*                        pLayout)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetImageSubresourceLayout(device, image, pSubresource, pLayout);
     {
@@ -2652,6 +2749,7 @@ VkResult DispatchCreateImageView(
     const VkAllocationCallbacks*                pAllocator,
     VkImageView*                                pView)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CreateImageView(device, pCreateInfo, pAllocator, pView);
     safe_VkImageViewCreateInfo var_local_pCreateInfo;
@@ -2678,6 +2776,7 @@ void DispatchDestroyImageView(
     VkImageView                                 imageView,
     const VkAllocationCallbacks*                pAllocator)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DestroyImageView(device, imageView, pAllocator);
     uint64_t imageView_id = CastToUint64(imageView);
@@ -2697,6 +2796,7 @@ VkResult DispatchCreateShaderModule(
     const VkAllocationCallbacks*                pAllocator,
     VkShaderModule*                             pShaderModule)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CreateShaderModule(device, pCreateInfo, pAllocator, pShaderModule);
     safe_VkShaderModuleCreateInfo var_local_pCreateInfo;
@@ -2720,6 +2820,7 @@ void DispatchDestroyShaderModule(
     VkShaderModule                              shaderModule,
     const VkAllocationCallbacks*                pAllocator)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DestroyShaderModule(device, shaderModule, pAllocator);
     uint64_t shaderModule_id = CastToUint64(shaderModule);
@@ -2739,6 +2840,7 @@ VkResult DispatchCreatePipelineCache(
     const VkAllocationCallbacks*                pAllocator,
     VkPipelineCache*                            pPipelineCache)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CreatePipelineCache(device, pCreateInfo, pAllocator, pPipelineCache);
     VkResult result = layer_data->device_dispatch_table.CreatePipelineCache(device, pCreateInfo, pAllocator, pPipelineCache);
@@ -2753,6 +2855,7 @@ void DispatchDestroyPipelineCache(
     VkPipelineCache                             pipelineCache,
     const VkAllocationCallbacks*                pAllocator)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DestroyPipelineCache(device, pipelineCache, pAllocator);
     uint64_t pipelineCache_id = CastToUint64(pipelineCache);
@@ -2772,6 +2875,7 @@ VkResult DispatchGetPipelineCacheData(
     size_t*                                     pDataSize,
     void*                                       pData)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetPipelineCacheData(device, pipelineCache, pDataSize, pData);
     {
@@ -2788,6 +2892,7 @@ VkResult DispatchMergePipelineCaches(
     uint32_t                                    srcCacheCount,
     const VkPipelineCache*                      pSrcCaches)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.MergePipelineCaches(device, dstCache, srcCacheCount, pSrcCaches);
     VkPipelineCache var_local_pSrcCaches[DISPATCH_MAX_STACK_ALLOCATIONS];
@@ -2817,6 +2922,7 @@ VkResult DispatchCreateComputePipelines(
     const VkAllocationCallbacks*                pAllocator,
     VkPipeline*                                 pPipelines)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CreateComputePipelines(device, pipelineCache, createInfoCount, pCreateInfos, pAllocator, pPipelines);
     safe_VkComputePipelineCreateInfo *local_pCreateInfos = nullptr;
@@ -2865,6 +2971,7 @@ void DispatchDestroyPipeline(
     VkPipeline                                  pipeline,
     const VkAllocationCallbacks*                pAllocator)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DestroyPipeline(device, pipeline, pAllocator);
     uint64_t pipeline_id = CastToUint64(pipeline);
@@ -2884,6 +2991,7 @@ VkResult DispatchCreatePipelineLayout(
     const VkAllocationCallbacks*                pAllocator,
     VkPipelineLayout*                           pPipelineLayout)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CreatePipelineLayout(device, pCreateInfo, pAllocator, pPipelineLayout);
     safe_VkPipelineLayoutCreateInfo var_local_pCreateInfo;
@@ -2911,6 +3019,7 @@ void DispatchDestroyPipelineLayout(
     VkPipelineLayout                            pipelineLayout,
     const VkAllocationCallbacks*                pAllocator)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DestroyPipelineLayout(device, pipelineLayout, pAllocator);
     uint64_t pipelineLayout_id = CastToUint64(pipelineLayout);
@@ -2930,6 +3039,7 @@ VkResult DispatchCreateSampler(
     const VkAllocationCallbacks*                pAllocator,
     VkSampler*                                  pSampler)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CreateSampler(device, pCreateInfo, pAllocator, pSampler);
     safe_VkSamplerCreateInfo var_local_pCreateInfo;
@@ -2953,6 +3063,7 @@ void DispatchDestroySampler(
     VkSampler                                   sampler,
     const VkAllocationCallbacks*                pAllocator)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DestroySampler(device, sampler, pAllocator);
     uint64_t sampler_id = CastToUint64(sampler);
@@ -2972,6 +3083,7 @@ VkResult DispatchCreateDescriptorSetLayout(
     const VkAllocationCallbacks*                pAllocator,
     VkDescriptorSetLayout*                      pSetLayout)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CreateDescriptorSetLayout(device, pCreateInfo, pAllocator, pSetLayout);
     safe_VkDescriptorSetLayoutCreateInfo var_local_pCreateInfo;
@@ -3003,6 +3115,7 @@ void DispatchDestroyDescriptorSetLayout(
     VkDescriptorSetLayout                       descriptorSetLayout,
     const VkAllocationCallbacks*                pAllocator)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DestroyDescriptorSetLayout(device, descriptorSetLayout, pAllocator);
     uint64_t descriptorSetLayout_id = CastToUint64(descriptorSetLayout);
@@ -3022,6 +3135,7 @@ VkResult DispatchCreateDescriptorPool(
     const VkAllocationCallbacks*                pAllocator,
     VkDescriptorPool*                           pDescriptorPool)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CreateDescriptorPool(device, pCreateInfo, pAllocator, pDescriptorPool);
     VkResult result = layer_data->device_dispatch_table.CreateDescriptorPool(device, pCreateInfo, pAllocator, pDescriptorPool);
@@ -3046,6 +3160,7 @@ void DispatchUpdateDescriptorSets(
     uint32_t                                    descriptorCopyCount,
     const VkCopyDescriptorSet*                  pDescriptorCopies)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.UpdateDescriptorSets(device, descriptorWriteCount, pDescriptorWrites, descriptorCopyCount, pDescriptorCopies);
     safe_VkWriteDescriptorSet *local_pDescriptorWrites = nullptr;
@@ -3111,6 +3226,7 @@ VkResult DispatchCreateFramebuffer(
     const VkAllocationCallbacks*                pAllocator,
     VkFramebuffer*                              pFramebuffer)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CreateFramebuffer(device, pCreateInfo, pAllocator, pFramebuffer);
     safe_VkFramebufferCreateInfo var_local_pCreateInfo;
@@ -3141,6 +3257,7 @@ void DispatchDestroyFramebuffer(
     VkFramebuffer                               framebuffer,
     const VkAllocationCallbacks*                pAllocator)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DestroyFramebuffer(device, framebuffer, pAllocator);
     uint64_t framebuffer_id = CastToUint64(framebuffer);
@@ -3163,6 +3280,7 @@ void DispatchGetRenderAreaGranularity(
     VkRenderPass                                renderPass,
     VkExtent2D*                                 pGranularity)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetRenderAreaGranularity(device, renderPass, pGranularity);
     {
@@ -3178,6 +3296,7 @@ VkResult DispatchCreateCommandPool(
     const VkAllocationCallbacks*                pAllocator,
     VkCommandPool*                              pCommandPool)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CreateCommandPool(device, pCreateInfo, pAllocator, pCommandPool);
     VkResult result = layer_data->device_dispatch_table.CreateCommandPool(device, pCreateInfo, pAllocator, pCommandPool);
@@ -3194,6 +3313,7 @@ VkResult DispatchResetCommandPool(
     VkCommandPool                               commandPool,
     VkCommandPoolResetFlags                     flags)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.ResetCommandPool(device, commandPool, flags);
     {
@@ -3213,6 +3333,7 @@ VkResult DispatchResetCommandPool(
 VkResult DispatchEndCommandBuffer(
     VkCommandBuffer                             commandBuffer)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     VkResult result = layer_data->device_dispatch_table.EndCommandBuffer(commandBuffer);
 
@@ -3223,6 +3344,7 @@ VkResult DispatchResetCommandBuffer(
     VkCommandBuffer                             commandBuffer,
     VkCommandBufferResetFlags                   flags)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     VkResult result = layer_data->device_dispatch_table.ResetCommandBuffer(commandBuffer, flags);
 
@@ -3234,6 +3356,7 @@ void DispatchCmdBindPipeline(
     VkPipelineBindPoint                         pipelineBindPoint,
     VkPipeline                                  pipeline)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdBindPipeline(commandBuffer, pipelineBindPoint, pipeline);
     {
@@ -3249,6 +3372,7 @@ void DispatchCmdSetViewport(
     uint32_t                                    viewportCount,
     const VkViewport*                           pViewports)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetViewport(commandBuffer, firstViewport, viewportCount, pViewports);
 
@@ -3260,6 +3384,7 @@ void DispatchCmdSetScissor(
     uint32_t                                    scissorCount,
     const VkRect2D*                             pScissors)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetScissor(commandBuffer, firstScissor, scissorCount, pScissors);
 
@@ -3269,6 +3394,7 @@ void DispatchCmdSetLineWidth(
     VkCommandBuffer                             commandBuffer,
     float                                       lineWidth)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetLineWidth(commandBuffer, lineWidth);
 
@@ -3280,6 +3406,7 @@ void DispatchCmdSetDepthBias(
     float                                       depthBiasClamp,
     float                                       depthBiasSlopeFactor)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetDepthBias(commandBuffer, depthBiasConstantFactor, depthBiasClamp, depthBiasSlopeFactor);
 
@@ -3289,6 +3416,7 @@ void DispatchCmdSetBlendConstants(
     VkCommandBuffer                             commandBuffer,
     const float                                 blendConstants[4])
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetBlendConstants(commandBuffer, blendConstants);
 
@@ -3299,6 +3427,7 @@ void DispatchCmdSetDepthBounds(
     float                                       minDepthBounds,
     float                                       maxDepthBounds)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetDepthBounds(commandBuffer, minDepthBounds, maxDepthBounds);
 
@@ -3309,6 +3438,7 @@ void DispatchCmdSetStencilCompareMask(
     VkStencilFaceFlags                          faceMask,
     uint32_t                                    compareMask)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetStencilCompareMask(commandBuffer, faceMask, compareMask);
 
@@ -3319,6 +3449,7 @@ void DispatchCmdSetStencilWriteMask(
     VkStencilFaceFlags                          faceMask,
     uint32_t                                    writeMask)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetStencilWriteMask(commandBuffer, faceMask, writeMask);
 
@@ -3329,6 +3460,7 @@ void DispatchCmdSetStencilReference(
     VkStencilFaceFlags                          faceMask,
     uint32_t                                    reference)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetStencilReference(commandBuffer, faceMask, reference);
 
@@ -3344,6 +3476,7 @@ void DispatchCmdBindDescriptorSets(
     uint32_t                                    dynamicOffsetCount,
     const uint32_t*                             pDynamicOffsets)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdBindDescriptorSets(commandBuffer, pipelineBindPoint, layout, firstSet, descriptorSetCount, pDescriptorSets, dynamicOffsetCount, pDynamicOffsets);
     VkDescriptorSet var_local_pDescriptorSets[DISPATCH_MAX_STACK_ALLOCATIONS];
@@ -3368,6 +3501,7 @@ void DispatchCmdBindIndexBuffer(
     VkDeviceSize                                offset,
     VkIndexType                                 indexType)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdBindIndexBuffer(commandBuffer, buffer, offset, indexType);
     {
@@ -3384,6 +3518,7 @@ void DispatchCmdBindVertexBuffers(
     const VkBuffer*                             pBuffers,
     const VkDeviceSize*                         pOffsets)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdBindVertexBuffers(commandBuffer, firstBinding, bindingCount, pBuffers, pOffsets);
     VkBuffer var_local_pBuffers[DISPATCH_MAX_STACK_ALLOCATIONS];
@@ -3408,6 +3543,7 @@ void DispatchCmdDraw(
     uint32_t                                    firstVertex,
     uint32_t                                    firstInstance)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdDraw(commandBuffer, vertexCount, instanceCount, firstVertex, firstInstance);
 
@@ -3421,6 +3557,7 @@ void DispatchCmdDrawIndexed(
     int32_t                                     vertexOffset,
     uint32_t                                    firstInstance)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdDrawIndexed(commandBuffer, indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
 
@@ -3433,6 +3570,7 @@ void DispatchCmdDrawIndirect(
     uint32_t                                    drawCount,
     uint32_t                                    stride)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdDrawIndirect(commandBuffer, buffer, offset, drawCount, stride);
     {
@@ -3449,6 +3587,7 @@ void DispatchCmdDrawIndexedIndirect(
     uint32_t                                    drawCount,
     uint32_t                                    stride)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdDrawIndexedIndirect(commandBuffer, buffer, offset, drawCount, stride);
     {
@@ -3464,6 +3603,7 @@ void DispatchCmdDispatch(
     uint32_t                                    groupCountY,
     uint32_t                                    groupCountZ)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdDispatch(commandBuffer, groupCountX, groupCountY, groupCountZ);
 
@@ -3474,6 +3614,7 @@ void DispatchCmdDispatchIndirect(
     VkBuffer                                    buffer,
     VkDeviceSize                                offset)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdDispatchIndirect(commandBuffer, buffer, offset);
     {
@@ -3490,6 +3631,7 @@ void DispatchCmdCopyBuffer(
     uint32_t                                    regionCount,
     const VkBufferCopy*                         pRegions)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, regionCount, pRegions);
     {
@@ -3509,6 +3651,7 @@ void DispatchCmdCopyImage(
     uint32_t                                    regionCount,
     const VkImageCopy*                          pRegions)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdCopyImage(commandBuffer, srcImage, srcImageLayout, dstImage, dstImageLayout, regionCount, pRegions);
     {
@@ -3529,6 +3672,7 @@ void DispatchCmdBlitImage(
     const VkImageBlit*                          pRegions,
     VkFilter                                    filter)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdBlitImage(commandBuffer, srcImage, srcImageLayout, dstImage, dstImageLayout, regionCount, pRegions, filter);
     {
@@ -3547,6 +3691,7 @@ void DispatchCmdCopyBufferToImage(
     uint32_t                                    regionCount,
     const VkBufferImageCopy*                    pRegions)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdCopyBufferToImage(commandBuffer, srcBuffer, dstImage, dstImageLayout, regionCount, pRegions);
     {
@@ -3565,6 +3710,7 @@ void DispatchCmdCopyImageToBuffer(
     uint32_t                                    regionCount,
     const VkBufferImageCopy*                    pRegions)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdCopyImageToBuffer(commandBuffer, srcImage, srcImageLayout, dstBuffer, regionCount, pRegions);
     {
@@ -3582,6 +3728,7 @@ void DispatchCmdUpdateBuffer(
     VkDeviceSize                                dataSize,
     const void*                                 pData)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdUpdateBuffer(commandBuffer, dstBuffer, dstOffset, dataSize, pData);
     {
@@ -3598,6 +3745,7 @@ void DispatchCmdFillBuffer(
     VkDeviceSize                                size,
     uint32_t                                    data)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdFillBuffer(commandBuffer, dstBuffer, dstOffset, size, data);
     {
@@ -3615,6 +3763,7 @@ void DispatchCmdClearColorImage(
     uint32_t                                    rangeCount,
     const VkImageSubresourceRange*              pRanges)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdClearColorImage(commandBuffer, image, imageLayout, pColor, rangeCount, pRanges);
     {
@@ -3632,6 +3781,7 @@ void DispatchCmdClearDepthStencilImage(
     uint32_t                                    rangeCount,
     const VkImageSubresourceRange*              pRanges)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdClearDepthStencilImage(commandBuffer, image, imageLayout, pDepthStencil, rangeCount, pRanges);
     {
@@ -3648,6 +3798,7 @@ void DispatchCmdClearAttachments(
     uint32_t                                    rectCount,
     const VkClearRect*                          pRects)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdClearAttachments(commandBuffer, attachmentCount, pAttachments, rectCount, pRects);
 
@@ -3662,6 +3813,7 @@ void DispatchCmdResolveImage(
     uint32_t                                    regionCount,
     const VkImageResolve*                       pRegions)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdResolveImage(commandBuffer, srcImage, srcImageLayout, dstImage, dstImageLayout, regionCount, pRegions);
     {
@@ -3677,6 +3829,7 @@ void DispatchCmdSetEvent(
     VkEvent                                     event,
     VkPipelineStageFlags                        stageMask)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdSetEvent(commandBuffer, event, stageMask);
     {
@@ -3691,6 +3844,7 @@ void DispatchCmdResetEvent(
     VkEvent                                     event,
     VkPipelineStageFlags                        stageMask)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdResetEvent(commandBuffer, event, stageMask);
     {
@@ -3713,6 +3867,7 @@ void DispatchCmdWaitEvents(
     uint32_t                                    imageMemoryBarrierCount,
     const VkImageMemoryBarrier*                 pImageMemoryBarriers)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdWaitEvents(commandBuffer, eventCount, pEvents, srcStageMask, dstStageMask, memoryBarrierCount, pMemoryBarriers, bufferMemoryBarrierCount, pBufferMemoryBarriers, imageMemoryBarrierCount, pImageMemoryBarriers);
     VkEvent var_local_pEvents[DISPATCH_MAX_STACK_ALLOCATIONS];
@@ -3768,6 +3923,7 @@ void DispatchCmdPipelineBarrier(
     uint32_t                                    imageMemoryBarrierCount,
     const VkImageMemoryBarrier*                 pImageMemoryBarriers)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdPipelineBarrier(commandBuffer, srcStageMask, dstStageMask, dependencyFlags, memoryBarrierCount, pMemoryBarriers, bufferMemoryBarrierCount, pBufferMemoryBarriers, imageMemoryBarrierCount, pImageMemoryBarriers);
     safe_VkBufferMemoryBarrier *local_pBufferMemoryBarriers = nullptr;
@@ -3807,6 +3963,7 @@ void DispatchCmdBeginQuery(
     uint32_t                                    query,
     VkQueryControlFlags                         flags)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdBeginQuery(commandBuffer, queryPool, query, flags);
     {
@@ -3821,6 +3978,7 @@ void DispatchCmdEndQuery(
     VkQueryPool                                 queryPool,
     uint32_t                                    query)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdEndQuery(commandBuffer, queryPool, query);
     {
@@ -3836,6 +3994,7 @@ void DispatchCmdResetQueryPool(
     uint32_t                                    firstQuery,
     uint32_t                                    queryCount)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdResetQueryPool(commandBuffer, queryPool, firstQuery, queryCount);
     {
@@ -3851,6 +4010,7 @@ void DispatchCmdWriteTimestamp(
     VkQueryPool                                 queryPool,
     uint32_t                                    query)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdWriteTimestamp(commandBuffer, pipelineStage, queryPool, query);
     {
@@ -3870,6 +4030,7 @@ void DispatchCmdCopyQueryPoolResults(
     VkDeviceSize                                stride,
     VkQueryResultFlags                          flags)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdCopyQueryPoolResults(commandBuffer, queryPool, firstQuery, queryCount, dstBuffer, dstOffset, stride, flags);
     {
@@ -3888,6 +4049,7 @@ void DispatchCmdPushConstants(
     uint32_t                                    size,
     const void*                                 pValues)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdPushConstants(commandBuffer, layout, stageFlags, offset, size, pValues);
     {
@@ -3902,6 +4064,7 @@ void DispatchCmdBeginRenderPass(
     const VkRenderPassBeginInfo*                pRenderPassBegin,
     VkSubpassContents                           contents)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdBeginRenderPass(commandBuffer, pRenderPassBegin, contents);
     safe_VkRenderPassBeginInfo var_local_pRenderPassBegin;
@@ -3927,6 +4090,7 @@ void DispatchCmdNextSubpass(
     VkCommandBuffer                             commandBuffer,
     VkSubpassContents                           contents)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdNextSubpass(commandBuffer, contents);
 
@@ -3935,6 +4099,7 @@ void DispatchCmdNextSubpass(
 void DispatchCmdEndRenderPass(
     VkCommandBuffer                             commandBuffer)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdEndRenderPass(commandBuffer);
 
@@ -3945,6 +4110,7 @@ void DispatchCmdExecuteCommands(
     uint32_t                                    commandBufferCount,
     const VkCommandBuffer*                      pCommandBuffers)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdExecuteCommands(commandBuffer, commandBufferCount, pCommandBuffers);
 
@@ -3957,6 +4123,7 @@ VkResult DispatchBindBufferMemory2(
     uint32_t                                    bindInfoCount,
     const VkBindBufferMemoryInfo*               pBindInfos)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.BindBufferMemory2(device, bindInfoCount, pBindInfos);
     safe_VkBindBufferMemoryInfo *local_pBindInfos = nullptr;
@@ -3986,6 +4153,7 @@ VkResult DispatchBindImageMemory2(
     uint32_t                                    bindInfoCount,
     const VkBindImageMemoryInfo*                pBindInfos)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.BindImageMemory2(device, bindInfoCount, pBindInfos);
     safe_VkBindImageMemoryInfo *local_pBindInfos = nullptr;
@@ -4018,6 +4186,7 @@ void DispatchGetDeviceGroupPeerMemoryFeatures(
     uint32_t                                    remoteDeviceIndex,
     VkPeerMemoryFeatureFlags*                   pPeerMemoryFeatures)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     layer_data->device_dispatch_table.GetDeviceGroupPeerMemoryFeatures(device, heapIndex, localDeviceIndex, remoteDeviceIndex, pPeerMemoryFeatures);
 
@@ -4027,6 +4196,7 @@ void DispatchCmdSetDeviceMask(
     VkCommandBuffer                             commandBuffer,
     uint32_t                                    deviceMask)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetDeviceMask(commandBuffer, deviceMask);
 
@@ -4041,6 +4211,7 @@ void DispatchCmdDispatchBase(
     uint32_t                                    groupCountY,
     uint32_t                                    groupCountZ)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdDispatchBase(commandBuffer, baseGroupX, baseGroupY, baseGroupZ, groupCountX, groupCountY, groupCountZ);
 
@@ -4051,6 +4222,7 @@ VkResult DispatchEnumeratePhysicalDeviceGroups(
     uint32_t*                                   pPhysicalDeviceGroupCount,
     VkPhysicalDeviceGroupProperties*            pPhysicalDeviceGroupProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(instance), layer_data_map);
     VkResult result = layer_data->instance_dispatch_table.EnumeratePhysicalDeviceGroups(instance, pPhysicalDeviceGroupCount, pPhysicalDeviceGroupProperties);
 
@@ -4062,6 +4234,7 @@ void DispatchGetImageMemoryRequirements2(
     const VkImageMemoryRequirementsInfo2*       pInfo,
     VkMemoryRequirements2*                      pMemoryRequirements)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetImageMemoryRequirements2(device, pInfo, pMemoryRequirements);
     safe_VkImageMemoryRequirementsInfo2 var_local_pInfo;
@@ -4084,6 +4257,7 @@ void DispatchGetBufferMemoryRequirements2(
     const VkBufferMemoryRequirementsInfo2*      pInfo,
     VkMemoryRequirements2*                      pMemoryRequirements)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetBufferMemoryRequirements2(device, pInfo, pMemoryRequirements);
     safe_VkBufferMemoryRequirementsInfo2 var_local_pInfo;
@@ -4107,6 +4281,7 @@ void DispatchGetImageSparseMemoryRequirements2(
     uint32_t*                                   pSparseMemoryRequirementCount,
     VkSparseImageMemoryRequirements2*           pSparseMemoryRequirements)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetImageSparseMemoryRequirements2(device, pInfo, pSparseMemoryRequirementCount, pSparseMemoryRequirements);
     safe_VkImageSparseMemoryRequirementsInfo2 var_local_pInfo;
@@ -4128,6 +4303,7 @@ void DispatchGetPhysicalDeviceFeatures2(
     VkPhysicalDevice                            physicalDevice,
     VkPhysicalDeviceFeatures2*                  pFeatures)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     layer_data->instance_dispatch_table.GetPhysicalDeviceFeatures2(physicalDevice, pFeatures);
 
@@ -4137,6 +4313,7 @@ void DispatchGetPhysicalDeviceProperties2(
     VkPhysicalDevice                            physicalDevice,
     VkPhysicalDeviceProperties2*                pProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     layer_data->instance_dispatch_table.GetPhysicalDeviceProperties2(physicalDevice, pProperties);
 
@@ -4147,6 +4324,7 @@ void DispatchGetPhysicalDeviceFormatProperties2(
     VkFormat                                    format,
     VkFormatProperties2*                        pFormatProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     layer_data->instance_dispatch_table.GetPhysicalDeviceFormatProperties2(physicalDevice, format, pFormatProperties);
 
@@ -4157,6 +4335,7 @@ VkResult DispatchGetPhysicalDeviceImageFormatProperties2(
     const VkPhysicalDeviceImageFormatInfo2*     pImageFormatInfo,
     VkImageFormatProperties2*                   pImageFormatProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     VkResult result = layer_data->instance_dispatch_table.GetPhysicalDeviceImageFormatProperties2(physicalDevice, pImageFormatInfo, pImageFormatProperties);
 
@@ -4168,6 +4347,7 @@ void DispatchGetPhysicalDeviceQueueFamilyProperties2(
     uint32_t*                                   pQueueFamilyPropertyCount,
     VkQueueFamilyProperties2*                   pQueueFamilyProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     layer_data->instance_dispatch_table.GetPhysicalDeviceQueueFamilyProperties2(physicalDevice, pQueueFamilyPropertyCount, pQueueFamilyProperties);
 
@@ -4177,6 +4357,7 @@ void DispatchGetPhysicalDeviceMemoryProperties2(
     VkPhysicalDevice                            physicalDevice,
     VkPhysicalDeviceMemoryProperties2*          pMemoryProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     layer_data->instance_dispatch_table.GetPhysicalDeviceMemoryProperties2(physicalDevice, pMemoryProperties);
 
@@ -4188,6 +4369,7 @@ void DispatchGetPhysicalDeviceSparseImageFormatProperties2(
     uint32_t*                                   pPropertyCount,
     VkSparseImageFormatProperties2*             pProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     layer_data->instance_dispatch_table.GetPhysicalDeviceSparseImageFormatProperties2(physicalDevice, pFormatInfo, pPropertyCount, pProperties);
 
@@ -4198,6 +4380,7 @@ void DispatchTrimCommandPool(
     VkCommandPool                               commandPool,
     VkCommandPoolTrimFlags                      flags)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.TrimCommandPool(device, commandPool, flags);
     {
@@ -4212,6 +4395,7 @@ void DispatchGetDeviceQueue2(
     const VkDeviceQueueInfo2*                   pQueueInfo,
     VkQueue*                                    pQueue)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     layer_data->device_dispatch_table.GetDeviceQueue2(device, pQueueInfo, pQueue);
 
@@ -4223,6 +4407,7 @@ VkResult DispatchCreateSamplerYcbcrConversion(
     const VkAllocationCallbacks*                pAllocator,
     VkSamplerYcbcrConversion*                   pYcbcrConversion)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CreateSamplerYcbcrConversion(device, pCreateInfo, pAllocator, pYcbcrConversion);
     VkResult result = layer_data->device_dispatch_table.CreateSamplerYcbcrConversion(device, pCreateInfo, pAllocator, pYcbcrConversion);
@@ -4237,6 +4422,7 @@ void DispatchDestroySamplerYcbcrConversion(
     VkSamplerYcbcrConversion                    ycbcrConversion,
     const VkAllocationCallbacks*                pAllocator)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DestroySamplerYcbcrConversion(device, ycbcrConversion, pAllocator);
     uint64_t ycbcrConversion_id = CastToUint64(ycbcrConversion);
@@ -4261,6 +4447,7 @@ void DispatchGetPhysicalDeviceExternalBufferProperties(
     const VkPhysicalDeviceExternalBufferInfo*   pExternalBufferInfo,
     VkExternalBufferProperties*                 pExternalBufferProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     layer_data->instance_dispatch_table.GetPhysicalDeviceExternalBufferProperties(physicalDevice, pExternalBufferInfo, pExternalBufferProperties);
 
@@ -4271,6 +4458,7 @@ void DispatchGetPhysicalDeviceExternalFenceProperties(
     const VkPhysicalDeviceExternalFenceInfo*    pExternalFenceInfo,
     VkExternalFenceProperties*                  pExternalFenceProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     layer_data->instance_dispatch_table.GetPhysicalDeviceExternalFenceProperties(physicalDevice, pExternalFenceInfo, pExternalFenceProperties);
 
@@ -4281,6 +4469,7 @@ void DispatchGetPhysicalDeviceExternalSemaphoreProperties(
     const VkPhysicalDeviceExternalSemaphoreInfo* pExternalSemaphoreInfo,
     VkExternalSemaphoreProperties*              pExternalSemaphoreProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     layer_data->instance_dispatch_table.GetPhysicalDeviceExternalSemaphoreProperties(physicalDevice, pExternalSemaphoreInfo, pExternalSemaphoreProperties);
 
@@ -4291,6 +4480,7 @@ void DispatchGetDescriptorSetLayoutSupport(
     const VkDescriptorSetLayoutCreateInfo*      pCreateInfo,
     VkDescriptorSetLayoutSupport*               pSupport)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetDescriptorSetLayoutSupport(device, pCreateInfo, pSupport);
     safe_VkDescriptorSetLayoutCreateInfo var_local_pCreateInfo;
@@ -4323,6 +4513,7 @@ void DispatchCmdDrawIndirectCount(
     uint32_t                                    maxDrawCount,
     uint32_t                                    stride)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdDrawIndirectCount(commandBuffer, buffer, offset, countBuffer, countBufferOffset, maxDrawCount, stride);
     {
@@ -4342,6 +4533,7 @@ void DispatchCmdDrawIndexedIndirectCount(
     uint32_t                                    maxDrawCount,
     uint32_t                                    stride)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdDrawIndexedIndirectCount(commandBuffer, buffer, offset, countBuffer, countBufferOffset, maxDrawCount, stride);
     {
@@ -4359,6 +4551,7 @@ void DispatchCmdBeginRenderPass2(
     const VkRenderPassBeginInfo*                pRenderPassBegin,
     const VkSubpassBeginInfo*                   pSubpassBeginInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdBeginRenderPass2(commandBuffer, pRenderPassBegin, pSubpassBeginInfo);
     safe_VkRenderPassBeginInfo var_local_pRenderPassBegin;
@@ -4385,6 +4578,7 @@ void DispatchCmdNextSubpass2(
     const VkSubpassBeginInfo*                   pSubpassBeginInfo,
     const VkSubpassEndInfo*                     pSubpassEndInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdNextSubpass2(commandBuffer, pSubpassBeginInfo, pSubpassEndInfo);
 
@@ -4394,6 +4588,7 @@ void DispatchCmdEndRenderPass2(
     VkCommandBuffer                             commandBuffer,
     const VkSubpassEndInfo*                     pSubpassEndInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdEndRenderPass2(commandBuffer, pSubpassEndInfo);
 
@@ -4405,6 +4600,7 @@ void DispatchResetQueryPool(
     uint32_t                                    firstQuery,
     uint32_t                                    queryCount)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.ResetQueryPool(device, queryPool, firstQuery, queryCount);
     {
@@ -4419,6 +4615,7 @@ VkResult DispatchGetSemaphoreCounterValue(
     VkSemaphore                                 semaphore,
     uint64_t*                                   pValue)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetSemaphoreCounterValue(device, semaphore, pValue);
     {
@@ -4434,6 +4631,7 @@ VkResult DispatchWaitSemaphores(
     const VkSemaphoreWaitInfo*                  pWaitInfo,
     uint64_t                                    timeout)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.WaitSemaphores(device, pWaitInfo, timeout);
     safe_VkSemaphoreWaitInfo var_local_pWaitInfo;
@@ -4458,6 +4656,7 @@ VkResult DispatchSignalSemaphore(
     VkDevice                                    device,
     const VkSemaphoreSignalInfo*                pSignalInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.SignalSemaphore(device, pSignalInfo);
     safe_VkSemaphoreSignalInfo var_local_pSignalInfo;
@@ -4480,6 +4679,7 @@ VkDeviceAddress DispatchGetBufferDeviceAddress(
     VkDevice                                    device,
     const VkBufferDeviceAddressInfo*            pInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetBufferDeviceAddress(device, pInfo);
     safe_VkBufferDeviceAddressInfo var_local_pInfo;
@@ -4502,6 +4702,7 @@ uint64_t DispatchGetBufferOpaqueCaptureAddress(
     VkDevice                                    device,
     const VkBufferDeviceAddressInfo*            pInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetBufferOpaqueCaptureAddress(device, pInfo);
     safe_VkBufferDeviceAddressInfo var_local_pInfo;
@@ -4524,6 +4725,7 @@ uint64_t DispatchGetDeviceMemoryOpaqueCaptureAddress(
     VkDevice                                    device,
     const VkDeviceMemoryOpaqueCaptureAddressInfo* pInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetDeviceMemoryOpaqueCaptureAddress(device, pInfo);
     safe_VkDeviceMemoryOpaqueCaptureAddressInfo var_local_pInfo;
@@ -4547,6 +4749,7 @@ VkResult DispatchGetPhysicalDeviceToolProperties(
     uint32_t*                                   pToolCount,
     VkPhysicalDeviceToolProperties*             pToolProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     VkResult result = layer_data->instance_dispatch_table.GetPhysicalDeviceToolProperties(physicalDevice, pToolCount, pToolProperties);
 
@@ -4559,6 +4762,7 @@ VkResult DispatchCreatePrivateDataSlot(
     const VkAllocationCallbacks*                pAllocator,
     VkPrivateDataSlot*                          pPrivateDataSlot)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CreatePrivateDataSlot(device, pCreateInfo, pAllocator, pPrivateDataSlot);
     VkResult result = layer_data->device_dispatch_table.CreatePrivateDataSlot(device, pCreateInfo, pAllocator, pPrivateDataSlot);
@@ -4573,6 +4777,7 @@ void DispatchDestroyPrivateDataSlot(
     VkPrivateDataSlot                           privateDataSlot,
     const VkAllocationCallbacks*                pAllocator)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DestroyPrivateDataSlot(device, privateDataSlot, pAllocator);
     uint64_t privateDataSlot_id = CastToUint64(privateDataSlot);
@@ -4595,6 +4800,7 @@ void DispatchCmdSetEvent2(
     VkEvent                                     event,
     const VkDependencyInfo*                     pDependencyInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdSetEvent2(commandBuffer, event, pDependencyInfo);
     safe_VkDependencyInfo var_local_pDependencyInfo;
@@ -4629,6 +4835,7 @@ void DispatchCmdResetEvent2(
     VkEvent                                     event,
     VkPipelineStageFlags2                       stageMask)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdResetEvent2(commandBuffer, event, stageMask);
     {
@@ -4644,6 +4851,7 @@ void DispatchCmdWaitEvents2(
     const VkEvent*                              pEvents,
     const VkDependencyInfo*                     pDependencyInfos)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdWaitEvents2(commandBuffer, eventCount, pEvents, pDependencyInfos);
     VkEvent var_local_pEvents[DISPATCH_MAX_STACK_ALLOCATIONS];
@@ -4689,6 +4897,7 @@ void DispatchCmdPipelineBarrier2(
     VkCommandBuffer                             commandBuffer,
     const VkDependencyInfo*                     pDependencyInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdPipelineBarrier2(commandBuffer, pDependencyInfo);
     safe_VkDependencyInfo var_local_pDependencyInfo;
@@ -4723,6 +4932,7 @@ void DispatchCmdWriteTimestamp2(
     VkQueryPool                                 queryPool,
     uint32_t                                    query)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdWriteTimestamp2(commandBuffer, stage, queryPool, query);
     {
@@ -4738,6 +4948,7 @@ VkResult DispatchQueueSubmit2(
     const VkSubmitInfo2*                        pSubmits,
     VkFence                                     fence)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(queue), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.QueueSubmit2(queue, submitCount, pSubmits, fence);
     safe_VkSubmitInfo2 *local_pSubmits = nullptr;
@@ -4776,6 +4987,7 @@ void DispatchCmdCopyBuffer2(
     VkCommandBuffer                             commandBuffer,
     const VkCopyBufferInfo2*                    pCopyBufferInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdCopyBuffer2(commandBuffer, pCopyBufferInfo);
     safe_VkCopyBufferInfo2 var_local_pCopyBufferInfo;
@@ -4800,6 +5012,7 @@ void DispatchCmdCopyImage2(
     VkCommandBuffer                             commandBuffer,
     const VkCopyImageInfo2*                     pCopyImageInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdCopyImage2(commandBuffer, pCopyImageInfo);
     safe_VkCopyImageInfo2 var_local_pCopyImageInfo;
@@ -4824,6 +5037,7 @@ void DispatchCmdCopyBufferToImage2(
     VkCommandBuffer                             commandBuffer,
     const VkCopyBufferToImageInfo2*             pCopyBufferToImageInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdCopyBufferToImage2(commandBuffer, pCopyBufferToImageInfo);
     safe_VkCopyBufferToImageInfo2 var_local_pCopyBufferToImageInfo;
@@ -4848,6 +5062,7 @@ void DispatchCmdCopyImageToBuffer2(
     VkCommandBuffer                             commandBuffer,
     const VkCopyImageToBufferInfo2*             pCopyImageToBufferInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdCopyImageToBuffer2(commandBuffer, pCopyImageToBufferInfo);
     safe_VkCopyImageToBufferInfo2 var_local_pCopyImageToBufferInfo;
@@ -4872,6 +5087,7 @@ void DispatchCmdBlitImage2(
     VkCommandBuffer                             commandBuffer,
     const VkBlitImageInfo2*                     pBlitImageInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdBlitImage2(commandBuffer, pBlitImageInfo);
     safe_VkBlitImageInfo2 var_local_pBlitImageInfo;
@@ -4896,6 +5112,7 @@ void DispatchCmdResolveImage2(
     VkCommandBuffer                             commandBuffer,
     const VkResolveImageInfo2*                  pResolveImageInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdResolveImage2(commandBuffer, pResolveImageInfo);
     safe_VkResolveImageInfo2 var_local_pResolveImageInfo;
@@ -4920,6 +5137,7 @@ void DispatchCmdBeginRendering(
     VkCommandBuffer                             commandBuffer,
     const VkRenderingInfo*                      pRenderingInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdBeginRendering(commandBuffer, pRenderingInfo);
     safe_VkRenderingInfo var_local_pRenderingInfo;
@@ -4964,6 +5182,7 @@ void DispatchCmdBeginRendering(
 void DispatchCmdEndRendering(
     VkCommandBuffer                             commandBuffer)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdEndRendering(commandBuffer);
 
@@ -4973,6 +5192,7 @@ void DispatchCmdSetCullMode(
     VkCommandBuffer                             commandBuffer,
     VkCullModeFlags                             cullMode)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetCullMode(commandBuffer, cullMode);
 
@@ -4982,6 +5202,7 @@ void DispatchCmdSetFrontFace(
     VkCommandBuffer                             commandBuffer,
     VkFrontFace                                 frontFace)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetFrontFace(commandBuffer, frontFace);
 
@@ -4991,6 +5212,7 @@ void DispatchCmdSetPrimitiveTopology(
     VkCommandBuffer                             commandBuffer,
     VkPrimitiveTopology                         primitiveTopology)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetPrimitiveTopology(commandBuffer, primitiveTopology);
 
@@ -5001,6 +5223,7 @@ void DispatchCmdSetViewportWithCount(
     uint32_t                                    viewportCount,
     const VkViewport*                           pViewports)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetViewportWithCount(commandBuffer, viewportCount, pViewports);
 
@@ -5011,6 +5234,7 @@ void DispatchCmdSetScissorWithCount(
     uint32_t                                    scissorCount,
     const VkRect2D*                             pScissors)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetScissorWithCount(commandBuffer, scissorCount, pScissors);
 
@@ -5025,6 +5249,7 @@ void DispatchCmdBindVertexBuffers2(
     const VkDeviceSize*                         pSizes,
     const VkDeviceSize*                         pStrides)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdBindVertexBuffers2(commandBuffer, firstBinding, bindingCount, pBuffers, pOffsets, pSizes, pStrides);
     VkBuffer var_local_pBuffers[DISPATCH_MAX_STACK_ALLOCATIONS];
@@ -5046,6 +5271,7 @@ void DispatchCmdSetDepthTestEnable(
     VkCommandBuffer                             commandBuffer,
     VkBool32                                    depthTestEnable)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetDepthTestEnable(commandBuffer, depthTestEnable);
 
@@ -5055,6 +5281,7 @@ void DispatchCmdSetDepthWriteEnable(
     VkCommandBuffer                             commandBuffer,
     VkBool32                                    depthWriteEnable)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetDepthWriteEnable(commandBuffer, depthWriteEnable);
 
@@ -5064,6 +5291,7 @@ void DispatchCmdSetDepthCompareOp(
     VkCommandBuffer                             commandBuffer,
     VkCompareOp                                 depthCompareOp)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetDepthCompareOp(commandBuffer, depthCompareOp);
 
@@ -5073,6 +5301,7 @@ void DispatchCmdSetDepthBoundsTestEnable(
     VkCommandBuffer                             commandBuffer,
     VkBool32                                    depthBoundsTestEnable)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetDepthBoundsTestEnable(commandBuffer, depthBoundsTestEnable);
 
@@ -5082,6 +5311,7 @@ void DispatchCmdSetStencilTestEnable(
     VkCommandBuffer                             commandBuffer,
     VkBool32                                    stencilTestEnable)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetStencilTestEnable(commandBuffer, stencilTestEnable);
 
@@ -5095,6 +5325,7 @@ void DispatchCmdSetStencilOp(
     VkStencilOp                                 depthFailOp,
     VkCompareOp                                 compareOp)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetStencilOp(commandBuffer, faceMask, failOp, passOp, depthFailOp, compareOp);
 
@@ -5104,6 +5335,7 @@ void DispatchCmdSetRasterizerDiscardEnable(
     VkCommandBuffer                             commandBuffer,
     VkBool32                                    rasterizerDiscardEnable)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetRasterizerDiscardEnable(commandBuffer, rasterizerDiscardEnable);
 
@@ -5113,6 +5345,7 @@ void DispatchCmdSetDepthBiasEnable(
     VkCommandBuffer                             commandBuffer,
     VkBool32                                    depthBiasEnable)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetDepthBiasEnable(commandBuffer, depthBiasEnable);
 
@@ -5122,6 +5355,7 @@ void DispatchCmdSetPrimitiveRestartEnable(
     VkCommandBuffer                             commandBuffer,
     VkBool32                                    primitiveRestartEnable)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetPrimitiveRestartEnable(commandBuffer, primitiveRestartEnable);
 
@@ -5132,6 +5366,7 @@ void DispatchGetDeviceBufferMemoryRequirements(
     const VkDeviceBufferMemoryRequirements*     pInfo,
     VkMemoryRequirements2*                      pMemoryRequirements)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     layer_data->device_dispatch_table.GetDeviceBufferMemoryRequirements(device, pInfo, pMemoryRequirements);
 
@@ -5142,6 +5377,7 @@ void DispatchGetDeviceImageMemoryRequirements(
     const VkDeviceImageMemoryRequirements*      pInfo,
     VkMemoryRequirements2*                      pMemoryRequirements)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     layer_data->device_dispatch_table.GetDeviceImageMemoryRequirements(device, pInfo, pMemoryRequirements);
 
@@ -5153,6 +5389,7 @@ void DispatchGetDeviceImageSparseMemoryRequirements(
     uint32_t*                                   pSparseMemoryRequirementCount,
     VkSparseImageMemoryRequirements2*           pSparseMemoryRequirements)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     layer_data->device_dispatch_table.GetDeviceImageSparseMemoryRequirements(device, pInfo, pSparseMemoryRequirementCount, pSparseMemoryRequirements);
 
@@ -5163,6 +5400,7 @@ void DispatchDestroySurfaceKHR(
     VkSurfaceKHR                                surface,
     const VkAllocationCallbacks*                pAllocator)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(instance), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.DestroySurfaceKHR(instance, surface, pAllocator);
     uint64_t surface_id = CastToUint64(surface);
@@ -5182,6 +5420,7 @@ VkResult DispatchGetPhysicalDeviceSurfaceSupportKHR(
     VkSurfaceKHR                                surface,
     VkBool32*                                   pSupported)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.GetPhysicalDeviceSurfaceSupportKHR(physicalDevice, queueFamilyIndex, surface, pSupported);
     {
@@ -5197,6 +5436,7 @@ VkResult DispatchGetPhysicalDeviceSurfaceCapabilitiesKHR(
     VkSurfaceKHR                                surface,
     VkSurfaceCapabilitiesKHR*                   pSurfaceCapabilities)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.GetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface, pSurfaceCapabilities);
     {
@@ -5213,6 +5453,7 @@ VkResult DispatchGetPhysicalDeviceSurfaceFormatsKHR(
     uint32_t*                                   pSurfaceFormatCount,
     VkSurfaceFormatKHR*                         pSurfaceFormats)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.GetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, pSurfaceFormatCount, pSurfaceFormats);
     {
@@ -5229,6 +5470,7 @@ VkResult DispatchGetPhysicalDeviceSurfacePresentModesKHR(
     uint32_t*                                   pPresentModeCount,
     VkPresentModeKHR*                           pPresentModes)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.GetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, pPresentModeCount, pPresentModes);
     {
@@ -5253,6 +5495,7 @@ VkResult DispatchAcquireNextImageKHR(
     VkFence                                     fence,
     uint32_t*                                   pImageIndex)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.AcquireNextImageKHR(device, swapchain, timeout, semaphore, fence, pImageIndex);
     {
@@ -5271,6 +5514,7 @@ VkResult DispatchGetDeviceGroupPresentCapabilitiesKHR(
     VkDevice                                    device,
     VkDeviceGroupPresentCapabilitiesKHR*        pDeviceGroupPresentCapabilities)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     VkResult result = layer_data->device_dispatch_table.GetDeviceGroupPresentCapabilitiesKHR(device, pDeviceGroupPresentCapabilities);
 
@@ -5282,6 +5526,7 @@ VkResult DispatchGetDeviceGroupSurfacePresentModesKHR(
     VkSurfaceKHR                                surface,
     VkDeviceGroupPresentModeFlagsKHR*           pModes)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetDeviceGroupSurfacePresentModesKHR(device, surface, pModes);
     {
@@ -5298,6 +5543,7 @@ VkResult DispatchGetPhysicalDevicePresentRectanglesKHR(
     uint32_t*                                   pRectCount,
     VkRect2D*                                   pRects)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.GetPhysicalDevicePresentRectanglesKHR(physicalDevice, surface, pRectCount, pRects);
     {
@@ -5313,6 +5559,7 @@ VkResult DispatchAcquireNextImage2KHR(
     const VkAcquireNextImageInfoKHR*            pAcquireInfo,
     uint32_t*                                   pImageIndex)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.AcquireNextImage2KHR(device, pAcquireInfo, pImageIndex);
     safe_VkAcquireNextImageInfoKHR var_local_pAcquireInfo;
@@ -5352,6 +5599,7 @@ VkResult DispatchCreateDisplayModeKHR(
     const VkAllocationCallbacks*                pAllocator,
     VkDisplayModeKHR*                           pMode)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.CreateDisplayModeKHR(physicalDevice, display, pCreateInfo, pAllocator, pMode);
     {
@@ -5370,6 +5618,7 @@ VkResult DispatchGetDisplayPlaneCapabilitiesKHR(
     uint32_t                                    planeIndex,
     VkDisplayPlaneCapabilitiesKHR*              pCapabilities)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.GetDisplayPlaneCapabilitiesKHR(physicalDevice, mode, planeIndex, pCapabilities);
     {
@@ -5386,6 +5635,7 @@ VkResult DispatchCreateDisplayPlaneSurfaceKHR(
     const VkAllocationCallbacks*                pAllocator,
     VkSurfaceKHR*                               pSurface)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(instance), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.CreateDisplayPlaneSurfaceKHR(instance, pCreateInfo, pAllocator, pSurface);
     safe_VkDisplaySurfaceCreateInfoKHR var_local_pCreateInfo;
@@ -5416,6 +5666,7 @@ VkResult DispatchCreateXlibSurfaceKHR(
     const VkAllocationCallbacks*                pAllocator,
     VkSurfaceKHR*                               pSurface)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(instance), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.CreateXlibSurfaceKHR(instance, pCreateInfo, pAllocator, pSurface);
     VkResult result = layer_data->instance_dispatch_table.CreateXlibSurfaceKHR(instance, pCreateInfo, pAllocator, pSurface);
@@ -5434,6 +5685,7 @@ VkBool32 DispatchGetPhysicalDeviceXlibPresentationSupportKHR(
     Display*                                    dpy,
     VisualID                                    visualID)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     VkBool32 result = layer_data->instance_dispatch_table.GetPhysicalDeviceXlibPresentationSupportKHR(physicalDevice, queueFamilyIndex, dpy, visualID);
 
@@ -5449,6 +5701,7 @@ VkResult DispatchCreateXcbSurfaceKHR(
     const VkAllocationCallbacks*                pAllocator,
     VkSurfaceKHR*                               pSurface)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(instance), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.CreateXcbSurfaceKHR(instance, pCreateInfo, pAllocator, pSurface);
     VkResult result = layer_data->instance_dispatch_table.CreateXcbSurfaceKHR(instance, pCreateInfo, pAllocator, pSurface);
@@ -5467,6 +5720,7 @@ VkBool32 DispatchGetPhysicalDeviceXcbPresentationSupportKHR(
     xcb_connection_t*                           connection,
     xcb_visualid_t                              visual_id)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     VkBool32 result = layer_data->instance_dispatch_table.GetPhysicalDeviceXcbPresentationSupportKHR(physicalDevice, queueFamilyIndex, connection, visual_id);
 
@@ -5482,6 +5736,7 @@ VkResult DispatchCreateWaylandSurfaceKHR(
     const VkAllocationCallbacks*                pAllocator,
     VkSurfaceKHR*                               pSurface)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(instance), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.CreateWaylandSurfaceKHR(instance, pCreateInfo, pAllocator, pSurface);
     VkResult result = layer_data->instance_dispatch_table.CreateWaylandSurfaceKHR(instance, pCreateInfo, pAllocator, pSurface);
@@ -5499,6 +5754,7 @@ VkBool32 DispatchGetPhysicalDeviceWaylandPresentationSupportKHR(
     uint32_t                                    queueFamilyIndex,
     struct wl_display*                          display)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     VkBool32 result = layer_data->instance_dispatch_table.GetPhysicalDeviceWaylandPresentationSupportKHR(physicalDevice, queueFamilyIndex, display);
 
@@ -5514,6 +5770,7 @@ VkResult DispatchCreateAndroidSurfaceKHR(
     const VkAllocationCallbacks*                pAllocator,
     VkSurfaceKHR*                               pSurface)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(instance), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.CreateAndroidSurfaceKHR(instance, pCreateInfo, pAllocator, pSurface);
     VkResult result = layer_data->instance_dispatch_table.CreateAndroidSurfaceKHR(instance, pCreateInfo, pAllocator, pSurface);
@@ -5532,6 +5789,7 @@ VkResult DispatchCreateWin32SurfaceKHR(
     const VkAllocationCallbacks*                pAllocator,
     VkSurfaceKHR*                               pSurface)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(instance), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.CreateWin32SurfaceKHR(instance, pCreateInfo, pAllocator, pSurface);
     VkResult result = layer_data->instance_dispatch_table.CreateWin32SurfaceKHR(instance, pCreateInfo, pAllocator, pSurface);
@@ -5548,6 +5806,7 @@ VkBool32 DispatchGetPhysicalDeviceWin32PresentationSupportKHR(
     VkPhysicalDevice                            physicalDevice,
     uint32_t                                    queueFamilyIndex)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     VkBool32 result = layer_data->instance_dispatch_table.GetPhysicalDeviceWin32PresentationSupportKHR(physicalDevice, queueFamilyIndex);
 
@@ -5560,6 +5819,7 @@ VkResult DispatchGetPhysicalDeviceVideoCapabilitiesKHR(
     const VkVideoProfileInfoKHR*                pVideoProfile,
     VkVideoCapabilitiesKHR*                     pCapabilities)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     VkResult result = layer_data->instance_dispatch_table.GetPhysicalDeviceVideoCapabilitiesKHR(physicalDevice, pVideoProfile, pCapabilities);
 
@@ -5572,6 +5832,7 @@ VkResult DispatchGetPhysicalDeviceVideoFormatPropertiesKHR(
     uint32_t*                                   pVideoFormatPropertyCount,
     VkVideoFormatPropertiesKHR*                 pVideoFormatProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     VkResult result = layer_data->instance_dispatch_table.GetPhysicalDeviceVideoFormatPropertiesKHR(physicalDevice, pVideoFormatInfo, pVideoFormatPropertyCount, pVideoFormatProperties);
 
@@ -5584,6 +5845,7 @@ VkResult DispatchCreateVideoSessionKHR(
     const VkAllocationCallbacks*                pAllocator,
     VkVideoSessionKHR*                          pVideoSession)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CreateVideoSessionKHR(device, pCreateInfo, pAllocator, pVideoSession);
     VkResult result = layer_data->device_dispatch_table.CreateVideoSessionKHR(device, pCreateInfo, pAllocator, pVideoSession);
@@ -5598,6 +5860,7 @@ void DispatchDestroyVideoSessionKHR(
     VkVideoSessionKHR                           videoSession,
     const VkAllocationCallbacks*                pAllocator)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DestroyVideoSessionKHR(device, videoSession, pAllocator);
     uint64_t videoSession_id = CastToUint64(videoSession);
@@ -5617,6 +5880,7 @@ VkResult DispatchGetVideoSessionMemoryRequirementsKHR(
     uint32_t*                                   pMemoryRequirementsCount,
     VkVideoSessionMemoryRequirementsKHR*        pMemoryRequirements)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetVideoSessionMemoryRequirementsKHR(device, videoSession, pMemoryRequirementsCount, pMemoryRequirements);
     {
@@ -5633,6 +5897,7 @@ VkResult DispatchBindVideoSessionMemoryKHR(
     uint32_t                                    bindSessionMemoryInfoCount,
     const VkBindVideoSessionMemoryInfoKHR*      pBindSessionMemoryInfos)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.BindVideoSessionMemoryKHR(device, videoSession, bindSessionMemoryInfoCount, pBindSessionMemoryInfos);
     safe_VkBindVideoSessionMemoryInfoKHR *local_pBindSessionMemoryInfos = nullptr;
@@ -5661,6 +5926,7 @@ VkResult DispatchCreateVideoSessionParametersKHR(
     const VkAllocationCallbacks*                pAllocator,
     VkVideoSessionParametersKHR*                pVideoSessionParameters)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CreateVideoSessionParametersKHR(device, pCreateInfo, pAllocator, pVideoSessionParameters);
     safe_VkVideoSessionParametersCreateInfoKHR var_local_pCreateInfo;
@@ -5689,6 +5955,7 @@ VkResult DispatchUpdateVideoSessionParametersKHR(
     VkVideoSessionParametersKHR                 videoSessionParameters,
     const VkVideoSessionParametersUpdateInfoKHR* pUpdateInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.UpdateVideoSessionParametersKHR(device, videoSessionParameters, pUpdateInfo);
     {
@@ -5704,6 +5971,7 @@ void DispatchDestroyVideoSessionParametersKHR(
     VkVideoSessionParametersKHR                 videoSessionParameters,
     const VkAllocationCallbacks*                pAllocator)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DestroyVideoSessionParametersKHR(device, videoSessionParameters, pAllocator);
     uint64_t videoSessionParameters_id = CastToUint64(videoSessionParameters);
@@ -5721,6 +5989,7 @@ void DispatchCmdBeginVideoCodingKHR(
     VkCommandBuffer                             commandBuffer,
     const VkVideoBeginCodingInfoKHR*            pBeginInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdBeginVideoCodingKHR(commandBuffer, pBeginInfo);
     safe_VkVideoBeginCodingInfoKHR var_local_pBeginInfo;
@@ -5754,6 +6023,7 @@ void DispatchCmdEndVideoCodingKHR(
     VkCommandBuffer                             commandBuffer,
     const VkVideoEndCodingInfoKHR*              pEndCodingInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdEndVideoCodingKHR(commandBuffer, pEndCodingInfo);
 
@@ -5763,6 +6033,7 @@ void DispatchCmdControlVideoCodingKHR(
     VkCommandBuffer                             commandBuffer,
     const VkVideoCodingControlInfoKHR*          pCodingControlInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdControlVideoCodingKHR(commandBuffer, pCodingControlInfo);
 
@@ -5772,6 +6043,7 @@ void DispatchCmdDecodeVideoKHR(
     VkCommandBuffer                             commandBuffer,
     const VkVideoDecodeInfoKHR*                 pDecodeInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdDecodeVideoKHR(commandBuffer, pDecodeInfo);
     safe_VkVideoDecodeInfoKHR var_local_pDecodeInfo;
@@ -5812,6 +6084,7 @@ void DispatchCmdBeginRenderingKHR(
     VkCommandBuffer                             commandBuffer,
     const VkRenderingInfo*                      pRenderingInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdBeginRenderingKHR(commandBuffer, pRenderingInfo);
     safe_VkRenderingInfo var_local_pRenderingInfo;
@@ -5856,6 +6129,7 @@ void DispatchCmdBeginRenderingKHR(
 void DispatchCmdEndRenderingKHR(
     VkCommandBuffer                             commandBuffer)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdEndRenderingKHR(commandBuffer);
 
@@ -5865,6 +6139,7 @@ void DispatchGetPhysicalDeviceFeatures2KHR(
     VkPhysicalDevice                            physicalDevice,
     VkPhysicalDeviceFeatures2*                  pFeatures)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     layer_data->instance_dispatch_table.GetPhysicalDeviceFeatures2KHR(physicalDevice, pFeatures);
 
@@ -5874,6 +6149,7 @@ void DispatchGetPhysicalDeviceProperties2KHR(
     VkPhysicalDevice                            physicalDevice,
     VkPhysicalDeviceProperties2*                pProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     layer_data->instance_dispatch_table.GetPhysicalDeviceProperties2KHR(physicalDevice, pProperties);
 
@@ -5884,6 +6160,7 @@ void DispatchGetPhysicalDeviceFormatProperties2KHR(
     VkFormat                                    format,
     VkFormatProperties2*                        pFormatProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     layer_data->instance_dispatch_table.GetPhysicalDeviceFormatProperties2KHR(physicalDevice, format, pFormatProperties);
 
@@ -5894,6 +6171,7 @@ VkResult DispatchGetPhysicalDeviceImageFormatProperties2KHR(
     const VkPhysicalDeviceImageFormatInfo2*     pImageFormatInfo,
     VkImageFormatProperties2*                   pImageFormatProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     VkResult result = layer_data->instance_dispatch_table.GetPhysicalDeviceImageFormatProperties2KHR(physicalDevice, pImageFormatInfo, pImageFormatProperties);
 
@@ -5905,6 +6183,7 @@ void DispatchGetPhysicalDeviceQueueFamilyProperties2KHR(
     uint32_t*                                   pQueueFamilyPropertyCount,
     VkQueueFamilyProperties2*                   pQueueFamilyProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     layer_data->instance_dispatch_table.GetPhysicalDeviceQueueFamilyProperties2KHR(physicalDevice, pQueueFamilyPropertyCount, pQueueFamilyProperties);
 
@@ -5914,6 +6193,7 @@ void DispatchGetPhysicalDeviceMemoryProperties2KHR(
     VkPhysicalDevice                            physicalDevice,
     VkPhysicalDeviceMemoryProperties2*          pMemoryProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     layer_data->instance_dispatch_table.GetPhysicalDeviceMemoryProperties2KHR(physicalDevice, pMemoryProperties);
 
@@ -5925,6 +6205,7 @@ void DispatchGetPhysicalDeviceSparseImageFormatProperties2KHR(
     uint32_t*                                   pPropertyCount,
     VkSparseImageFormatProperties2*             pProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     layer_data->instance_dispatch_table.GetPhysicalDeviceSparseImageFormatProperties2KHR(physicalDevice, pFormatInfo, pPropertyCount, pProperties);
 
@@ -5937,6 +6218,7 @@ void DispatchGetDeviceGroupPeerMemoryFeaturesKHR(
     uint32_t                                    remoteDeviceIndex,
     VkPeerMemoryFeatureFlags*                   pPeerMemoryFeatures)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     layer_data->device_dispatch_table.GetDeviceGroupPeerMemoryFeaturesKHR(device, heapIndex, localDeviceIndex, remoteDeviceIndex, pPeerMemoryFeatures);
 
@@ -5946,6 +6228,7 @@ void DispatchCmdSetDeviceMaskKHR(
     VkCommandBuffer                             commandBuffer,
     uint32_t                                    deviceMask)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetDeviceMaskKHR(commandBuffer, deviceMask);
 
@@ -5960,6 +6243,7 @@ void DispatchCmdDispatchBaseKHR(
     uint32_t                                    groupCountY,
     uint32_t                                    groupCountZ)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdDispatchBaseKHR(commandBuffer, baseGroupX, baseGroupY, baseGroupZ, groupCountX, groupCountY, groupCountZ);
 
@@ -5970,6 +6254,7 @@ void DispatchTrimCommandPoolKHR(
     VkCommandPool                               commandPool,
     VkCommandPoolTrimFlags                      flags)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.TrimCommandPoolKHR(device, commandPool, flags);
     {
@@ -5984,6 +6269,7 @@ VkResult DispatchEnumeratePhysicalDeviceGroupsKHR(
     uint32_t*                                   pPhysicalDeviceGroupCount,
     VkPhysicalDeviceGroupProperties*            pPhysicalDeviceGroupProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(instance), layer_data_map);
     VkResult result = layer_data->instance_dispatch_table.EnumeratePhysicalDeviceGroupsKHR(instance, pPhysicalDeviceGroupCount, pPhysicalDeviceGroupProperties);
 
@@ -5995,6 +6281,7 @@ void DispatchGetPhysicalDeviceExternalBufferPropertiesKHR(
     const VkPhysicalDeviceExternalBufferInfo*   pExternalBufferInfo,
     VkExternalBufferProperties*                 pExternalBufferProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     layer_data->instance_dispatch_table.GetPhysicalDeviceExternalBufferPropertiesKHR(physicalDevice, pExternalBufferInfo, pExternalBufferProperties);
 
@@ -6007,6 +6294,7 @@ VkResult DispatchGetMemoryWin32HandleKHR(
     const VkMemoryGetWin32HandleInfoKHR*        pGetWin32HandleInfo,
     HANDLE*                                     pHandle)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetMemoryWin32HandleKHR(device, pGetWin32HandleInfo, pHandle);
     safe_VkMemoryGetWin32HandleInfoKHR var_local_pGetWin32HandleInfo;
@@ -6034,6 +6322,7 @@ VkResult DispatchGetMemoryWin32HandlePropertiesKHR(
     HANDLE                                      handle,
     VkMemoryWin32HandlePropertiesKHR*           pMemoryWin32HandleProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     VkResult result = layer_data->device_dispatch_table.GetMemoryWin32HandlePropertiesKHR(device, handleType, handle, pMemoryWin32HandleProperties);
 
@@ -6046,6 +6335,7 @@ VkResult DispatchGetMemoryFdKHR(
     const VkMemoryGetFdInfoKHR*                 pGetFdInfo,
     int*                                        pFd)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetMemoryFdKHR(device, pGetFdInfo, pFd);
     safe_VkMemoryGetFdInfoKHR var_local_pGetFdInfo;
@@ -6070,6 +6360,7 @@ VkResult DispatchGetMemoryFdPropertiesKHR(
     int                                         fd,
     VkMemoryFdPropertiesKHR*                    pMemoryFdProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     VkResult result = layer_data->device_dispatch_table.GetMemoryFdPropertiesKHR(device, handleType, fd, pMemoryFdProperties);
 
@@ -6081,6 +6372,7 @@ void DispatchGetPhysicalDeviceExternalSemaphorePropertiesKHR(
     const VkPhysicalDeviceExternalSemaphoreInfo* pExternalSemaphoreInfo,
     VkExternalSemaphoreProperties*              pExternalSemaphoreProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     layer_data->instance_dispatch_table.GetPhysicalDeviceExternalSemaphorePropertiesKHR(physicalDevice, pExternalSemaphoreInfo, pExternalSemaphoreProperties);
 
@@ -6092,6 +6384,7 @@ VkResult DispatchImportSemaphoreWin32HandleKHR(
     VkDevice                                    device,
     const VkImportSemaphoreWin32HandleInfoKHR*  pImportSemaphoreWin32HandleInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.ImportSemaphoreWin32HandleKHR(device, pImportSemaphoreWin32HandleInfo);
     safe_VkImportSemaphoreWin32HandleInfoKHR var_local_pImportSemaphoreWin32HandleInfo;
@@ -6118,6 +6411,7 @@ VkResult DispatchGetSemaphoreWin32HandleKHR(
     const VkSemaphoreGetWin32HandleInfoKHR*     pGetWin32HandleInfo,
     HANDLE*                                     pHandle)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetSemaphoreWin32HandleKHR(device, pGetWin32HandleInfo, pHandle);
     safe_VkSemaphoreGetWin32HandleInfoKHR var_local_pGetWin32HandleInfo;
@@ -6141,6 +6435,7 @@ VkResult DispatchImportSemaphoreFdKHR(
     VkDevice                                    device,
     const VkImportSemaphoreFdInfoKHR*           pImportSemaphoreFdInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.ImportSemaphoreFdKHR(device, pImportSemaphoreFdInfo);
     safe_VkImportSemaphoreFdInfoKHR var_local_pImportSemaphoreFdInfo;
@@ -6164,6 +6459,7 @@ VkResult DispatchGetSemaphoreFdKHR(
     const VkSemaphoreGetFdInfoKHR*              pGetFdInfo,
     int*                                        pFd)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetSemaphoreFdKHR(device, pGetFdInfo, pFd);
     safe_VkSemaphoreGetFdInfoKHR var_local_pGetFdInfo;
@@ -6190,6 +6486,7 @@ void DispatchCmdPushDescriptorSetKHR(
     uint32_t                                    descriptorWriteCount,
     const VkWriteDescriptorSet*                 pDescriptorWrites)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdPushDescriptorSetKHR(commandBuffer, pipelineBindPoint, layout, set, descriptorWriteCount, pDescriptorWrites);
     safe_VkWriteDescriptorSet *local_pDescriptorWrites = nullptr;
@@ -6249,6 +6546,7 @@ void DispatchCmdBeginRenderPass2KHR(
     const VkRenderPassBeginInfo*                pRenderPassBegin,
     const VkSubpassBeginInfo*                   pSubpassBeginInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdBeginRenderPass2KHR(commandBuffer, pRenderPassBegin, pSubpassBeginInfo);
     safe_VkRenderPassBeginInfo var_local_pRenderPassBegin;
@@ -6275,6 +6573,7 @@ void DispatchCmdNextSubpass2KHR(
     const VkSubpassBeginInfo*                   pSubpassBeginInfo,
     const VkSubpassEndInfo*                     pSubpassEndInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdNextSubpass2KHR(commandBuffer, pSubpassBeginInfo, pSubpassEndInfo);
 
@@ -6284,6 +6583,7 @@ void DispatchCmdEndRenderPass2KHR(
     VkCommandBuffer                             commandBuffer,
     const VkSubpassEndInfo*                     pSubpassEndInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdEndRenderPass2KHR(commandBuffer, pSubpassEndInfo);
 
@@ -6293,6 +6593,7 @@ VkResult DispatchGetSwapchainStatusKHR(
     VkDevice                                    device,
     VkSwapchainKHR                              swapchain)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetSwapchainStatusKHR(device, swapchain);
     {
@@ -6308,6 +6609,7 @@ void DispatchGetPhysicalDeviceExternalFencePropertiesKHR(
     const VkPhysicalDeviceExternalFenceInfo*    pExternalFenceInfo,
     VkExternalFenceProperties*                  pExternalFenceProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     layer_data->instance_dispatch_table.GetPhysicalDeviceExternalFencePropertiesKHR(physicalDevice, pExternalFenceInfo, pExternalFenceProperties);
 
@@ -6319,6 +6621,7 @@ VkResult DispatchImportFenceWin32HandleKHR(
     VkDevice                                    device,
     const VkImportFenceWin32HandleInfoKHR*      pImportFenceWin32HandleInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.ImportFenceWin32HandleKHR(device, pImportFenceWin32HandleInfo);
     safe_VkImportFenceWin32HandleInfoKHR var_local_pImportFenceWin32HandleInfo;
@@ -6345,6 +6648,7 @@ VkResult DispatchGetFenceWin32HandleKHR(
     const VkFenceGetWin32HandleInfoKHR*         pGetWin32HandleInfo,
     HANDLE*                                     pHandle)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetFenceWin32HandleKHR(device, pGetWin32HandleInfo, pHandle);
     safe_VkFenceGetWin32HandleInfoKHR var_local_pGetWin32HandleInfo;
@@ -6368,6 +6672,7 @@ VkResult DispatchImportFenceFdKHR(
     VkDevice                                    device,
     const VkImportFenceFdInfoKHR*               pImportFenceFdInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.ImportFenceFdKHR(device, pImportFenceFdInfo);
     safe_VkImportFenceFdInfoKHR var_local_pImportFenceFdInfo;
@@ -6391,6 +6696,7 @@ VkResult DispatchGetFenceFdKHR(
     const VkFenceGetFdInfoKHR*                  pGetFdInfo,
     int*                                        pFd)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetFenceFdKHR(device, pGetFdInfo, pFd);
     safe_VkFenceGetFdInfoKHR var_local_pGetFdInfo;
@@ -6416,6 +6722,7 @@ VkResult DispatchEnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR(
     VkPerformanceCounterKHR*                    pCounters,
     VkPerformanceCounterDescriptionKHR*         pCounterDescriptions)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     VkResult result = layer_data->instance_dispatch_table.EnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR(physicalDevice, queueFamilyIndex, pCounterCount, pCounters, pCounterDescriptions);
 
@@ -6427,6 +6734,7 @@ void DispatchGetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR(
     const VkQueryPoolPerformanceCreateInfoKHR*  pPerformanceQueryCreateInfo,
     uint32_t*                                   pNumPasses)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     layer_data->instance_dispatch_table.GetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR(physicalDevice, pPerformanceQueryCreateInfo, pNumPasses);
 
@@ -6436,6 +6744,7 @@ VkResult DispatchAcquireProfilingLockKHR(
     VkDevice                                    device,
     const VkAcquireProfilingLockInfoKHR*        pInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     VkResult result = layer_data->device_dispatch_table.AcquireProfilingLockKHR(device, pInfo);
 
@@ -6445,6 +6754,7 @@ VkResult DispatchAcquireProfilingLockKHR(
 void DispatchReleaseProfilingLockKHR(
     VkDevice                                    device)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     layer_data->device_dispatch_table.ReleaseProfilingLockKHR(device);
 
@@ -6455,6 +6765,7 @@ VkResult DispatchGetPhysicalDeviceSurfaceCapabilities2KHR(
     const VkPhysicalDeviceSurfaceInfo2KHR*      pSurfaceInfo,
     VkSurfaceCapabilities2KHR*                  pSurfaceCapabilities)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.GetPhysicalDeviceSurfaceCapabilities2KHR(physicalDevice, pSurfaceInfo, pSurfaceCapabilities);
     safe_VkPhysicalDeviceSurfaceInfo2KHR var_local_pSurfaceInfo;
@@ -6479,6 +6790,7 @@ VkResult DispatchGetPhysicalDeviceSurfaceFormats2KHR(
     uint32_t*                                   pSurfaceFormatCount,
     VkSurfaceFormat2KHR*                        pSurfaceFormats)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.GetPhysicalDeviceSurfaceFormats2KHR(physicalDevice, pSurfaceInfo, pSurfaceFormatCount, pSurfaceFormats);
     safe_VkPhysicalDeviceSurfaceInfo2KHR var_local_pSurfaceInfo;
@@ -6508,6 +6820,7 @@ VkResult DispatchGetDisplayPlaneCapabilities2KHR(
     const VkDisplayPlaneInfo2KHR*               pDisplayPlaneInfo,
     VkDisplayPlaneCapabilities2KHR*             pCapabilities)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.GetDisplayPlaneCapabilities2KHR(physicalDevice, pDisplayPlaneInfo, pCapabilities);
     safe_VkDisplayPlaneInfo2KHR var_local_pDisplayPlaneInfo;
@@ -6531,6 +6844,7 @@ void DispatchGetImageMemoryRequirements2KHR(
     const VkImageMemoryRequirementsInfo2*       pInfo,
     VkMemoryRequirements2*                      pMemoryRequirements)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetImageMemoryRequirements2KHR(device, pInfo, pMemoryRequirements);
     safe_VkImageMemoryRequirementsInfo2 var_local_pInfo;
@@ -6553,6 +6867,7 @@ void DispatchGetBufferMemoryRequirements2KHR(
     const VkBufferMemoryRequirementsInfo2*      pInfo,
     VkMemoryRequirements2*                      pMemoryRequirements)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetBufferMemoryRequirements2KHR(device, pInfo, pMemoryRequirements);
     safe_VkBufferMemoryRequirementsInfo2 var_local_pInfo;
@@ -6576,6 +6891,7 @@ void DispatchGetImageSparseMemoryRequirements2KHR(
     uint32_t*                                   pSparseMemoryRequirementCount,
     VkSparseImageMemoryRequirements2*           pSparseMemoryRequirements)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetImageSparseMemoryRequirements2KHR(device, pInfo, pSparseMemoryRequirementCount, pSparseMemoryRequirements);
     safe_VkImageSparseMemoryRequirementsInfo2 var_local_pInfo;
@@ -6599,6 +6915,7 @@ VkResult DispatchCreateSamplerYcbcrConversionKHR(
     const VkAllocationCallbacks*                pAllocator,
     VkSamplerYcbcrConversion*                   pYcbcrConversion)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CreateSamplerYcbcrConversionKHR(device, pCreateInfo, pAllocator, pYcbcrConversion);
     VkResult result = layer_data->device_dispatch_table.CreateSamplerYcbcrConversionKHR(device, pCreateInfo, pAllocator, pYcbcrConversion);
@@ -6613,6 +6930,7 @@ void DispatchDestroySamplerYcbcrConversionKHR(
     VkSamplerYcbcrConversion                    ycbcrConversion,
     const VkAllocationCallbacks*                pAllocator)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DestroySamplerYcbcrConversionKHR(device, ycbcrConversion, pAllocator);
     uint64_t ycbcrConversion_id = CastToUint64(ycbcrConversion);
@@ -6631,6 +6949,7 @@ VkResult DispatchBindBufferMemory2KHR(
     uint32_t                                    bindInfoCount,
     const VkBindBufferMemoryInfo*               pBindInfos)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.BindBufferMemory2KHR(device, bindInfoCount, pBindInfos);
     safe_VkBindBufferMemoryInfo *local_pBindInfos = nullptr;
@@ -6660,6 +6979,7 @@ VkResult DispatchBindImageMemory2KHR(
     uint32_t                                    bindInfoCount,
     const VkBindImageMemoryInfo*                pBindInfos)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.BindImageMemory2KHR(device, bindInfoCount, pBindInfos);
     safe_VkBindImageMemoryInfo *local_pBindInfos = nullptr;
@@ -6690,6 +7010,7 @@ void DispatchGetDescriptorSetLayoutSupportKHR(
     const VkDescriptorSetLayoutCreateInfo*      pCreateInfo,
     VkDescriptorSetLayoutSupport*               pSupport)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetDescriptorSetLayoutSupportKHR(device, pCreateInfo, pSupport);
     safe_VkDescriptorSetLayoutCreateInfo var_local_pCreateInfo;
@@ -6722,6 +7043,7 @@ void DispatchCmdDrawIndirectCountKHR(
     uint32_t                                    maxDrawCount,
     uint32_t                                    stride)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdDrawIndirectCountKHR(commandBuffer, buffer, offset, countBuffer, countBufferOffset, maxDrawCount, stride);
     {
@@ -6741,6 +7063,7 @@ void DispatchCmdDrawIndexedIndirectCountKHR(
     uint32_t                                    maxDrawCount,
     uint32_t                                    stride)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdDrawIndexedIndirectCountKHR(commandBuffer, buffer, offset, countBuffer, countBufferOffset, maxDrawCount, stride);
     {
@@ -6756,6 +7079,7 @@ VkResult DispatchGetSemaphoreCounterValueKHR(
     VkSemaphore                                 semaphore,
     uint64_t*                                   pValue)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetSemaphoreCounterValueKHR(device, semaphore, pValue);
     {
@@ -6771,6 +7095,7 @@ VkResult DispatchWaitSemaphoresKHR(
     const VkSemaphoreWaitInfo*                  pWaitInfo,
     uint64_t                                    timeout)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.WaitSemaphoresKHR(device, pWaitInfo, timeout);
     safe_VkSemaphoreWaitInfo var_local_pWaitInfo;
@@ -6795,6 +7120,7 @@ VkResult DispatchSignalSemaphoreKHR(
     VkDevice                                    device,
     const VkSemaphoreSignalInfo*                pSignalInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.SignalSemaphoreKHR(device, pSignalInfo);
     safe_VkSemaphoreSignalInfo var_local_pSignalInfo;
@@ -6818,6 +7144,7 @@ VkResult DispatchGetPhysicalDeviceFragmentShadingRatesKHR(
     uint32_t*                                   pFragmentShadingRateCount,
     VkPhysicalDeviceFragmentShadingRateKHR*     pFragmentShadingRates)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     VkResult result = layer_data->instance_dispatch_table.GetPhysicalDeviceFragmentShadingRatesKHR(physicalDevice, pFragmentShadingRateCount, pFragmentShadingRates);
 
@@ -6829,6 +7156,7 @@ void DispatchCmdSetFragmentShadingRateKHR(
     const VkExtent2D*                           pFragmentSize,
     const VkFragmentShadingRateCombinerOpKHR    combinerOps[2])
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetFragmentShadingRateKHR(commandBuffer, pFragmentSize, combinerOps);
 
@@ -6840,6 +7168,7 @@ VkResult DispatchWaitForPresentKHR(
     uint64_t                                    presentId,
     uint64_t                                    timeout)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.WaitForPresentKHR(device, swapchain, presentId, timeout);
     {
@@ -6854,6 +7183,7 @@ VkDeviceAddress DispatchGetBufferDeviceAddressKHR(
     VkDevice                                    device,
     const VkBufferDeviceAddressInfo*            pInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetBufferDeviceAddressKHR(device, pInfo);
     safe_VkBufferDeviceAddressInfo var_local_pInfo;
@@ -6876,6 +7206,7 @@ uint64_t DispatchGetBufferOpaqueCaptureAddressKHR(
     VkDevice                                    device,
     const VkBufferDeviceAddressInfo*            pInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetBufferOpaqueCaptureAddressKHR(device, pInfo);
     safe_VkBufferDeviceAddressInfo var_local_pInfo;
@@ -6898,6 +7229,7 @@ uint64_t DispatchGetDeviceMemoryOpaqueCaptureAddressKHR(
     VkDevice                                    device,
     const VkDeviceMemoryOpaqueCaptureAddressInfo* pInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetDeviceMemoryOpaqueCaptureAddressKHR(device, pInfo);
     safe_VkDeviceMemoryOpaqueCaptureAddressInfo var_local_pInfo;
@@ -6921,6 +7253,7 @@ VkResult DispatchCreateDeferredOperationKHR(
     const VkAllocationCallbacks*                pAllocator,
     VkDeferredOperationKHR*                     pDeferredOperation)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CreateDeferredOperationKHR(device, pAllocator, pDeferredOperation);
     VkResult result = layer_data->device_dispatch_table.CreateDeferredOperationKHR(device, pAllocator, pDeferredOperation);
@@ -6935,6 +7268,7 @@ void DispatchDestroyDeferredOperationKHR(
     VkDeferredOperationKHR                      operation,
     const VkAllocationCallbacks*                pAllocator)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DestroyDeferredOperationKHR(device, operation, pAllocator);
     uint64_t operation_id = CastToUint64(operation);
@@ -6952,6 +7286,7 @@ uint32_t DispatchGetDeferredOperationMaxConcurrencyKHR(
     VkDevice                                    device,
     VkDeferredOperationKHR                      operation)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetDeferredOperationMaxConcurrencyKHR(device, operation);
     {
@@ -6972,6 +7307,7 @@ VkResult DispatchGetPipelineExecutablePropertiesKHR(
     uint32_t*                                   pExecutableCount,
     VkPipelineExecutablePropertiesKHR*          pProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetPipelineExecutablePropertiesKHR(device, pPipelineInfo, pExecutableCount, pProperties);
     safe_VkPipelineInfoKHR var_local_pPipelineInfo;
@@ -6996,6 +7332,7 @@ VkResult DispatchGetPipelineExecutableStatisticsKHR(
     uint32_t*                                   pStatisticCount,
     VkPipelineExecutableStatisticKHR*           pStatistics)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetPipelineExecutableStatisticsKHR(device, pExecutableInfo, pStatisticCount, pStatistics);
     safe_VkPipelineExecutableInfoKHR var_local_pExecutableInfo;
@@ -7020,6 +7357,7 @@ VkResult DispatchGetPipelineExecutableInternalRepresentationsKHR(
     uint32_t*                                   pInternalRepresentationCount,
     VkPipelineExecutableInternalRepresentationKHR* pInternalRepresentations)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetPipelineExecutableInternalRepresentationsKHR(device, pExecutableInfo, pInternalRepresentationCount, pInternalRepresentations);
     safe_VkPipelineExecutableInfoKHR var_local_pExecutableInfo;
@@ -7044,6 +7382,7 @@ void DispatchCmdEncodeVideoKHR(
     VkCommandBuffer                             commandBuffer,
     const VkVideoEncodeInfoKHR*                 pEncodeInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdEncodeVideoKHR(commandBuffer, pEncodeInfo);
     safe_VkVideoEncodeInfoKHR var_local_pEncodeInfo;
@@ -7086,6 +7425,7 @@ void DispatchCmdSetEvent2KHR(
     VkEvent                                     event,
     const VkDependencyInfo*                     pDependencyInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdSetEvent2KHR(commandBuffer, event, pDependencyInfo);
     safe_VkDependencyInfo var_local_pDependencyInfo;
@@ -7120,6 +7460,7 @@ void DispatchCmdResetEvent2KHR(
     VkEvent                                     event,
     VkPipelineStageFlags2                       stageMask)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdResetEvent2KHR(commandBuffer, event, stageMask);
     {
@@ -7135,6 +7476,7 @@ void DispatchCmdWaitEvents2KHR(
     const VkEvent*                              pEvents,
     const VkDependencyInfo*                     pDependencyInfos)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdWaitEvents2KHR(commandBuffer, eventCount, pEvents, pDependencyInfos);
     VkEvent var_local_pEvents[DISPATCH_MAX_STACK_ALLOCATIONS];
@@ -7180,6 +7522,7 @@ void DispatchCmdPipelineBarrier2KHR(
     VkCommandBuffer                             commandBuffer,
     const VkDependencyInfo*                     pDependencyInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdPipelineBarrier2KHR(commandBuffer, pDependencyInfo);
     safe_VkDependencyInfo var_local_pDependencyInfo;
@@ -7214,6 +7557,7 @@ void DispatchCmdWriteTimestamp2KHR(
     VkQueryPool                                 queryPool,
     uint32_t                                    query)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdWriteTimestamp2KHR(commandBuffer, stage, queryPool, query);
     {
@@ -7229,6 +7573,7 @@ VkResult DispatchQueueSubmit2KHR(
     const VkSubmitInfo2*                        pSubmits,
     VkFence                                     fence)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(queue), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.QueueSubmit2KHR(queue, submitCount, pSubmits, fence);
     safe_VkSubmitInfo2 *local_pSubmits = nullptr;
@@ -7270,6 +7615,7 @@ void DispatchCmdWriteBufferMarker2AMD(
     VkDeviceSize                                dstOffset,
     uint32_t                                    marker)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdWriteBufferMarker2AMD(commandBuffer, stage, dstBuffer, dstOffset, marker);
     {
@@ -7284,6 +7630,7 @@ void DispatchGetQueueCheckpointData2NV(
     uint32_t*                                   pCheckpointDataCount,
     VkCheckpointData2NV*                        pCheckpointData)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(queue), layer_data_map);
     layer_data->device_dispatch_table.GetQueueCheckpointData2NV(queue, pCheckpointDataCount, pCheckpointData);
 
@@ -7293,6 +7640,7 @@ void DispatchCmdCopyBuffer2KHR(
     VkCommandBuffer                             commandBuffer,
     const VkCopyBufferInfo2*                    pCopyBufferInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdCopyBuffer2KHR(commandBuffer, pCopyBufferInfo);
     safe_VkCopyBufferInfo2 var_local_pCopyBufferInfo;
@@ -7317,6 +7665,7 @@ void DispatchCmdCopyImage2KHR(
     VkCommandBuffer                             commandBuffer,
     const VkCopyImageInfo2*                     pCopyImageInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdCopyImage2KHR(commandBuffer, pCopyImageInfo);
     safe_VkCopyImageInfo2 var_local_pCopyImageInfo;
@@ -7341,6 +7690,7 @@ void DispatchCmdCopyBufferToImage2KHR(
     VkCommandBuffer                             commandBuffer,
     const VkCopyBufferToImageInfo2*             pCopyBufferToImageInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdCopyBufferToImage2KHR(commandBuffer, pCopyBufferToImageInfo);
     safe_VkCopyBufferToImageInfo2 var_local_pCopyBufferToImageInfo;
@@ -7365,6 +7715,7 @@ void DispatchCmdCopyImageToBuffer2KHR(
     VkCommandBuffer                             commandBuffer,
     const VkCopyImageToBufferInfo2*             pCopyImageToBufferInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdCopyImageToBuffer2KHR(commandBuffer, pCopyImageToBufferInfo);
     safe_VkCopyImageToBufferInfo2 var_local_pCopyImageToBufferInfo;
@@ -7389,6 +7740,7 @@ void DispatchCmdBlitImage2KHR(
     VkCommandBuffer                             commandBuffer,
     const VkBlitImageInfo2*                     pBlitImageInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdBlitImage2KHR(commandBuffer, pBlitImageInfo);
     safe_VkBlitImageInfo2 var_local_pBlitImageInfo;
@@ -7413,6 +7765,7 @@ void DispatchCmdResolveImage2KHR(
     VkCommandBuffer                             commandBuffer,
     const VkResolveImageInfo2*                  pResolveImageInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdResolveImage2KHR(commandBuffer, pResolveImageInfo);
     safe_VkResolveImageInfo2 var_local_pResolveImageInfo;
@@ -7437,6 +7790,7 @@ void DispatchCmdTraceRaysIndirect2KHR(
     VkCommandBuffer                             commandBuffer,
     VkDeviceAddress                             indirectDeviceAddress)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdTraceRaysIndirect2KHR(commandBuffer, indirectDeviceAddress);
 
@@ -7447,6 +7801,7 @@ void DispatchGetDeviceBufferMemoryRequirementsKHR(
     const VkDeviceBufferMemoryRequirements*     pInfo,
     VkMemoryRequirements2*                      pMemoryRequirements)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     layer_data->device_dispatch_table.GetDeviceBufferMemoryRequirementsKHR(device, pInfo, pMemoryRequirements);
 
@@ -7457,6 +7812,7 @@ void DispatchGetDeviceImageMemoryRequirementsKHR(
     const VkDeviceImageMemoryRequirements*      pInfo,
     VkMemoryRequirements2*                      pMemoryRequirements)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     layer_data->device_dispatch_table.GetDeviceImageMemoryRequirementsKHR(device, pInfo, pMemoryRequirements);
 
@@ -7468,6 +7824,7 @@ void DispatchGetDeviceImageSparseMemoryRequirementsKHR(
     uint32_t*                                   pSparseMemoryRequirementCount,
     VkSparseImageMemoryRequirements2*           pSparseMemoryRequirements)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     layer_data->device_dispatch_table.GetDeviceImageSparseMemoryRequirementsKHR(device, pInfo, pSparseMemoryRequirementCount, pSparseMemoryRequirements);
 
@@ -7479,6 +7836,7 @@ VkResult DispatchCreateDebugReportCallbackEXT(
     const VkAllocationCallbacks*                pAllocator,
     VkDebugReportCallbackEXT*                   pCallback)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(instance), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.CreateDebugReportCallbackEXT(instance, pCreateInfo, pAllocator, pCallback);
     VkResult result = layer_data->instance_dispatch_table.CreateDebugReportCallbackEXT(instance, pCreateInfo, pAllocator, pCallback);
@@ -7493,6 +7851,7 @@ void DispatchDestroyDebugReportCallbackEXT(
     VkDebugReportCallbackEXT                    callback,
     const VkAllocationCallbacks*                pAllocator)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(instance), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.DestroyDebugReportCallbackEXT(instance, callback, pAllocator);
     uint64_t callback_id = CastToUint64(callback);
@@ -7516,6 +7875,7 @@ void DispatchDebugReportMessageEXT(
     const char*                                 pLayerPrefix,
     const char*                                 pMessage)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(instance), layer_data_map);
     layer_data->instance_dispatch_table.DebugReportMessageEXT(instance, flags, objectType, object, location, messageCode, pLayerPrefix, pMessage);
 
@@ -7529,6 +7889,7 @@ void DispatchCmdDebugMarkerBeginEXT(
     VkCommandBuffer                             commandBuffer,
     const VkDebugMarkerMarkerInfoEXT*           pMarkerInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdDebugMarkerBeginEXT(commandBuffer, pMarkerInfo);
 
@@ -7537,6 +7898,7 @@ void DispatchCmdDebugMarkerBeginEXT(
 void DispatchCmdDebugMarkerEndEXT(
     VkCommandBuffer                             commandBuffer)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdDebugMarkerEndEXT(commandBuffer);
 
@@ -7546,6 +7908,7 @@ void DispatchCmdDebugMarkerInsertEXT(
     VkCommandBuffer                             commandBuffer,
     const VkDebugMarkerMarkerInfoEXT*           pMarkerInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdDebugMarkerInsertEXT(commandBuffer, pMarkerInfo);
 
@@ -7559,6 +7922,7 @@ void DispatchCmdBindTransformFeedbackBuffersEXT(
     const VkDeviceSize*                         pOffsets,
     const VkDeviceSize*                         pSizes)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdBindTransformFeedbackBuffersEXT(commandBuffer, firstBinding, bindingCount, pBuffers, pOffsets, pSizes);
     VkBuffer var_local_pBuffers[DISPATCH_MAX_STACK_ALLOCATIONS];
@@ -7583,6 +7947,7 @@ void DispatchCmdBeginTransformFeedbackEXT(
     const VkBuffer*                             pCounterBuffers,
     const VkDeviceSize*                         pCounterBufferOffsets)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdBeginTransformFeedbackEXT(commandBuffer, firstCounterBuffer, counterBufferCount, pCounterBuffers, pCounterBufferOffsets);
     VkBuffer var_local_pCounterBuffers[DISPATCH_MAX_STACK_ALLOCATIONS];
@@ -7607,6 +7972,7 @@ void DispatchCmdEndTransformFeedbackEXT(
     const VkBuffer*                             pCounterBuffers,
     const VkDeviceSize*                         pCounterBufferOffsets)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdEndTransformFeedbackEXT(commandBuffer, firstCounterBuffer, counterBufferCount, pCounterBuffers, pCounterBufferOffsets);
     VkBuffer var_local_pCounterBuffers[DISPATCH_MAX_STACK_ALLOCATIONS];
@@ -7631,6 +7997,7 @@ void DispatchCmdBeginQueryIndexedEXT(
     VkQueryControlFlags                         flags,
     uint32_t                                    index)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdBeginQueryIndexedEXT(commandBuffer, queryPool, query, flags, index);
     {
@@ -7646,6 +8013,7 @@ void DispatchCmdEndQueryIndexedEXT(
     uint32_t                                    query,
     uint32_t                                    index)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdEndQueryIndexedEXT(commandBuffer, queryPool, query, index);
     {
@@ -7664,6 +8032,7 @@ void DispatchCmdDrawIndirectByteCountEXT(
     uint32_t                                    counterOffset,
     uint32_t                                    vertexStride)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdDrawIndirectByteCountEXT(commandBuffer, instanceCount, firstInstance, counterBuffer, counterBufferOffset, counterOffset, vertexStride);
     {
@@ -7679,6 +8048,7 @@ VkResult DispatchCreateCuModuleNVX(
     const VkAllocationCallbacks*                pAllocator,
     VkCuModuleNVX*                              pModule)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CreateCuModuleNVX(device, pCreateInfo, pAllocator, pModule);
     VkResult result = layer_data->device_dispatch_table.CreateCuModuleNVX(device, pCreateInfo, pAllocator, pModule);
@@ -7694,6 +8064,7 @@ VkResult DispatchCreateCuFunctionNVX(
     const VkAllocationCallbacks*                pAllocator,
     VkCuFunctionNVX*                            pFunction)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CreateCuFunctionNVX(device, pCreateInfo, pAllocator, pFunction);
     safe_VkCuFunctionCreateInfoNVX var_local_pCreateInfo;
@@ -7719,6 +8090,7 @@ void DispatchDestroyCuModuleNVX(
     VkCuModuleNVX                               module,
     const VkAllocationCallbacks*                pAllocator)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DestroyCuModuleNVX(device, module, pAllocator);
     uint64_t module_id = CastToUint64(module);
@@ -7737,6 +8109,7 @@ void DispatchDestroyCuFunctionNVX(
     VkCuFunctionNVX                             function,
     const VkAllocationCallbacks*                pAllocator)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DestroyCuFunctionNVX(device, function, pAllocator);
     uint64_t function_id = CastToUint64(function);
@@ -7754,6 +8127,7 @@ void DispatchCmdCuLaunchKernelNVX(
     VkCommandBuffer                             commandBuffer,
     const VkCuLaunchInfoNVX*                    pLaunchInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdCuLaunchKernelNVX(commandBuffer, pLaunchInfo);
     safe_VkCuLaunchInfoNVX var_local_pLaunchInfo;
@@ -7775,6 +8149,7 @@ uint32_t DispatchGetImageViewHandleNVX(
     VkDevice                                    device,
     const VkImageViewHandleInfoNVX*             pInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetImageViewHandleNVX(device, pInfo);
     safe_VkImageViewHandleInfoNVX var_local_pInfo;
@@ -7801,6 +8176,7 @@ VkResult DispatchGetImageViewAddressNVX(
     VkImageView                                 imageView,
     VkImageViewAddressPropertiesNVX*            pProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetImageViewAddressNVX(device, imageView, pProperties);
     {
@@ -7820,6 +8196,7 @@ void DispatchCmdDrawIndirectCountAMD(
     uint32_t                                    maxDrawCount,
     uint32_t                                    stride)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdDrawIndirectCountAMD(commandBuffer, buffer, offset, countBuffer, countBufferOffset, maxDrawCount, stride);
     {
@@ -7839,6 +8216,7 @@ void DispatchCmdDrawIndexedIndirectCountAMD(
     uint32_t                                    maxDrawCount,
     uint32_t                                    stride)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdDrawIndexedIndirectCountAMD(commandBuffer, buffer, offset, countBuffer, countBufferOffset, maxDrawCount, stride);
     {
@@ -7857,6 +8235,7 @@ VkResult DispatchGetShaderInfoAMD(
     size_t*                                     pInfoSize,
     void*                                       pInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetShaderInfoAMD(device, pipeline, shaderStage, infoType, pInfoSize, pInfo);
     {
@@ -7875,6 +8254,7 @@ VkResult DispatchCreateStreamDescriptorSurfaceGGP(
     const VkAllocationCallbacks*                pAllocator,
     VkSurfaceKHR*                               pSurface)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(instance), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.CreateStreamDescriptorSurfaceGGP(instance, pCreateInfo, pAllocator, pSurface);
     VkResult result = layer_data->instance_dispatch_table.CreateStreamDescriptorSurfaceGGP(instance, pCreateInfo, pAllocator, pSurface);
@@ -7895,6 +8275,7 @@ VkResult DispatchGetPhysicalDeviceExternalImageFormatPropertiesNV(
     VkExternalMemoryHandleTypeFlagsNV           externalHandleType,
     VkExternalImageFormatPropertiesNV*          pExternalImageFormatProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     VkResult result = layer_data->instance_dispatch_table.GetPhysicalDeviceExternalImageFormatPropertiesNV(physicalDevice, format, type, tiling, usage, flags, externalHandleType, pExternalImageFormatProperties);
 
@@ -7909,6 +8290,7 @@ VkResult DispatchGetMemoryWin32HandleNV(
     VkExternalMemoryHandleTypeFlagsNV           handleType,
     HANDLE*                                     pHandle)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetMemoryWin32HandleNV(device, memory, handleType, pHandle);
     {
@@ -7928,6 +8310,7 @@ VkResult DispatchCreateViSurfaceNN(
     const VkAllocationCallbacks*                pAllocator,
     VkSurfaceKHR*                               pSurface)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(instance), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.CreateViSurfaceNN(instance, pCreateInfo, pAllocator, pSurface);
     VkResult result = layer_data->instance_dispatch_table.CreateViSurfaceNN(instance, pCreateInfo, pAllocator, pSurface);
@@ -7942,6 +8325,7 @@ void DispatchCmdBeginConditionalRenderingEXT(
     VkCommandBuffer                             commandBuffer,
     const VkConditionalRenderingBeginInfoEXT*   pConditionalRenderingBegin)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdBeginConditionalRenderingEXT(commandBuffer, pConditionalRenderingBegin);
     safe_VkConditionalRenderingBeginInfoEXT var_local_pConditionalRenderingBegin;
@@ -7962,6 +8346,7 @@ void DispatchCmdBeginConditionalRenderingEXT(
 void DispatchCmdEndConditionalRenderingEXT(
     VkCommandBuffer                             commandBuffer)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdEndConditionalRenderingEXT(commandBuffer);
 
@@ -7973,6 +8358,7 @@ void DispatchCmdSetViewportWScalingNV(
     uint32_t                                    viewportCount,
     const VkViewportWScalingNV*                 pViewportWScalings)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetViewportWScalingNV(commandBuffer, firstViewport, viewportCount, pViewportWScalings);
 
@@ -7982,6 +8368,7 @@ VkResult DispatchReleaseDisplayEXT(
     VkPhysicalDevice                            physicalDevice,
     VkDisplayKHR                                display)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.ReleaseDisplayEXT(physicalDevice, display);
     {
@@ -7999,6 +8386,7 @@ VkResult DispatchAcquireXlibDisplayEXT(
     Display*                                    dpy,
     VkDisplayKHR                                display)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.AcquireXlibDisplayEXT(physicalDevice, dpy, display);
     {
@@ -8018,6 +8406,7 @@ VkResult DispatchGetRandROutputDisplayEXT(
     RROutput                                    rrOutput,
     VkDisplayKHR*                               pDisplay)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.GetRandROutputDisplayEXT(physicalDevice, dpy, rrOutput, pDisplay);
     VkResult result = layer_data->instance_dispatch_table.GetRandROutputDisplayEXT(physicalDevice, dpy, rrOutput, pDisplay);
@@ -8033,6 +8422,7 @@ VkResult DispatchGetPhysicalDeviceSurfaceCapabilities2EXT(
     VkSurfaceKHR                                surface,
     VkSurfaceCapabilities2EXT*                  pSurfaceCapabilities)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.GetPhysicalDeviceSurfaceCapabilities2EXT(physicalDevice, surface, pSurfaceCapabilities);
     {
@@ -8048,6 +8438,7 @@ VkResult DispatchDisplayPowerControlEXT(
     VkDisplayKHR                                display,
     const VkDisplayPowerInfoEXT*                pDisplayPowerInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DisplayPowerControlEXT(device, display, pDisplayPowerInfo);
     {
@@ -8064,6 +8455,7 @@ VkResult DispatchRegisterDeviceEventEXT(
     const VkAllocationCallbacks*                pAllocator,
     VkFence*                                    pFence)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.RegisterDeviceEventEXT(device, pDeviceEventInfo, pAllocator, pFence);
     VkResult result = layer_data->device_dispatch_table.RegisterDeviceEventEXT(device, pDeviceEventInfo, pAllocator, pFence);
@@ -8080,6 +8472,7 @@ VkResult DispatchRegisterDisplayEventEXT(
     const VkAllocationCallbacks*                pAllocator,
     VkFence*                                    pFence)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.RegisterDisplayEventEXT(device, display, pDisplayEventInfo, pAllocator, pFence);
     {
@@ -8098,6 +8491,7 @@ VkResult DispatchGetSwapchainCounterEXT(
     VkSurfaceCounterFlagBitsEXT                 counter,
     uint64_t*                                   pCounterValue)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetSwapchainCounterEXT(device, swapchain, counter, pCounterValue);
     {
@@ -8113,6 +8507,7 @@ VkResult DispatchGetRefreshCycleDurationGOOGLE(
     VkSwapchainKHR                              swapchain,
     VkRefreshCycleDurationGOOGLE*               pDisplayTimingProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetRefreshCycleDurationGOOGLE(device, swapchain, pDisplayTimingProperties);
     {
@@ -8129,6 +8524,7 @@ VkResult DispatchGetPastPresentationTimingGOOGLE(
     uint32_t*                                   pPresentationTimingCount,
     VkPastPresentationTimingGOOGLE*             pPresentationTimings)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetPastPresentationTimingGOOGLE(device, swapchain, pPresentationTimingCount, pPresentationTimings);
     {
@@ -8145,6 +8541,7 @@ void DispatchCmdSetDiscardRectangleEXT(
     uint32_t                                    discardRectangleCount,
     const VkRect2D*                             pDiscardRectangles)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetDiscardRectangleEXT(commandBuffer, firstDiscardRectangle, discardRectangleCount, pDiscardRectangles);
 
@@ -8154,6 +8551,7 @@ void DispatchCmdSetDiscardRectangleEnableEXT(
     VkCommandBuffer                             commandBuffer,
     VkBool32                                    discardRectangleEnable)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetDiscardRectangleEnableEXT(commandBuffer, discardRectangleEnable);
 
@@ -8163,6 +8561,7 @@ void DispatchCmdSetDiscardRectangleModeEXT(
     VkCommandBuffer                             commandBuffer,
     VkDiscardRectangleModeEXT                   discardRectangleMode)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetDiscardRectangleModeEXT(commandBuffer, discardRectangleMode);
 
@@ -8174,6 +8573,7 @@ void DispatchSetHdrMetadataEXT(
     const VkSwapchainKHR*                       pSwapchains,
     const VkHdrMetadataEXT*                     pMetadata)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.SetHdrMetadataEXT(device, swapchainCount, pSwapchains, pMetadata);
     VkSwapchainKHR var_local_pSwapchains[DISPATCH_MAX_STACK_ALLOCATIONS];
@@ -8199,6 +8599,7 @@ VkResult DispatchCreateIOSSurfaceMVK(
     const VkAllocationCallbacks*                pAllocator,
     VkSurfaceKHR*                               pSurface)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(instance), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.CreateIOSSurfaceMVK(instance, pCreateInfo, pAllocator, pSurface);
     VkResult result = layer_data->instance_dispatch_table.CreateIOSSurfaceMVK(instance, pCreateInfo, pAllocator, pSurface);
@@ -8217,6 +8618,7 @@ VkResult DispatchCreateMacOSSurfaceMVK(
     const VkAllocationCallbacks*                pAllocator,
     VkSurfaceKHR*                               pSurface)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(instance), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.CreateMacOSSurfaceMVK(instance, pCreateInfo, pAllocator, pSurface);
     VkResult result = layer_data->instance_dispatch_table.CreateMacOSSurfaceMVK(instance, pCreateInfo, pAllocator, pSurface);
@@ -8235,6 +8637,7 @@ void DispatchQueueBeginDebugUtilsLabelEXT(
     VkQueue                                     queue,
     const VkDebugUtilsLabelEXT*                 pLabelInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(queue), layer_data_map);
     layer_data->device_dispatch_table.QueueBeginDebugUtilsLabelEXT(queue, pLabelInfo);
 
@@ -8243,6 +8646,7 @@ void DispatchQueueBeginDebugUtilsLabelEXT(
 void DispatchQueueEndDebugUtilsLabelEXT(
     VkQueue                                     queue)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(queue), layer_data_map);
     layer_data->device_dispatch_table.QueueEndDebugUtilsLabelEXT(queue);
 
@@ -8252,6 +8656,7 @@ void DispatchQueueInsertDebugUtilsLabelEXT(
     VkQueue                                     queue,
     const VkDebugUtilsLabelEXT*                 pLabelInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(queue), layer_data_map);
     layer_data->device_dispatch_table.QueueInsertDebugUtilsLabelEXT(queue, pLabelInfo);
 
@@ -8261,6 +8666,7 @@ void DispatchCmdBeginDebugUtilsLabelEXT(
     VkCommandBuffer                             commandBuffer,
     const VkDebugUtilsLabelEXT*                 pLabelInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdBeginDebugUtilsLabelEXT(commandBuffer, pLabelInfo);
 
@@ -8269,6 +8675,7 @@ void DispatchCmdBeginDebugUtilsLabelEXT(
 void DispatchCmdEndDebugUtilsLabelEXT(
     VkCommandBuffer                             commandBuffer)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdEndDebugUtilsLabelEXT(commandBuffer);
 
@@ -8278,6 +8685,7 @@ void DispatchCmdInsertDebugUtilsLabelEXT(
     VkCommandBuffer                             commandBuffer,
     const VkDebugUtilsLabelEXT*                 pLabelInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdInsertDebugUtilsLabelEXT(commandBuffer, pLabelInfo);
 
@@ -8289,6 +8697,7 @@ VkResult DispatchCreateDebugUtilsMessengerEXT(
     const VkAllocationCallbacks*                pAllocator,
     VkDebugUtilsMessengerEXT*                   pMessenger)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(instance), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.CreateDebugUtilsMessengerEXT(instance, pCreateInfo, pAllocator, pMessenger);
     VkResult result = layer_data->instance_dispatch_table.CreateDebugUtilsMessengerEXT(instance, pCreateInfo, pAllocator, pMessenger);
@@ -8303,6 +8712,7 @@ void DispatchDestroyDebugUtilsMessengerEXT(
     VkDebugUtilsMessengerEXT                    messenger,
     const VkAllocationCallbacks*                pAllocator)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(instance), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.DestroyDebugUtilsMessengerEXT(instance, messenger, pAllocator);
     uint64_t messenger_id = CastToUint64(messenger);
@@ -8322,6 +8732,7 @@ void DispatchSubmitDebugUtilsMessageEXT(
     VkDebugUtilsMessageTypeFlagsEXT             messageTypes,
     const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(instance), layer_data_map);
     layer_data->instance_dispatch_table.SubmitDebugUtilsMessageEXT(instance, messageSeverity, messageTypes, pCallbackData);
 
@@ -8334,6 +8745,7 @@ VkResult DispatchGetAndroidHardwareBufferPropertiesANDROID(
     const struct AHardwareBuffer*               buffer,
     VkAndroidHardwareBufferPropertiesANDROID*   pProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     VkResult result = layer_data->device_dispatch_table.GetAndroidHardwareBufferPropertiesANDROID(device, buffer, pProperties);
 
@@ -8348,6 +8760,7 @@ VkResult DispatchGetMemoryAndroidHardwareBufferANDROID(
     const VkMemoryGetAndroidHardwareBufferInfoANDROID* pInfo,
     struct AHardwareBuffer**                    pBuffer)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetMemoryAndroidHardwareBufferANDROID(device, pInfo, pBuffer);
     safe_VkMemoryGetAndroidHardwareBufferInfoANDROID var_local_pInfo;
@@ -8371,6 +8784,7 @@ void DispatchCmdSetSampleLocationsEXT(
     VkCommandBuffer                             commandBuffer,
     const VkSampleLocationsInfoEXT*             pSampleLocationsInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetSampleLocationsEXT(commandBuffer, pSampleLocationsInfo);
 
@@ -8381,6 +8795,7 @@ void DispatchGetPhysicalDeviceMultisamplePropertiesEXT(
     VkSampleCountFlagBits                       samples,
     VkMultisamplePropertiesEXT*                 pMultisampleProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     layer_data->instance_dispatch_table.GetPhysicalDeviceMultisamplePropertiesEXT(physicalDevice, samples, pMultisampleProperties);
 
@@ -8391,6 +8806,7 @@ VkResult DispatchGetImageDrmFormatModifierPropertiesEXT(
     VkImage                                     image,
     VkImageDrmFormatModifierPropertiesEXT*      pProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetImageDrmFormatModifierPropertiesEXT(device, image, pProperties);
     {
@@ -8407,6 +8823,7 @@ VkResult DispatchCreateValidationCacheEXT(
     const VkAllocationCallbacks*                pAllocator,
     VkValidationCacheEXT*                       pValidationCache)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CreateValidationCacheEXT(device, pCreateInfo, pAllocator, pValidationCache);
     VkResult result = layer_data->device_dispatch_table.CreateValidationCacheEXT(device, pCreateInfo, pAllocator, pValidationCache);
@@ -8421,6 +8838,7 @@ void DispatchDestroyValidationCacheEXT(
     VkValidationCacheEXT                        validationCache,
     const VkAllocationCallbacks*                pAllocator)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DestroyValidationCacheEXT(device, validationCache, pAllocator);
     uint64_t validationCache_id = CastToUint64(validationCache);
@@ -8440,6 +8858,7 @@ VkResult DispatchMergeValidationCachesEXT(
     uint32_t                                    srcCacheCount,
     const VkValidationCacheEXT*                 pSrcCaches)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.MergeValidationCachesEXT(device, dstCache, srcCacheCount, pSrcCaches);
     VkValidationCacheEXT var_local_pSrcCaches[DISPATCH_MAX_STACK_ALLOCATIONS];
@@ -8465,6 +8884,7 @@ VkResult DispatchGetValidationCacheDataEXT(
     size_t*                                     pDataSize,
     void*                                       pData)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetValidationCacheDataEXT(device, validationCache, pDataSize, pData);
     {
@@ -8480,6 +8900,7 @@ void DispatchCmdBindShadingRateImageNV(
     VkImageView                                 imageView,
     VkImageLayout                               imageLayout)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdBindShadingRateImageNV(commandBuffer, imageView, imageLayout);
     {
@@ -8495,6 +8916,7 @@ void DispatchCmdSetViewportShadingRatePaletteNV(
     uint32_t                                    viewportCount,
     const VkShadingRatePaletteNV*               pShadingRatePalettes)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetViewportShadingRatePaletteNV(commandBuffer, firstViewport, viewportCount, pShadingRatePalettes);
 
@@ -8506,6 +8928,7 @@ void DispatchCmdSetCoarseSampleOrderNV(
     uint32_t                                    customSampleOrderCount,
     const VkCoarseSampleOrderCustomNV*          pCustomSampleOrders)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetCoarseSampleOrderNV(commandBuffer, sampleOrderType, customSampleOrderCount, pCustomSampleOrders);
 
@@ -8517,6 +8940,7 @@ VkResult DispatchCreateAccelerationStructureNV(
     const VkAllocationCallbacks*                pAllocator,
     VkAccelerationStructureNV*                  pAccelerationStructure)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CreateAccelerationStructureNV(device, pCreateInfo, pAllocator, pAccelerationStructure);
     safe_VkAccelerationStructureCreateInfoNV var_local_pCreateInfo;
@@ -8555,6 +8979,7 @@ void DispatchDestroyAccelerationStructureNV(
     VkAccelerationStructureNV                   accelerationStructure,
     const VkAllocationCallbacks*                pAllocator)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DestroyAccelerationStructureNV(device, accelerationStructure, pAllocator);
     uint64_t accelerationStructure_id = CastToUint64(accelerationStructure);
@@ -8573,6 +8998,7 @@ void DispatchGetAccelerationStructureMemoryRequirementsNV(
     const VkAccelerationStructureMemoryRequirementsInfoNV* pInfo,
     VkMemoryRequirements2KHR*                   pMemoryRequirements)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetAccelerationStructureMemoryRequirementsNV(device, pInfo, pMemoryRequirements);
     safe_VkAccelerationStructureMemoryRequirementsInfoNV var_local_pInfo;
@@ -8595,6 +9021,7 @@ VkResult DispatchBindAccelerationStructureMemoryNV(
     uint32_t                                    bindInfoCount,
     const VkBindAccelerationStructureMemoryInfoNV* pBindInfos)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.BindAccelerationStructureMemoryNV(device, bindInfoCount, pBindInfos);
     safe_VkBindAccelerationStructureMemoryInfoNV *local_pBindInfos = nullptr;
@@ -8630,6 +9057,7 @@ void DispatchCmdBuildAccelerationStructureNV(
     VkBuffer                                    scratch,
     VkDeviceSize                                scratchOffset)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdBuildAccelerationStructureNV(commandBuffer, pInfo, instanceData, instanceOffset, update, dst, src, scratch, scratchOffset);
     safe_VkAccelerationStructureInfoNV var_local_pInfo;
@@ -8670,6 +9098,7 @@ void DispatchCmdCopyAccelerationStructureNV(
     VkAccelerationStructureNV                   src,
     VkCopyAccelerationStructureModeKHR          mode)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdCopyAccelerationStructureNV(commandBuffer, dst, src, mode);
     {
@@ -8697,6 +9126,7 @@ void DispatchCmdTraceRaysNV(
     uint32_t                                    height,
     uint32_t                                    depth)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdTraceRaysNV(commandBuffer, raygenShaderBindingTableBuffer, raygenShaderBindingOffset, missShaderBindingTableBuffer, missShaderBindingOffset, missShaderBindingStride, hitShaderBindingTableBuffer, hitShaderBindingOffset, hitShaderBindingStride, callableShaderBindingTableBuffer, callableShaderBindingOffset, callableShaderBindingStride, width, height, depth);
     {
@@ -8717,6 +9147,7 @@ VkResult DispatchCreateRayTracingPipelinesNV(
     const VkAllocationCallbacks*                pAllocator,
     VkPipeline*                                 pPipelines)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CreateRayTracingPipelinesNV(device, pipelineCache, createInfoCount, pCreateInfos, pAllocator, pPipelines);
     safe_VkRayTracingPipelineCreateInfoNV *local_pCreateInfos = nullptr;
@@ -8770,6 +9201,7 @@ VkResult DispatchGetRayTracingShaderGroupHandlesKHR(
     size_t                                      dataSize,
     void*                                       pData)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetRayTracingShaderGroupHandlesKHR(device, pipeline, firstGroup, groupCount, dataSize, pData);
     {
@@ -8788,6 +9220,7 @@ VkResult DispatchGetRayTracingShaderGroupHandlesNV(
     size_t                                      dataSize,
     void*                                       pData)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetRayTracingShaderGroupHandlesNV(device, pipeline, firstGroup, groupCount, dataSize, pData);
     {
@@ -8804,6 +9237,7 @@ VkResult DispatchGetAccelerationStructureHandleNV(
     size_t                                      dataSize,
     void*                                       pData)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetAccelerationStructureHandleNV(device, accelerationStructure, dataSize, pData);
     {
@@ -8822,6 +9256,7 @@ void DispatchCmdWriteAccelerationStructuresPropertiesNV(
     VkQueryPool                                 queryPool,
     uint32_t                                    firstQuery)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdWriteAccelerationStructuresPropertiesNV(commandBuffer, accelerationStructureCount, pAccelerationStructures, queryType, queryPool, firstQuery);
     VkAccelerationStructureNV var_local_pAccelerationStructures[DISPATCH_MAX_STACK_ALLOCATIONS];
@@ -8845,6 +9280,7 @@ VkResult DispatchCompileDeferredNV(
     VkPipeline                                  pipeline,
     uint32_t                                    shader)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CompileDeferredNV(device, pipeline, shader);
     {
@@ -8861,6 +9297,7 @@ VkResult DispatchGetMemoryHostPointerPropertiesEXT(
     const void*                                 pHostPointer,
     VkMemoryHostPointerPropertiesEXT*           pMemoryHostPointerProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     VkResult result = layer_data->device_dispatch_table.GetMemoryHostPointerPropertiesEXT(device, handleType, pHostPointer, pMemoryHostPointerProperties);
 
@@ -8874,6 +9311,7 @@ void DispatchCmdWriteBufferMarkerAMD(
     VkDeviceSize                                dstOffset,
     uint32_t                                    marker)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdWriteBufferMarkerAMD(commandBuffer, pipelineStage, dstBuffer, dstOffset, marker);
     {
@@ -8888,6 +9326,7 @@ VkResult DispatchGetPhysicalDeviceCalibrateableTimeDomainsEXT(
     uint32_t*                                   pTimeDomainCount,
     VkTimeDomainEXT*                            pTimeDomains)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     VkResult result = layer_data->instance_dispatch_table.GetPhysicalDeviceCalibrateableTimeDomainsEXT(physicalDevice, pTimeDomainCount, pTimeDomains);
 
@@ -8901,6 +9340,7 @@ VkResult DispatchGetCalibratedTimestampsEXT(
     uint64_t*                                   pTimestamps,
     uint64_t*                                   pMaxDeviation)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     VkResult result = layer_data->device_dispatch_table.GetCalibratedTimestampsEXT(device, timestampCount, pTimestampInfos, pTimestamps, pMaxDeviation);
 
@@ -8912,6 +9352,7 @@ void DispatchCmdDrawMeshTasksNV(
     uint32_t                                    taskCount,
     uint32_t                                    firstTask)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdDrawMeshTasksNV(commandBuffer, taskCount, firstTask);
 
@@ -8924,6 +9365,7 @@ void DispatchCmdDrawMeshTasksIndirectNV(
     uint32_t                                    drawCount,
     uint32_t                                    stride)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdDrawMeshTasksIndirectNV(commandBuffer, buffer, offset, drawCount, stride);
     {
@@ -8942,6 +9384,7 @@ void DispatchCmdDrawMeshTasksIndirectCountNV(
     uint32_t                                    maxDrawCount,
     uint32_t                                    stride)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdDrawMeshTasksIndirectCountNV(commandBuffer, buffer, offset, countBuffer, countBufferOffset, maxDrawCount, stride);
     {
@@ -8958,6 +9401,7 @@ void DispatchCmdSetExclusiveScissorEnableNV(
     uint32_t                                    exclusiveScissorCount,
     const VkBool32*                             pExclusiveScissorEnables)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetExclusiveScissorEnableNV(commandBuffer, firstExclusiveScissor, exclusiveScissorCount, pExclusiveScissorEnables);
 
@@ -8969,6 +9413,7 @@ void DispatchCmdSetExclusiveScissorNV(
     uint32_t                                    exclusiveScissorCount,
     const VkRect2D*                             pExclusiveScissors)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetExclusiveScissorNV(commandBuffer, firstExclusiveScissor, exclusiveScissorCount, pExclusiveScissors);
 
@@ -8978,6 +9423,7 @@ void DispatchCmdSetCheckpointNV(
     VkCommandBuffer                             commandBuffer,
     const void*                                 pCheckpointMarker)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetCheckpointNV(commandBuffer, pCheckpointMarker);
 
@@ -8988,6 +9434,7 @@ void DispatchGetQueueCheckpointDataNV(
     uint32_t*                                   pCheckpointDataCount,
     VkCheckpointDataNV*                         pCheckpointData)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(queue), layer_data_map);
     layer_data->device_dispatch_table.GetQueueCheckpointDataNV(queue, pCheckpointDataCount, pCheckpointData);
 
@@ -8997,6 +9444,7 @@ VkResult DispatchInitializePerformanceApiINTEL(
     VkDevice                                    device,
     const VkInitializePerformanceApiInfoINTEL*  pInitializeInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     VkResult result = layer_data->device_dispatch_table.InitializePerformanceApiINTEL(device, pInitializeInfo);
 
@@ -9006,6 +9454,7 @@ VkResult DispatchInitializePerformanceApiINTEL(
 void DispatchUninitializePerformanceApiINTEL(
     VkDevice                                    device)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     layer_data->device_dispatch_table.UninitializePerformanceApiINTEL(device);
 
@@ -9015,6 +9464,7 @@ VkResult DispatchCmdSetPerformanceMarkerINTEL(
     VkCommandBuffer                             commandBuffer,
     const VkPerformanceMarkerInfoINTEL*         pMarkerInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     VkResult result = layer_data->device_dispatch_table.CmdSetPerformanceMarkerINTEL(commandBuffer, pMarkerInfo);
 
@@ -9025,6 +9475,7 @@ VkResult DispatchCmdSetPerformanceStreamMarkerINTEL(
     VkCommandBuffer                             commandBuffer,
     const VkPerformanceStreamMarkerInfoINTEL*   pMarkerInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     VkResult result = layer_data->device_dispatch_table.CmdSetPerformanceStreamMarkerINTEL(commandBuffer, pMarkerInfo);
 
@@ -9035,6 +9486,7 @@ VkResult DispatchCmdSetPerformanceOverrideINTEL(
     VkCommandBuffer                             commandBuffer,
     const VkPerformanceOverrideInfoINTEL*       pOverrideInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     VkResult result = layer_data->device_dispatch_table.CmdSetPerformanceOverrideINTEL(commandBuffer, pOverrideInfo);
 
@@ -9046,6 +9498,7 @@ VkResult DispatchAcquirePerformanceConfigurationINTEL(
     const VkPerformanceConfigurationAcquireInfoINTEL* pAcquireInfo,
     VkPerformanceConfigurationINTEL*            pConfiguration)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.AcquirePerformanceConfigurationINTEL(device, pAcquireInfo, pConfiguration);
     VkResult result = layer_data->device_dispatch_table.AcquirePerformanceConfigurationINTEL(device, pAcquireInfo, pConfiguration);
@@ -9059,6 +9512,7 @@ VkResult DispatchReleasePerformanceConfigurationINTEL(
     VkDevice                                    device,
     VkPerformanceConfigurationINTEL             configuration)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.ReleasePerformanceConfigurationINTEL(device, configuration);
     {
@@ -9073,6 +9527,7 @@ VkResult DispatchQueueSetPerformanceConfigurationINTEL(
     VkQueue                                     queue,
     VkPerformanceConfigurationINTEL             configuration)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(queue), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.QueueSetPerformanceConfigurationINTEL(queue, configuration);
     {
@@ -9088,6 +9543,7 @@ VkResult DispatchGetPerformanceParameterINTEL(
     VkPerformanceParameterTypeINTEL             parameter,
     VkPerformanceValueINTEL*                    pValue)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     VkResult result = layer_data->device_dispatch_table.GetPerformanceParameterINTEL(device, parameter, pValue);
 
@@ -9099,6 +9555,7 @@ void DispatchSetLocalDimmingAMD(
     VkSwapchainKHR                              swapChain,
     VkBool32                                    localDimmingEnable)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.SetLocalDimmingAMD(device, swapChain, localDimmingEnable);
     {
@@ -9116,6 +9573,7 @@ VkResult DispatchCreateImagePipeSurfaceFUCHSIA(
     const VkAllocationCallbacks*                pAllocator,
     VkSurfaceKHR*                               pSurface)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(instance), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.CreateImagePipeSurfaceFUCHSIA(instance, pCreateInfo, pAllocator, pSurface);
     VkResult result = layer_data->instance_dispatch_table.CreateImagePipeSurfaceFUCHSIA(instance, pCreateInfo, pAllocator, pSurface);
@@ -9134,6 +9592,7 @@ VkResult DispatchCreateMetalSurfaceEXT(
     const VkAllocationCallbacks*                pAllocator,
     VkSurfaceKHR*                               pSurface)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(instance), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.CreateMetalSurfaceEXT(instance, pCreateInfo, pAllocator, pSurface);
     VkResult result = layer_data->instance_dispatch_table.CreateMetalSurfaceEXT(instance, pCreateInfo, pAllocator, pSurface);
@@ -9148,6 +9607,7 @@ VkDeviceAddress DispatchGetBufferDeviceAddressEXT(
     VkDevice                                    device,
     const VkBufferDeviceAddressInfo*            pInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetBufferDeviceAddressEXT(device, pInfo);
     safe_VkBufferDeviceAddressInfo var_local_pInfo;
@@ -9173,6 +9633,7 @@ VkResult DispatchGetPhysicalDeviceCooperativeMatrixPropertiesNV(
     uint32_t*                                   pPropertyCount,
     VkCooperativeMatrixPropertiesNV*            pProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     VkResult result = layer_data->instance_dispatch_table.GetPhysicalDeviceCooperativeMatrixPropertiesNV(physicalDevice, pPropertyCount, pProperties);
 
@@ -9184,6 +9645,7 @@ VkResult DispatchGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV
     uint32_t*                                   pCombinationCount,
     VkFramebufferMixedSamplesCombinationNV*     pCombinations)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     VkResult result = layer_data->instance_dispatch_table.GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV(physicalDevice, pCombinationCount, pCombinations);
 
@@ -9198,6 +9660,7 @@ VkResult DispatchGetPhysicalDeviceSurfacePresentModes2EXT(
     uint32_t*                                   pPresentModeCount,
     VkPresentModeKHR*                           pPresentModes)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.GetPhysicalDeviceSurfacePresentModes2EXT(physicalDevice, pSurfaceInfo, pPresentModeCount, pPresentModes);
     safe_VkPhysicalDeviceSurfaceInfo2KHR var_local_pSurfaceInfo;
@@ -9223,6 +9686,7 @@ VkResult DispatchAcquireFullScreenExclusiveModeEXT(
     VkDevice                                    device,
     VkSwapchainKHR                              swapchain)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.AcquireFullScreenExclusiveModeEXT(device, swapchain);
     {
@@ -9240,6 +9704,7 @@ VkResult DispatchReleaseFullScreenExclusiveModeEXT(
     VkDevice                                    device,
     VkSwapchainKHR                              swapchain)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.ReleaseFullScreenExclusiveModeEXT(device, swapchain);
     {
@@ -9258,6 +9723,7 @@ VkResult DispatchGetDeviceGroupSurfacePresentModes2EXT(
     const VkPhysicalDeviceSurfaceInfo2KHR*      pSurfaceInfo,
     VkDeviceGroupPresentModeFlagsKHR*           pModes)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetDeviceGroupSurfacePresentModes2EXT(device, pSurfaceInfo, pModes);
     safe_VkPhysicalDeviceSurfaceInfo2KHR var_local_pSurfaceInfo;
@@ -9283,6 +9749,7 @@ VkResult DispatchCreateHeadlessSurfaceEXT(
     const VkAllocationCallbacks*                pAllocator,
     VkSurfaceKHR*                               pSurface)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(instance), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.CreateHeadlessSurfaceEXT(instance, pCreateInfo, pAllocator, pSurface);
     VkResult result = layer_data->instance_dispatch_table.CreateHeadlessSurfaceEXT(instance, pCreateInfo, pAllocator, pSurface);
@@ -9297,6 +9764,7 @@ void DispatchCmdSetLineStippleEXT(
     uint32_t                                    lineStippleFactor,
     uint16_t                                    lineStipplePattern)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetLineStippleEXT(commandBuffer, lineStippleFactor, lineStipplePattern);
 
@@ -9308,6 +9776,7 @@ void DispatchResetQueryPoolEXT(
     uint32_t                                    firstQuery,
     uint32_t                                    queryCount)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.ResetQueryPoolEXT(device, queryPool, firstQuery, queryCount);
     {
@@ -9321,6 +9790,7 @@ void DispatchCmdSetCullModeEXT(
     VkCommandBuffer                             commandBuffer,
     VkCullModeFlags                             cullMode)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetCullModeEXT(commandBuffer, cullMode);
 
@@ -9330,6 +9800,7 @@ void DispatchCmdSetFrontFaceEXT(
     VkCommandBuffer                             commandBuffer,
     VkFrontFace                                 frontFace)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetFrontFaceEXT(commandBuffer, frontFace);
 
@@ -9339,6 +9810,7 @@ void DispatchCmdSetPrimitiveTopologyEXT(
     VkCommandBuffer                             commandBuffer,
     VkPrimitiveTopology                         primitiveTopology)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetPrimitiveTopologyEXT(commandBuffer, primitiveTopology);
 
@@ -9349,6 +9821,7 @@ void DispatchCmdSetViewportWithCountEXT(
     uint32_t                                    viewportCount,
     const VkViewport*                           pViewports)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetViewportWithCountEXT(commandBuffer, viewportCount, pViewports);
 
@@ -9359,6 +9832,7 @@ void DispatchCmdSetScissorWithCountEXT(
     uint32_t                                    scissorCount,
     const VkRect2D*                             pScissors)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetScissorWithCountEXT(commandBuffer, scissorCount, pScissors);
 
@@ -9373,6 +9847,7 @@ void DispatchCmdBindVertexBuffers2EXT(
     const VkDeviceSize*                         pSizes,
     const VkDeviceSize*                         pStrides)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdBindVertexBuffers2EXT(commandBuffer, firstBinding, bindingCount, pBuffers, pOffsets, pSizes, pStrides);
     VkBuffer var_local_pBuffers[DISPATCH_MAX_STACK_ALLOCATIONS];
@@ -9394,6 +9869,7 @@ void DispatchCmdSetDepthTestEnableEXT(
     VkCommandBuffer                             commandBuffer,
     VkBool32                                    depthTestEnable)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetDepthTestEnableEXT(commandBuffer, depthTestEnable);
 
@@ -9403,6 +9879,7 @@ void DispatchCmdSetDepthWriteEnableEXT(
     VkCommandBuffer                             commandBuffer,
     VkBool32                                    depthWriteEnable)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetDepthWriteEnableEXT(commandBuffer, depthWriteEnable);
 
@@ -9412,6 +9889,7 @@ void DispatchCmdSetDepthCompareOpEXT(
     VkCommandBuffer                             commandBuffer,
     VkCompareOp                                 depthCompareOp)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetDepthCompareOpEXT(commandBuffer, depthCompareOp);
 
@@ -9421,6 +9899,7 @@ void DispatchCmdSetDepthBoundsTestEnableEXT(
     VkCommandBuffer                             commandBuffer,
     VkBool32                                    depthBoundsTestEnable)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetDepthBoundsTestEnableEXT(commandBuffer, depthBoundsTestEnable);
 
@@ -9430,6 +9909,7 @@ void DispatchCmdSetStencilTestEnableEXT(
     VkCommandBuffer                             commandBuffer,
     VkBool32                                    stencilTestEnable)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetStencilTestEnableEXT(commandBuffer, stencilTestEnable);
 
@@ -9443,6 +9923,7 @@ void DispatchCmdSetStencilOpEXT(
     VkStencilOp                                 depthFailOp,
     VkCompareOp                                 compareOp)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetStencilOpEXT(commandBuffer, faceMask, failOp, passOp, depthFailOp, compareOp);
 
@@ -9452,6 +9933,7 @@ VkResult DispatchReleaseSwapchainImagesEXT(
     VkDevice                                    device,
     const VkReleaseSwapchainImagesInfoEXT*      pReleaseInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.ReleaseSwapchainImagesEXT(device, pReleaseInfo);
     safe_VkReleaseSwapchainImagesInfoEXT var_local_pReleaseInfo;
@@ -9475,6 +9957,7 @@ void DispatchGetGeneratedCommandsMemoryRequirementsNV(
     const VkGeneratedCommandsMemoryRequirementsInfoNV* pInfo,
     VkMemoryRequirements2*                      pMemoryRequirements)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetGeneratedCommandsMemoryRequirementsNV(device, pInfo, pMemoryRequirements);
     safe_VkGeneratedCommandsMemoryRequirementsInfoNV var_local_pInfo;
@@ -9499,6 +9982,7 @@ void DispatchCmdPreprocessGeneratedCommandsNV(
     VkCommandBuffer                             commandBuffer,
     const VkGeneratedCommandsInfoNV*            pGeneratedCommandsInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdPreprocessGeneratedCommandsNV(commandBuffer, pGeneratedCommandsInfo);
     safe_VkGeneratedCommandsInfoNV var_local_pGeneratedCommandsInfo;
@@ -9540,6 +10024,7 @@ void DispatchCmdExecuteGeneratedCommandsNV(
     VkBool32                                    isPreprocessed,
     const VkGeneratedCommandsInfoNV*            pGeneratedCommandsInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdExecuteGeneratedCommandsNV(commandBuffer, isPreprocessed, pGeneratedCommandsInfo);
     safe_VkGeneratedCommandsInfoNV var_local_pGeneratedCommandsInfo;
@@ -9582,6 +10067,7 @@ void DispatchCmdBindPipelineShaderGroupNV(
     VkPipeline                                  pipeline,
     uint32_t                                    groupIndex)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdBindPipelineShaderGroupNV(commandBuffer, pipelineBindPoint, pipeline, groupIndex);
     {
@@ -9597,6 +10083,7 @@ VkResult DispatchCreateIndirectCommandsLayoutNV(
     const VkAllocationCallbacks*                pAllocator,
     VkIndirectCommandsLayoutNV*                 pIndirectCommandsLayout)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CreateIndirectCommandsLayoutNV(device, pCreateInfo, pAllocator, pIndirectCommandsLayout);
     safe_VkIndirectCommandsLayoutCreateInfoNV var_local_pCreateInfo;
@@ -9626,6 +10113,7 @@ void DispatchDestroyIndirectCommandsLayoutNV(
     VkIndirectCommandsLayoutNV                  indirectCommandsLayout,
     const VkAllocationCallbacks*                pAllocator)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DestroyIndirectCommandsLayoutNV(device, indirectCommandsLayout, pAllocator);
     uint64_t indirectCommandsLayout_id = CastToUint64(indirectCommandsLayout);
@@ -9644,6 +10132,7 @@ VkResult DispatchAcquireDrmDisplayEXT(
     int32_t                                     drmFd,
     VkDisplayKHR                                display)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.AcquireDrmDisplayEXT(physicalDevice, drmFd, display);
     {
@@ -9660,6 +10149,7 @@ VkResult DispatchGetDrmDisplayEXT(
     uint32_t                                    connectorId,
     VkDisplayKHR*                               display)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.GetDrmDisplayEXT(physicalDevice, drmFd, connectorId, display);
     VkResult result = layer_data->instance_dispatch_table.GetDrmDisplayEXT(physicalDevice, drmFd, connectorId, display);
@@ -9675,6 +10165,7 @@ VkResult DispatchCreatePrivateDataSlotEXT(
     const VkAllocationCallbacks*                pAllocator,
     VkPrivateDataSlot*                          pPrivateDataSlot)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CreatePrivateDataSlotEXT(device, pCreateInfo, pAllocator, pPrivateDataSlot);
     VkResult result = layer_data->device_dispatch_table.CreatePrivateDataSlotEXT(device, pCreateInfo, pAllocator, pPrivateDataSlot);
@@ -9689,6 +10180,7 @@ void DispatchDestroyPrivateDataSlotEXT(
     VkPrivateDataSlot                           privateDataSlot,
     const VkAllocationCallbacks*                pAllocator)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DestroyPrivateDataSlotEXT(device, privateDataSlot, pAllocator);
     uint64_t privateDataSlot_id = CastToUint64(privateDataSlot);
@@ -9712,6 +10204,7 @@ void DispatchExportMetalObjectsEXT(
     VkDevice                                    device,
     VkExportMetalObjectsInfoEXT*                pMetalObjectsInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.ExportMetalObjectsEXT(device, pMetalObjectsInfo);
     safe_VkExportMetalObjectsInfoEXT var_local_pMetalObjectsInfo;
@@ -9734,6 +10227,7 @@ void DispatchGetDescriptorSetLayoutSizeEXT(
     VkDescriptorSetLayout                       layout,
     VkDeviceSize*                               pLayoutSizeInBytes)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetDescriptorSetLayoutSizeEXT(device, layout, pLayoutSizeInBytes);
     {
@@ -9749,6 +10243,7 @@ void DispatchGetDescriptorSetLayoutBindingOffsetEXT(
     uint32_t                                    binding,
     VkDeviceSize*                               pOffset)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetDescriptorSetLayoutBindingOffsetEXT(device, layout, binding, pOffset);
     {
@@ -9765,6 +10260,7 @@ void DispatchCmdBindDescriptorBuffersEXT(
     uint32_t                                    bufferCount,
     const VkDescriptorBufferBindingInfoEXT*     pBindingInfos)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdBindDescriptorBuffersEXT(commandBuffer, bufferCount, pBindingInfos);
     safe_VkDescriptorBufferBindingInfoEXT *local_pBindingInfos = nullptr;
@@ -9792,6 +10288,7 @@ void DispatchCmdSetDescriptorBufferOffsetsEXT(
     const uint32_t*                             pBufferIndices,
     const VkDeviceSize*                         pOffsets)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdSetDescriptorBufferOffsetsEXT(commandBuffer, pipelineBindPoint, layout, firstSet, setCount, pBufferIndices, pOffsets);
     {
@@ -9807,6 +10304,7 @@ void DispatchCmdBindDescriptorBufferEmbeddedSamplersEXT(
     VkPipelineLayout                            layout,
     uint32_t                                    set)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdBindDescriptorBufferEmbeddedSamplersEXT(commandBuffer, pipelineBindPoint, layout, set);
     {
@@ -9821,6 +10319,7 @@ VkResult DispatchGetBufferOpaqueCaptureDescriptorDataEXT(
     const VkBufferCaptureDescriptorDataInfoEXT* pInfo,
     void*                                       pData)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetBufferOpaqueCaptureDescriptorDataEXT(device, pInfo, pData);
     safe_VkBufferCaptureDescriptorDataInfoEXT var_local_pInfo;
@@ -9844,6 +10343,7 @@ VkResult DispatchGetImageOpaqueCaptureDescriptorDataEXT(
     const VkImageCaptureDescriptorDataInfoEXT*  pInfo,
     void*                                       pData)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetImageOpaqueCaptureDescriptorDataEXT(device, pInfo, pData);
     safe_VkImageCaptureDescriptorDataInfoEXT var_local_pInfo;
@@ -9867,6 +10367,7 @@ VkResult DispatchGetImageViewOpaqueCaptureDescriptorDataEXT(
     const VkImageViewCaptureDescriptorDataInfoEXT* pInfo,
     void*                                       pData)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetImageViewOpaqueCaptureDescriptorDataEXT(device, pInfo, pData);
     safe_VkImageViewCaptureDescriptorDataInfoEXT var_local_pInfo;
@@ -9890,6 +10391,7 @@ VkResult DispatchGetSamplerOpaqueCaptureDescriptorDataEXT(
     const VkSamplerCaptureDescriptorDataInfoEXT* pInfo,
     void*                                       pData)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetSamplerOpaqueCaptureDescriptorDataEXT(device, pInfo, pData);
     safe_VkSamplerCaptureDescriptorDataInfoEXT var_local_pInfo;
@@ -9913,6 +10415,7 @@ VkResult DispatchGetAccelerationStructureOpaqueCaptureDescriptorDataEXT(
     const VkAccelerationStructureCaptureDescriptorDataInfoEXT* pInfo,
     void*                                       pData)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetAccelerationStructureOpaqueCaptureDescriptorDataEXT(device, pInfo, pData);
     safe_VkAccelerationStructureCaptureDescriptorDataInfoEXT var_local_pInfo;
@@ -9939,6 +10442,7 @@ void DispatchCmdSetFragmentShadingRateEnumNV(
     VkFragmentShadingRateNV                     shadingRate,
     const VkFragmentShadingRateCombinerOpKHR    combinerOps[2])
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetFragmentShadingRateEnumNV(commandBuffer, shadingRate, combinerOps);
 
@@ -9950,6 +10454,7 @@ void DispatchGetImageSubresourceLayout2EXT(
     const VkImageSubresource2EXT*               pSubresource,
     VkSubresourceLayout2EXT*                    pLayout)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetImageSubresourceLayout2EXT(device, image, pSubresource, pLayout);
     {
@@ -9964,6 +10469,7 @@ VkResult DispatchGetDeviceFaultInfoEXT(
     VkDeviceFaultCountsEXT*                     pFaultCounts,
     VkDeviceFaultInfoEXT*                       pFaultInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     VkResult result = layer_data->device_dispatch_table.GetDeviceFaultInfoEXT(device, pFaultCounts, pFaultInfo);
 
@@ -9976,6 +10482,7 @@ VkResult DispatchAcquireWinrtDisplayNV(
     VkPhysicalDevice                            physicalDevice,
     VkDisplayKHR                                display)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.AcquireWinrtDisplayNV(physicalDevice, display);
     {
@@ -9994,6 +10501,7 @@ VkResult DispatchGetWinrtDisplayNV(
     uint32_t                                    deviceRelativeId,
     VkDisplayKHR*                               pDisplay)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.GetWinrtDisplayNV(physicalDevice, deviceRelativeId, pDisplay);
     {
@@ -10013,6 +10521,7 @@ VkResult DispatchCreateDirectFBSurfaceEXT(
     const VkAllocationCallbacks*                pAllocator,
     VkSurfaceKHR*                               pSurface)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(instance), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.CreateDirectFBSurfaceEXT(instance, pCreateInfo, pAllocator, pSurface);
     VkResult result = layer_data->instance_dispatch_table.CreateDirectFBSurfaceEXT(instance, pCreateInfo, pAllocator, pSurface);
@@ -10030,6 +10539,7 @@ VkBool32 DispatchGetPhysicalDeviceDirectFBPresentationSupportEXT(
     uint32_t                                    queueFamilyIndex,
     IDirectFB*                                  dfb)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     VkBool32 result = layer_data->instance_dispatch_table.GetPhysicalDeviceDirectFBPresentationSupportEXT(physicalDevice, queueFamilyIndex, dfb);
 
@@ -10044,6 +10554,7 @@ void DispatchCmdSetVertexInputEXT(
     uint32_t                                    vertexAttributeDescriptionCount,
     const VkVertexInputAttributeDescription2EXT* pVertexAttributeDescriptions)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetVertexInputEXT(commandBuffer, vertexBindingDescriptionCount, pVertexBindingDescriptions, vertexAttributeDescriptionCount, pVertexAttributeDescriptions);
 
@@ -10056,6 +10567,7 @@ VkResult DispatchGetMemoryZirconHandleFUCHSIA(
     const VkMemoryGetZirconHandleInfoFUCHSIA*   pGetZirconHandleInfo,
     zx_handle_t*                                pZirconHandle)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetMemoryZirconHandleFUCHSIA(device, pGetZirconHandleInfo, pZirconHandle);
     safe_VkMemoryGetZirconHandleInfoFUCHSIA var_local_pGetZirconHandleInfo;
@@ -10083,6 +10595,7 @@ VkResult DispatchGetMemoryZirconHandlePropertiesFUCHSIA(
     zx_handle_t                                 zirconHandle,
     VkMemoryZirconHandlePropertiesFUCHSIA*      pMemoryZirconHandleProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     VkResult result = layer_data->device_dispatch_table.GetMemoryZirconHandlePropertiesFUCHSIA(device, handleType, zirconHandle, pMemoryZirconHandleProperties);
 
@@ -10096,6 +10609,7 @@ VkResult DispatchImportSemaphoreZirconHandleFUCHSIA(
     VkDevice                                    device,
     const VkImportSemaphoreZirconHandleInfoFUCHSIA* pImportSemaphoreZirconHandleInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.ImportSemaphoreZirconHandleFUCHSIA(device, pImportSemaphoreZirconHandleInfo);
     safe_VkImportSemaphoreZirconHandleInfoFUCHSIA var_local_pImportSemaphoreZirconHandleInfo;
@@ -10122,6 +10636,7 @@ VkResult DispatchGetSemaphoreZirconHandleFUCHSIA(
     const VkSemaphoreGetZirconHandleInfoFUCHSIA* pGetZirconHandleInfo,
     zx_handle_t*                                pZirconHandle)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetSemaphoreZirconHandleFUCHSIA(device, pGetZirconHandleInfo, pZirconHandle);
     safe_VkSemaphoreGetZirconHandleInfoFUCHSIA var_local_pGetZirconHandleInfo;
@@ -10149,6 +10664,7 @@ VkResult DispatchCreateBufferCollectionFUCHSIA(
     const VkAllocationCallbacks*                pAllocator,
     VkBufferCollectionFUCHSIA*                  pCollection)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CreateBufferCollectionFUCHSIA(device, pCreateInfo, pAllocator, pCollection);
     VkResult result = layer_data->device_dispatch_table.CreateBufferCollectionFUCHSIA(device, pCreateInfo, pAllocator, pCollection);
@@ -10166,6 +10682,7 @@ VkResult DispatchSetBufferCollectionImageConstraintsFUCHSIA(
     VkBufferCollectionFUCHSIA                   collection,
     const VkImageConstraintsInfoFUCHSIA*        pImageConstraintsInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.SetBufferCollectionImageConstraintsFUCHSIA(device, collection, pImageConstraintsInfo);
     {
@@ -10184,6 +10701,7 @@ VkResult DispatchSetBufferCollectionBufferConstraintsFUCHSIA(
     VkBufferCollectionFUCHSIA                   collection,
     const VkBufferConstraintsInfoFUCHSIA*       pBufferConstraintsInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.SetBufferCollectionBufferConstraintsFUCHSIA(device, collection, pBufferConstraintsInfo);
     {
@@ -10202,6 +10720,7 @@ void DispatchDestroyBufferCollectionFUCHSIA(
     VkBufferCollectionFUCHSIA                   collection,
     const VkAllocationCallbacks*                pAllocator)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DestroyBufferCollectionFUCHSIA(device, collection, pAllocator);
     uint64_t collection_id = CastToUint64(collection);
@@ -10223,6 +10742,7 @@ VkResult DispatchGetBufferCollectionPropertiesFUCHSIA(
     VkBufferCollectionFUCHSIA                   collection,
     VkBufferCollectionPropertiesFUCHSIA*        pProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetBufferCollectionPropertiesFUCHSIA(device, collection, pProperties);
     {
@@ -10239,6 +10759,7 @@ VkResult DispatchGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI(
     VkRenderPass                                renderpass,
     VkExtent2D*                                 pMaxWorkgroupSize)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI(device, renderpass, pMaxWorkgroupSize);
     {
@@ -10252,6 +10773,7 @@ VkResult DispatchGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI(
 void DispatchCmdSubpassShadingHUAWEI(
     VkCommandBuffer                             commandBuffer)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSubpassShadingHUAWEI(commandBuffer);
 
@@ -10262,6 +10784,7 @@ void DispatchCmdBindInvocationMaskHUAWEI(
     VkImageView                                 imageView,
     VkImageLayout                               imageLayout)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdBindInvocationMaskHUAWEI(commandBuffer, imageView, imageLayout);
     {
@@ -10276,6 +10799,7 @@ VkResult DispatchGetMemoryRemoteAddressNV(
     const VkMemoryGetRemoteAddressInfoNV*       pMemoryGetRemoteAddressInfo,
     VkRemoteAddressNV*                          pAddress)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetMemoryRemoteAddressNV(device, pMemoryGetRemoteAddressInfo, pAddress);
     safe_VkMemoryGetRemoteAddressInfoNV var_local_pMemoryGetRemoteAddressInfo;
@@ -10299,6 +10823,7 @@ VkResult DispatchGetPipelinePropertiesEXT(
     const VkPipelineInfoEXT*                    pPipelineInfo,
     VkBaseOutStructure*                         pPipelineProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     VkResult result = layer_data->device_dispatch_table.GetPipelinePropertiesEXT(device, pPipelineInfo, pPipelineProperties);
 
@@ -10309,6 +10834,7 @@ void DispatchCmdSetPatchControlPointsEXT(
     VkCommandBuffer                             commandBuffer,
     uint32_t                                    patchControlPoints)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetPatchControlPointsEXT(commandBuffer, patchControlPoints);
 
@@ -10318,6 +10844,7 @@ void DispatchCmdSetRasterizerDiscardEnableEXT(
     VkCommandBuffer                             commandBuffer,
     VkBool32                                    rasterizerDiscardEnable)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetRasterizerDiscardEnableEXT(commandBuffer, rasterizerDiscardEnable);
 
@@ -10327,6 +10854,7 @@ void DispatchCmdSetDepthBiasEnableEXT(
     VkCommandBuffer                             commandBuffer,
     VkBool32                                    depthBiasEnable)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetDepthBiasEnableEXT(commandBuffer, depthBiasEnable);
 
@@ -10336,6 +10864,7 @@ void DispatchCmdSetLogicOpEXT(
     VkCommandBuffer                             commandBuffer,
     VkLogicOp                                   logicOp)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetLogicOpEXT(commandBuffer, logicOp);
 
@@ -10345,6 +10874,7 @@ void DispatchCmdSetPrimitiveRestartEnableEXT(
     VkCommandBuffer                             commandBuffer,
     VkBool32                                    primitiveRestartEnable)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetPrimitiveRestartEnableEXT(commandBuffer, primitiveRestartEnable);
 
@@ -10358,6 +10888,7 @@ VkResult DispatchCreateScreenSurfaceQNX(
     const VkAllocationCallbacks*                pAllocator,
     VkSurfaceKHR*                               pSurface)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(instance), layer_data_map);
     if (!wrap_handles) return layer_data->instance_dispatch_table.CreateScreenSurfaceQNX(instance, pCreateInfo, pAllocator, pSurface);
     VkResult result = layer_data->instance_dispatch_table.CreateScreenSurfaceQNX(instance, pCreateInfo, pAllocator, pSurface);
@@ -10375,6 +10906,7 @@ VkBool32 DispatchGetPhysicalDeviceScreenPresentationSupportQNX(
     uint32_t                                    queueFamilyIndex,
     struct _screen_window*                      window)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     VkBool32 result = layer_data->instance_dispatch_table.GetPhysicalDeviceScreenPresentationSupportQNX(physicalDevice, queueFamilyIndex, window);
 
@@ -10387,6 +10919,7 @@ void                                    DispatchCmdSetColorWriteEnableEXT(
     uint32_t                                    attachmentCount,
     const VkBool32*                             pColorWriteEnables)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetColorWriteEnableEXT(commandBuffer, attachmentCount, pColorWriteEnables);
 
@@ -10400,6 +10933,7 @@ void DispatchCmdDrawMultiEXT(
     uint32_t                                    firstInstance,
     uint32_t                                    stride)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdDrawMultiEXT(commandBuffer, drawCount, pVertexInfo, instanceCount, firstInstance, stride);
 
@@ -10414,6 +10948,7 @@ void DispatchCmdDrawMultiIndexedEXT(
     uint32_t                                    stride,
     const int32_t*                              pVertexOffset)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdDrawMultiIndexedEXT(commandBuffer, drawCount, pIndexInfo, instanceCount, firstInstance, stride, pVertexOffset);
 
@@ -10425,6 +10960,7 @@ VkResult DispatchCreateMicromapEXT(
     const VkAllocationCallbacks*                pAllocator,
     VkMicromapEXT*                              pMicromap)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CreateMicromapEXT(device, pCreateInfo, pAllocator, pMicromap);
     safe_VkMicromapCreateInfoEXT var_local_pCreateInfo;
@@ -10450,6 +10986,7 @@ void DispatchDestroyMicromapEXT(
     VkMicromapEXT                               micromap,
     const VkAllocationCallbacks*                pAllocator)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DestroyMicromapEXT(device, micromap, pAllocator);
     uint64_t micromap_id = CastToUint64(micromap);
@@ -10468,6 +11005,7 @@ void DispatchCmdBuildMicromapsEXT(
     uint32_t                                    infoCount,
     const VkMicromapBuildInfoEXT*               pInfos)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdBuildMicromapsEXT(commandBuffer, infoCount, pInfos);
     safe_VkMicromapBuildInfoEXT *local_pInfos = nullptr;
@@ -10494,6 +11032,7 @@ VkResult DispatchBuildMicromapsEXT(
     uint32_t                                    infoCount,
     const VkMicromapBuildInfoEXT*               pInfos)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.BuildMicromapsEXT(device, deferredOperation, infoCount, pInfos);
     safe_VkMicromapBuildInfoEXT *local_pInfos = nullptr;
@@ -10526,6 +11065,7 @@ VkResult DispatchCopyMicromapEXT(
     VkDeferredOperationKHR                      deferredOperation,
     const VkCopyMicromapInfoEXT*                pInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CopyMicromapEXT(device, deferredOperation, pInfo);
     safe_VkCopyMicromapInfoEXT *local_pInfo = nullptr;
@@ -10559,6 +11099,7 @@ VkResult DispatchCopyMicromapToMemoryEXT(
     VkDeferredOperationKHR                      deferredOperation,
     const VkCopyMicromapToMemoryInfoEXT*        pInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CopyMicromapToMemoryEXT(device, deferredOperation, pInfo);
     safe_VkCopyMicromapToMemoryInfoEXT *local_pInfo = nullptr;
@@ -10589,6 +11130,7 @@ VkResult DispatchCopyMemoryToMicromapEXT(
     VkDeferredOperationKHR                      deferredOperation,
     const VkCopyMemoryToMicromapInfoEXT*        pInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CopyMemoryToMicromapEXT(device, deferredOperation, pInfo);
     safe_VkCopyMemoryToMicromapInfoEXT *local_pInfo = nullptr;
@@ -10623,6 +11165,7 @@ VkResult DispatchWriteMicromapsPropertiesEXT(
     void*                                       pData,
     size_t                                      stride)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.WriteMicromapsPropertiesEXT(device, micromapCount, pMicromaps, queryType, dataSize, pData, stride);
     VkMicromapEXT var_local_pMicromaps[DISPATCH_MAX_STACK_ALLOCATIONS];
@@ -10645,6 +11188,7 @@ void DispatchCmdCopyMicromapEXT(
     VkCommandBuffer                             commandBuffer,
     const VkCopyMicromapInfoEXT*                pInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdCopyMicromapEXT(commandBuffer, pInfo);
     safe_VkCopyMicromapInfoEXT var_local_pInfo;
@@ -10669,6 +11213,7 @@ void DispatchCmdCopyMicromapToMemoryEXT(
     VkCommandBuffer                             commandBuffer,
     const VkCopyMicromapToMemoryInfoEXT*        pInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdCopyMicromapToMemoryEXT(commandBuffer, pInfo);
     safe_VkCopyMicromapToMemoryInfoEXT var_local_pInfo;
@@ -10690,6 +11235,7 @@ void DispatchCmdCopyMemoryToMicromapEXT(
     VkCommandBuffer                             commandBuffer,
     const VkCopyMemoryToMicromapInfoEXT*        pInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdCopyMemoryToMicromapEXT(commandBuffer, pInfo);
     safe_VkCopyMemoryToMicromapInfoEXT var_local_pInfo;
@@ -10715,6 +11261,7 @@ void DispatchCmdWriteMicromapsPropertiesEXT(
     VkQueryPool                                 queryPool,
     uint32_t                                    firstQuery)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdWriteMicromapsPropertiesEXT(commandBuffer, micromapCount, pMicromaps, queryType, queryPool, firstQuery);
     VkMicromapEXT var_local_pMicromaps[DISPATCH_MAX_STACK_ALLOCATIONS];
@@ -10738,6 +11285,7 @@ void DispatchGetDeviceMicromapCompatibilityEXT(
     const VkMicromapVersionInfoEXT*             pVersionInfo,
     VkAccelerationStructureCompatibilityKHR*    pCompatibility)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     layer_data->device_dispatch_table.GetDeviceMicromapCompatibilityEXT(device, pVersionInfo, pCompatibility);
 
@@ -10749,6 +11297,7 @@ void DispatchGetMicromapBuildSizesEXT(
     const VkMicromapBuildInfoEXT*               pBuildInfo,
     VkMicromapBuildSizesInfoEXT*                pSizeInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetMicromapBuildSizesEXT(device, buildType, pBuildInfo, pSizeInfo);
     safe_VkMicromapBuildInfoEXT var_local_pBuildInfo;
@@ -10772,6 +11321,7 @@ void DispatchCmdDrawClusterHUAWEI(
     uint32_t                                    groupCountY,
     uint32_t                                    groupCountZ)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdDrawClusterHUAWEI(commandBuffer, groupCountX, groupCountY, groupCountZ);
 
@@ -10782,6 +11332,7 @@ void DispatchCmdDrawClusterIndirectHUAWEI(
     VkBuffer                                    buffer,
     VkDeviceSize                                offset)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdDrawClusterIndirectHUAWEI(commandBuffer, buffer, offset);
     {
@@ -10796,6 +11347,7 @@ void DispatchSetDeviceMemoryPriorityEXT(
     VkDeviceMemory                              memory,
     float                                       priority)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.SetDeviceMemoryPriorityEXT(device, memory, priority);
     {
@@ -10810,6 +11362,7 @@ void DispatchGetDescriptorSetLayoutHostMappingInfoVALVE(
     const VkDescriptorSetBindingReferenceVALVE* pBindingReference,
     VkDescriptorSetLayoutHostMappingInfoVALVE*  pHostMapping)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetDescriptorSetLayoutHostMappingInfoVALVE(device, pBindingReference, pHostMapping);
     safe_VkDescriptorSetBindingReferenceVALVE var_local_pBindingReference;
@@ -10832,6 +11385,7 @@ void DispatchGetDescriptorSetHostMappingVALVE(
     VkDescriptorSet                             descriptorSet,
     void**                                      ppData)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetDescriptorSetHostMappingVALVE(device, descriptorSet, ppData);
     {
@@ -10847,6 +11401,7 @@ void DispatchCmdCopyMemoryIndirectNV(
     uint32_t                                    copyCount,
     uint32_t                                    stride)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdCopyMemoryIndirectNV(commandBuffer, copyBufferAddress, copyCount, stride);
 
@@ -10861,6 +11416,7 @@ void DispatchCmdCopyMemoryToImageIndirectNV(
     VkImageLayout                               dstImageLayout,
     const VkImageSubresourceLayers*             pImageSubresources)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdCopyMemoryToImageIndirectNV(commandBuffer, copyBufferAddress, copyCount, stride, dstImage, dstImageLayout, pImageSubresources);
     {
@@ -10875,6 +11431,7 @@ void DispatchCmdDecompressMemoryNV(
     uint32_t                                    decompressRegionCount,
     const VkDecompressMemoryRegionNV*           pDecompressMemoryRegions)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdDecompressMemoryNV(commandBuffer, decompressRegionCount, pDecompressMemoryRegions);
 
@@ -10886,6 +11443,7 @@ void DispatchCmdDecompressMemoryIndirectCountNV(
     VkDeviceAddress                             indirectCommandsCountAddress,
     uint32_t                                    stride)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdDecompressMemoryIndirectCountNV(commandBuffer, indirectCommandsAddress, indirectCommandsCountAddress, stride);
 
@@ -10895,6 +11453,7 @@ void DispatchCmdSetTessellationDomainOriginEXT(
     VkCommandBuffer                             commandBuffer,
     VkTessellationDomainOrigin                  domainOrigin)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetTessellationDomainOriginEXT(commandBuffer, domainOrigin);
 
@@ -10904,6 +11463,7 @@ void DispatchCmdSetDepthClampEnableEXT(
     VkCommandBuffer                             commandBuffer,
     VkBool32                                    depthClampEnable)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetDepthClampEnableEXT(commandBuffer, depthClampEnable);
 
@@ -10913,6 +11473,7 @@ void DispatchCmdSetPolygonModeEXT(
     VkCommandBuffer                             commandBuffer,
     VkPolygonMode                               polygonMode)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetPolygonModeEXT(commandBuffer, polygonMode);
 
@@ -10922,6 +11483,7 @@ void DispatchCmdSetRasterizationSamplesEXT(
     VkCommandBuffer                             commandBuffer,
     VkSampleCountFlagBits                       rasterizationSamples)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetRasterizationSamplesEXT(commandBuffer, rasterizationSamples);
 
@@ -10932,6 +11494,7 @@ void DispatchCmdSetSampleMaskEXT(
     VkSampleCountFlagBits                       samples,
     const VkSampleMask*                         pSampleMask)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetSampleMaskEXT(commandBuffer, samples, pSampleMask);
 
@@ -10941,6 +11504,7 @@ void DispatchCmdSetAlphaToCoverageEnableEXT(
     VkCommandBuffer                             commandBuffer,
     VkBool32                                    alphaToCoverageEnable)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetAlphaToCoverageEnableEXT(commandBuffer, alphaToCoverageEnable);
 
@@ -10950,6 +11514,7 @@ void DispatchCmdSetAlphaToOneEnableEXT(
     VkCommandBuffer                             commandBuffer,
     VkBool32                                    alphaToOneEnable)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetAlphaToOneEnableEXT(commandBuffer, alphaToOneEnable);
 
@@ -10959,6 +11524,7 @@ void DispatchCmdSetLogicOpEnableEXT(
     VkCommandBuffer                             commandBuffer,
     VkBool32                                    logicOpEnable)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetLogicOpEnableEXT(commandBuffer, logicOpEnable);
 
@@ -10970,6 +11536,7 @@ void DispatchCmdSetColorBlendEnableEXT(
     uint32_t                                    attachmentCount,
     const VkBool32*                             pColorBlendEnables)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetColorBlendEnableEXT(commandBuffer, firstAttachment, attachmentCount, pColorBlendEnables);
 
@@ -10981,6 +11548,7 @@ void DispatchCmdSetColorBlendEquationEXT(
     uint32_t                                    attachmentCount,
     const VkColorBlendEquationEXT*              pColorBlendEquations)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetColorBlendEquationEXT(commandBuffer, firstAttachment, attachmentCount, pColorBlendEquations);
 
@@ -10992,6 +11560,7 @@ void DispatchCmdSetColorWriteMaskEXT(
     uint32_t                                    attachmentCount,
     const VkColorComponentFlags*                pColorWriteMasks)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetColorWriteMaskEXT(commandBuffer, firstAttachment, attachmentCount, pColorWriteMasks);
 
@@ -11001,6 +11570,7 @@ void DispatchCmdSetRasterizationStreamEXT(
     VkCommandBuffer                             commandBuffer,
     uint32_t                                    rasterizationStream)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetRasterizationStreamEXT(commandBuffer, rasterizationStream);
 
@@ -11010,6 +11580,7 @@ void DispatchCmdSetConservativeRasterizationModeEXT(
     VkCommandBuffer                             commandBuffer,
     VkConservativeRasterizationModeEXT          conservativeRasterizationMode)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetConservativeRasterizationModeEXT(commandBuffer, conservativeRasterizationMode);
 
@@ -11019,6 +11590,7 @@ void DispatchCmdSetExtraPrimitiveOverestimationSizeEXT(
     VkCommandBuffer                             commandBuffer,
     float                                       extraPrimitiveOverestimationSize)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetExtraPrimitiveOverestimationSizeEXT(commandBuffer, extraPrimitiveOverestimationSize);
 
@@ -11028,6 +11600,7 @@ void DispatchCmdSetDepthClipEnableEXT(
     VkCommandBuffer                             commandBuffer,
     VkBool32                                    depthClipEnable)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetDepthClipEnableEXT(commandBuffer, depthClipEnable);
 
@@ -11037,6 +11610,7 @@ void DispatchCmdSetSampleLocationsEnableEXT(
     VkCommandBuffer                             commandBuffer,
     VkBool32                                    sampleLocationsEnable)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetSampleLocationsEnableEXT(commandBuffer, sampleLocationsEnable);
 
@@ -11048,6 +11622,7 @@ void DispatchCmdSetColorBlendAdvancedEXT(
     uint32_t                                    attachmentCount,
     const VkColorBlendAdvancedEXT*              pColorBlendAdvanced)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetColorBlendAdvancedEXT(commandBuffer, firstAttachment, attachmentCount, pColorBlendAdvanced);
 
@@ -11057,6 +11632,7 @@ void DispatchCmdSetProvokingVertexModeEXT(
     VkCommandBuffer                             commandBuffer,
     VkProvokingVertexModeEXT                    provokingVertexMode)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetProvokingVertexModeEXT(commandBuffer, provokingVertexMode);
 
@@ -11066,6 +11642,7 @@ void DispatchCmdSetLineRasterizationModeEXT(
     VkCommandBuffer                             commandBuffer,
     VkLineRasterizationModeEXT                  lineRasterizationMode)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetLineRasterizationModeEXT(commandBuffer, lineRasterizationMode);
 
@@ -11075,6 +11652,7 @@ void DispatchCmdSetLineStippleEnableEXT(
     VkCommandBuffer                             commandBuffer,
     VkBool32                                    stippledLineEnable)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetLineStippleEnableEXT(commandBuffer, stippledLineEnable);
 
@@ -11084,6 +11662,7 @@ void DispatchCmdSetDepthClipNegativeOneToOneEXT(
     VkCommandBuffer                             commandBuffer,
     VkBool32                                    negativeOneToOne)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetDepthClipNegativeOneToOneEXT(commandBuffer, negativeOneToOne);
 
@@ -11093,6 +11672,7 @@ void DispatchCmdSetViewportWScalingEnableNV(
     VkCommandBuffer                             commandBuffer,
     VkBool32                                    viewportWScalingEnable)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetViewportWScalingEnableNV(commandBuffer, viewportWScalingEnable);
 
@@ -11104,6 +11684,7 @@ void DispatchCmdSetViewportSwizzleNV(
     uint32_t                                    viewportCount,
     const VkViewportSwizzleNV*                  pViewportSwizzles)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetViewportSwizzleNV(commandBuffer, firstViewport, viewportCount, pViewportSwizzles);
 
@@ -11113,6 +11694,7 @@ void DispatchCmdSetCoverageToColorEnableNV(
     VkCommandBuffer                             commandBuffer,
     VkBool32                                    coverageToColorEnable)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetCoverageToColorEnableNV(commandBuffer, coverageToColorEnable);
 
@@ -11122,6 +11704,7 @@ void DispatchCmdSetCoverageToColorLocationNV(
     VkCommandBuffer                             commandBuffer,
     uint32_t                                    coverageToColorLocation)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetCoverageToColorLocationNV(commandBuffer, coverageToColorLocation);
 
@@ -11131,6 +11714,7 @@ void DispatchCmdSetCoverageModulationModeNV(
     VkCommandBuffer                             commandBuffer,
     VkCoverageModulationModeNV                  coverageModulationMode)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetCoverageModulationModeNV(commandBuffer, coverageModulationMode);
 
@@ -11140,6 +11724,7 @@ void DispatchCmdSetCoverageModulationTableEnableNV(
     VkCommandBuffer                             commandBuffer,
     VkBool32                                    coverageModulationTableEnable)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetCoverageModulationTableEnableNV(commandBuffer, coverageModulationTableEnable);
 
@@ -11150,6 +11735,7 @@ void DispatchCmdSetCoverageModulationTableNV(
     uint32_t                                    coverageModulationTableCount,
     const float*                                pCoverageModulationTable)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetCoverageModulationTableNV(commandBuffer, coverageModulationTableCount, pCoverageModulationTable);
 
@@ -11159,6 +11745,7 @@ void DispatchCmdSetShadingRateImageEnableNV(
     VkCommandBuffer                             commandBuffer,
     VkBool32                                    shadingRateImageEnable)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetShadingRateImageEnableNV(commandBuffer, shadingRateImageEnable);
 
@@ -11168,6 +11755,7 @@ void DispatchCmdSetRepresentativeFragmentTestEnableNV(
     VkCommandBuffer                             commandBuffer,
     VkBool32                                    representativeFragmentTestEnable)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetRepresentativeFragmentTestEnableNV(commandBuffer, representativeFragmentTestEnable);
 
@@ -11177,6 +11765,7 @@ void DispatchCmdSetCoverageReductionModeNV(
     VkCommandBuffer                             commandBuffer,
     VkCoverageReductionModeNV                   coverageReductionMode)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetCoverageReductionModeNV(commandBuffer, coverageReductionMode);
 
@@ -11187,6 +11776,7 @@ void DispatchGetShaderModuleIdentifierEXT(
     VkShaderModule                              shaderModule,
     VkShaderModuleIdentifierEXT*                pIdentifier)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetShaderModuleIdentifierEXT(device, shaderModule, pIdentifier);
     {
@@ -11201,6 +11791,7 @@ void DispatchGetShaderModuleCreateInfoIdentifierEXT(
     const VkShaderModuleCreateInfo*             pCreateInfo,
     VkShaderModuleIdentifierEXT*                pIdentifier)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetShaderModuleCreateInfoIdentifierEXT(device, pCreateInfo, pIdentifier);
     safe_VkShaderModuleCreateInfo var_local_pCreateInfo;
@@ -11222,6 +11813,7 @@ VkResult DispatchGetPhysicalDeviceOpticalFlowImageFormatsNV(
     uint32_t*                                   pFormatCount,
     VkOpticalFlowImageFormatPropertiesNV*       pImageFormatProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(physicalDevice), layer_data_map);
     VkResult result = layer_data->instance_dispatch_table.GetPhysicalDeviceOpticalFlowImageFormatsNV(physicalDevice, pOpticalFlowImageFormatInfo, pFormatCount, pImageFormatProperties);
 
@@ -11234,6 +11826,7 @@ VkResult DispatchCreateOpticalFlowSessionNV(
     const VkAllocationCallbacks*                pAllocator,
     VkOpticalFlowSessionNV*                     pSession)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CreateOpticalFlowSessionNV(device, pCreateInfo, pAllocator, pSession);
     VkResult result = layer_data->device_dispatch_table.CreateOpticalFlowSessionNV(device, pCreateInfo, pAllocator, pSession);
@@ -11248,6 +11841,7 @@ void DispatchDestroyOpticalFlowSessionNV(
     VkOpticalFlowSessionNV                      session,
     const VkAllocationCallbacks*                pAllocator)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DestroyOpticalFlowSessionNV(device, session, pAllocator);
     uint64_t session_id = CastToUint64(session);
@@ -11268,6 +11862,7 @@ VkResult DispatchBindOpticalFlowSessionImageNV(
     VkImageView                                 view,
     VkImageLayout                               layout)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.BindOpticalFlowSessionImageNV(device, session, bindingPoint, view, layout);
     {
@@ -11284,6 +11879,7 @@ void DispatchCmdOpticalFlowExecuteNV(
     VkOpticalFlowSessionNV                      session,
     const VkOpticalFlowExecuteInfoNV*           pExecuteInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdOpticalFlowExecuteNV(commandBuffer, session, pExecuteInfo);
     {
@@ -11299,6 +11895,7 @@ VkResult DispatchGetFramebufferTilePropertiesQCOM(
     uint32_t*                                   pPropertiesCount,
     VkTilePropertiesQCOM*                       pProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetFramebufferTilePropertiesQCOM(device, framebuffer, pPropertiesCount, pProperties);
     {
@@ -11314,6 +11911,7 @@ VkResult DispatchGetDynamicRenderingTilePropertiesQCOM(
     const VkRenderingInfo*                      pRenderingInfo,
     VkTilePropertiesQCOM*                       pProperties)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetDynamicRenderingTilePropertiesQCOM(device, pRenderingInfo, pProperties);
     safe_VkRenderingInfo var_local_pRenderingInfo;
@@ -11362,6 +11960,7 @@ VkResult DispatchCreateAccelerationStructureKHR(
     const VkAllocationCallbacks*                pAllocator,
     VkAccelerationStructureKHR*                 pAccelerationStructure)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CreateAccelerationStructureKHR(device, pCreateInfo, pAllocator, pAccelerationStructure);
     safe_VkAccelerationStructureCreateInfoKHR var_local_pCreateInfo;
@@ -11387,6 +11986,7 @@ void DispatchDestroyAccelerationStructureKHR(
     VkAccelerationStructureKHR                  accelerationStructure,
     const VkAllocationCallbacks*                pAllocator)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.DestroyAccelerationStructureKHR(device, accelerationStructure, pAllocator);
     uint64_t accelerationStructure_id = CastToUint64(accelerationStructure);
@@ -11406,6 +12006,7 @@ void DispatchCmdBuildAccelerationStructuresKHR(
     const VkAccelerationStructureBuildGeometryInfoKHR* pInfos,
     const VkAccelerationStructureBuildRangeInfoKHR* const* ppBuildRangeInfos)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdBuildAccelerationStructuresKHR(commandBuffer, infoCount, pInfos, ppBuildRangeInfos);
     safe_VkAccelerationStructureBuildGeometryInfoKHR *local_pInfos = nullptr;
@@ -11437,6 +12038,7 @@ void DispatchCmdBuildAccelerationStructuresIndirectKHR(
     const uint32_t*                             pIndirectStrides,
     const uint32_t* const*                      ppMaxPrimitiveCounts)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdBuildAccelerationStructuresIndirectKHR(commandBuffer, infoCount, pInfos, pIndirectDeviceAddresses, pIndirectStrides, ppMaxPrimitiveCounts);
     safe_VkAccelerationStructureBuildGeometryInfoKHR *local_pInfos = nullptr;
@@ -11467,6 +12069,7 @@ VkResult DispatchCopyAccelerationStructureKHR(
     VkDeferredOperationKHR                      deferredOperation,
     const VkCopyAccelerationStructureInfoKHR*   pInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CopyAccelerationStructureKHR(device, deferredOperation, pInfo);
     safe_VkCopyAccelerationStructureInfoKHR *local_pInfo = nullptr;
@@ -11500,6 +12103,7 @@ VkResult DispatchCopyAccelerationStructureToMemoryKHR(
     VkDeferredOperationKHR                      deferredOperation,
     const VkCopyAccelerationStructureToMemoryInfoKHR* pInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CopyAccelerationStructureToMemoryKHR(device, deferredOperation, pInfo);
     safe_VkCopyAccelerationStructureToMemoryInfoKHR *local_pInfo = nullptr;
@@ -11530,6 +12134,7 @@ VkResult DispatchCopyMemoryToAccelerationStructureKHR(
     VkDeferredOperationKHR                      deferredOperation,
     const VkCopyMemoryToAccelerationStructureInfoKHR* pInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CopyMemoryToAccelerationStructureKHR(device, deferredOperation, pInfo);
     safe_VkCopyMemoryToAccelerationStructureInfoKHR *local_pInfo = nullptr;
@@ -11564,6 +12169,7 @@ VkResult DispatchWriteAccelerationStructuresPropertiesKHR(
     void*                                       pData,
     size_t                                      stride)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.WriteAccelerationStructuresPropertiesKHR(device, accelerationStructureCount, pAccelerationStructures, queryType, dataSize, pData, stride);
     VkAccelerationStructureKHR var_local_pAccelerationStructures[DISPATCH_MAX_STACK_ALLOCATIONS];
@@ -11586,6 +12192,7 @@ void DispatchCmdCopyAccelerationStructureKHR(
     VkCommandBuffer                             commandBuffer,
     const VkCopyAccelerationStructureInfoKHR*   pInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdCopyAccelerationStructureKHR(commandBuffer, pInfo);
     safe_VkCopyAccelerationStructureInfoKHR var_local_pInfo;
@@ -11610,6 +12217,7 @@ void DispatchCmdCopyAccelerationStructureToMemoryKHR(
     VkCommandBuffer                             commandBuffer,
     const VkCopyAccelerationStructureToMemoryInfoKHR* pInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdCopyAccelerationStructureToMemoryKHR(commandBuffer, pInfo);
     safe_VkCopyAccelerationStructureToMemoryInfoKHR var_local_pInfo;
@@ -11631,6 +12239,7 @@ void DispatchCmdCopyMemoryToAccelerationStructureKHR(
     VkCommandBuffer                             commandBuffer,
     const VkCopyMemoryToAccelerationStructureInfoKHR* pInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdCopyMemoryToAccelerationStructureKHR(commandBuffer, pInfo);
     safe_VkCopyMemoryToAccelerationStructureInfoKHR var_local_pInfo;
@@ -11652,6 +12261,7 @@ VkDeviceAddress DispatchGetAccelerationStructureDeviceAddressKHR(
     VkDevice                                    device,
     const VkAccelerationStructureDeviceAddressInfoKHR* pInfo)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetAccelerationStructureDeviceAddressKHR(device, pInfo);
     safe_VkAccelerationStructureDeviceAddressInfoKHR var_local_pInfo;
@@ -11678,6 +12288,7 @@ void DispatchCmdWriteAccelerationStructuresPropertiesKHR(
     VkQueryPool                                 queryPool,
     uint32_t                                    firstQuery)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdWriteAccelerationStructuresPropertiesKHR(commandBuffer, accelerationStructureCount, pAccelerationStructures, queryType, queryPool, firstQuery);
     VkAccelerationStructureKHR var_local_pAccelerationStructures[DISPATCH_MAX_STACK_ALLOCATIONS];
@@ -11701,6 +12312,7 @@ void DispatchGetDeviceAccelerationStructureCompatibilityKHR(
     const VkAccelerationStructureVersionInfoKHR* pVersionInfo,
     VkAccelerationStructureCompatibilityKHR*    pCompatibility)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     layer_data->device_dispatch_table.GetDeviceAccelerationStructureCompatibilityKHR(device, pVersionInfo, pCompatibility);
 
@@ -11718,6 +12330,7 @@ void DispatchCmdTraceRaysKHR(
     uint32_t                                    height,
     uint32_t                                    depth)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdTraceRaysKHR(commandBuffer, pRaygenShaderBindingTable, pMissShaderBindingTable, pHitShaderBindingTable, pCallableShaderBindingTable, width, height, depth);
 
@@ -11733,6 +12346,7 @@ VkResult DispatchGetRayTracingCaptureReplayShaderGroupHandlesKHR(
     size_t                                      dataSize,
     void*                                       pData)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetRayTracingCaptureReplayShaderGroupHandlesKHR(device, pipeline, firstGroup, groupCount, dataSize, pData);
     {
@@ -11751,6 +12365,7 @@ void DispatchCmdTraceRaysIndirectKHR(
     const VkStridedDeviceAddressRegionKHR*      pCallableShaderBindingTable,
     VkDeviceAddress                             indirectDeviceAddress)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdTraceRaysIndirectKHR(commandBuffer, pRaygenShaderBindingTable, pMissShaderBindingTable, pHitShaderBindingTable, pCallableShaderBindingTable, indirectDeviceAddress);
 
@@ -11762,6 +12377,7 @@ VkDeviceSize DispatchGetRayTracingShaderGroupStackSizeKHR(
     uint32_t                                    group,
     VkShaderGroupShaderKHR                      groupShader)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(device), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.GetRayTracingShaderGroupStackSizeKHR(device, pipeline, group, groupShader);
     {
@@ -11776,6 +12392,7 @@ void DispatchCmdSetRayTracingPipelineStackSizeKHR(
     VkCommandBuffer                             commandBuffer,
     uint32_t                                    pipelineStackSize)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdSetRayTracingPipelineStackSizeKHR(commandBuffer, pipelineStackSize);
 
@@ -11787,6 +12404,7 @@ void DispatchCmdDrawMeshTasksEXT(
     uint32_t                                    groupCountY,
     uint32_t                                    groupCountZ)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     layer_data->device_dispatch_table.CmdDrawMeshTasksEXT(commandBuffer, groupCountX, groupCountY, groupCountZ);
 
@@ -11799,6 +12417,7 @@ void DispatchCmdDrawMeshTasksIndirectEXT(
     uint32_t                                    drawCount,
     uint32_t                                    stride)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdDrawMeshTasksIndirectEXT(commandBuffer, buffer, offset, drawCount, stride);
     {
@@ -11817,6 +12436,7 @@ void DispatchCmdDrawMeshTasksIndirectCountEXT(
     uint32_t                                    maxDrawCount,
     uint32_t                                    stride)
 {
+    ZoneScoped;
     auto layer_data = GetLayerDataPtr(get_dispatch_key(commandBuffer), layer_data_map);
     if (!wrap_handles) return layer_data->device_dispatch_table.CmdDrawMeshTasksIndirectCountEXT(commandBuffer, buffer, offset, countBuffer, countBufferOffset, maxDrawCount, stride);
     {

@@ -36,6 +36,7 @@ bool CoreChecks::PreCallValidateCreateAccelerationStructureNV(VkDevice device,
                                                               const VkAccelerationStructureCreateInfoNV *pCreateInfo,
                                                               const VkAllocationCallbacks *pAllocator,
                                                               VkAccelerationStructureNV *pAccelerationStructure) const {
+    ZoneScoped;
     bool skip = false;
     if (pCreateInfo != nullptr && pCreateInfo->info.type == VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_NV) {
         for (uint32_t i = 0; i < pCreateInfo->info.geometryCount; i++) {
@@ -49,6 +50,7 @@ bool CoreChecks::PreCallValidateCreateAccelerationStructureKHR(VkDevice device,
                                                                const VkAccelerationStructureCreateInfoKHR *pCreateInfo,
                                                                const VkAllocationCallbacks *pAllocator,
                                                                VkAccelerationStructureKHR *pAccelerationStructure) const {
+    ZoneScoped;
     bool skip = false;
     if (pCreateInfo) {
         auto buffer_state = Get<BUFFER_STATE>(pCreateInfo->buffer);
@@ -76,6 +78,7 @@ bool CoreChecks::PreCallValidateCreateAccelerationStructureKHR(VkDevice device,
 
 bool CoreChecks::ValidateBindAccelerationStructureMemory(VkDevice device,
                                                          const VkBindAccelerationStructureMemoryInfoNV &info) const {
+    ZoneScoped;
     bool skip = false;
 
     auto as_state = Get<ACCELERATION_STRUCTURE_STATE>(info.accelerationStructure);
@@ -126,6 +129,7 @@ bool CoreChecks::ValidateBindAccelerationStructureMemory(VkDevice device,
 }
 bool CoreChecks::PreCallValidateBindAccelerationStructureMemoryNV(VkDevice device, uint32_t bindInfoCount,
                                                                   const VkBindAccelerationStructureMemoryInfoNV *pBindInfos) const {
+    ZoneScoped;
     bool skip = false;
     for (uint32_t i = 0; i < bindInfoCount; i++) {
         skip |= ValidateBindAccelerationStructureMemory(device, pBindInfos[i]);
@@ -135,6 +139,7 @@ bool CoreChecks::PreCallValidateBindAccelerationStructureMemoryNV(VkDevice devic
 
 bool CoreChecks::PreCallValidateGetAccelerationStructureHandleNV(VkDevice device, VkAccelerationStructureNV accelerationStructure,
                                                                  size_t dataSize, void *pData) const {
+    ZoneScoped;
     bool skip = false;
 
     auto as_state = Get<ACCELERATION_STRUCTURE_STATE>(accelerationStructure);
@@ -149,6 +154,7 @@ bool CoreChecks::PreCallValidateGetAccelerationStructureHandleNV(VkDevice device
 bool CoreChecks::PreCallValidateCmdBuildAccelerationStructuresKHR(
     VkCommandBuffer commandBuffer, uint32_t infoCount, const VkAccelerationStructureBuildGeometryInfoKHR *pInfos,
     const VkAccelerationStructureBuildRangeInfoKHR *const *ppBuildRangeInfos) const {
+    ZoneScoped;
     bool skip = false;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     assert(cb_state);
@@ -255,6 +261,7 @@ bool CoreChecks::PreCallValidateCmdBuildAccelerationStructuresKHR(
 
 bool CoreChecks::ValidateAccelerationBuffers(uint32_t info_index, const VkAccelerationStructureBuildGeometryInfoKHR &info,
                                              const char *func_name) const {
+    ZoneScoped;
     bool skip = false;
     const auto geometry_count = info.geometryCount;
     const auto *p_geometries = info.pGeometries;
@@ -348,6 +355,7 @@ bool CoreChecks::PreCallValidateBuildAccelerationStructuresKHR(
     VkDevice device, VkDeferredOperationKHR deferredOperation, uint32_t infoCount,
     const VkAccelerationStructureBuildGeometryInfoKHR *pInfos,
     const VkAccelerationStructureBuildRangeInfoKHR *const *ppBuildRangeInfos) const {
+    ZoneScoped;
     bool skip = false;
     for (uint32_t i = 0; i < infoCount; ++i) {
         auto src_as_state = Get<ACCELERATION_STRUCTURE_STATE_KHR>(pInfos[i].srcAccelerationStructure);
@@ -421,6 +429,7 @@ bool CoreChecks::PreCallValidateCmdBuildAccelerationStructureNV(VkCommandBuffer 
                                                                 VkDeviceSize instanceOffset, VkBool32 update,
                                                                 VkAccelerationStructureNV dst, VkAccelerationStructureNV src,
                                                                 VkBuffer scratch, VkDeviceSize scratchOffset) const {
+    ZoneScoped;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     assert(cb_state);
     bool skip = false;
@@ -576,6 +585,7 @@ bool CoreChecks::PreCallValidateCmdBuildAccelerationStructureNV(VkCommandBuffer 
 bool CoreChecks::PreCallValidateCmdCopyAccelerationStructureNV(VkCommandBuffer commandBuffer, VkAccelerationStructureNV dst,
                                                                VkAccelerationStructureNV src,
                                                                VkCopyAccelerationStructureModeNV mode) const {
+    ZoneScoped;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     assert(cb_state);
     bool skip = false;
@@ -608,6 +618,7 @@ bool CoreChecks::PreCallValidateCmdCopyAccelerationStructureNV(VkCommandBuffer c
 
 bool CoreChecks::PreCallValidateDestroyAccelerationStructureNV(VkDevice device, VkAccelerationStructureNV accelerationStructure,
                                                                const VkAllocationCallbacks *pAllocator) const {
+    ZoneScoped;
     auto as_state = Get<ACCELERATION_STRUCTURE_STATE>(accelerationStructure);
     bool skip = false;
     if (as_state) {
@@ -619,6 +630,7 @@ bool CoreChecks::PreCallValidateDestroyAccelerationStructureNV(VkDevice device, 
 
 bool CoreChecks::PreCallValidateDestroyAccelerationStructureKHR(VkDevice device, VkAccelerationStructureKHR accelerationStructure,
                                                                 const VkAllocationCallbacks *pAllocator) const {
+    ZoneScoped;
     auto as_state = Get<ACCELERATION_STRUCTURE_STATE_KHR>(accelerationStructure);
     bool skip = false;
     if (as_state) {
@@ -633,6 +645,7 @@ void CoreChecks::PreCallRecordCmdWriteAccelerationStructuresPropertiesKHR(VkComm
                                                                           const VkAccelerationStructureKHR *pAccelerationStructures,
                                                                           VkQueryType queryType, VkQueryPool queryPool,
                                                                           uint32_t firstQuery) {
+    ZoneScoped;
     if (disabled[query_validation]) return;
     // Enqueue the submit time validation check here, before the submit time state update in StateTracker::PostCall...
     auto cb_state = GetWrite<CMD_BUFFER_STATE>(commandBuffer);
@@ -654,6 +667,7 @@ bool CoreChecks::PreCallValidateWriteAccelerationStructuresPropertiesKHR(VkDevic
                                                                          const VkAccelerationStructureKHR *pAccelerationStructures,
                                                                          VkQueryType queryType, size_t dataSize, void *pData,
                                                                          size_t stride) const {
+    ZoneScoped;
     bool skip = false;
     for (uint32_t i = 0; i < accelerationStructureCount; ++i) {
         auto as_state = Get<ACCELERATION_STRUCTURE_STATE_KHR>(pAccelerationStructures[i]);
@@ -679,6 +693,7 @@ bool CoreChecks::PreCallValidateWriteAccelerationStructuresPropertiesKHR(VkDevic
 bool CoreChecks::PreCallValidateCmdWriteAccelerationStructuresPropertiesKHR(
     VkCommandBuffer commandBuffer, uint32_t accelerationStructureCount, const VkAccelerationStructureKHR *pAccelerationStructures,
     VkQueryType queryType, VkQueryPool queryPool, uint32_t firstQuery) const {
+    ZoneScoped;
     bool skip = false;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     skip |= ValidateCmd(*cb_state, CMD_WRITEACCELERATIONSTRUCTURESPROPERTIESKHR);
@@ -709,6 +724,7 @@ bool CoreChecks::PreCallValidateCmdWriteAccelerationStructuresPropertiesNV(VkCom
                                                                            const VkAccelerationStructureNV *pAccelerationStructures,
                                                                            VkQueryType queryType, VkQueryPool queryPool,
                                                                            uint32_t firstQuery) const {
+    ZoneScoped;
     bool skip = false;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     skip |= ValidateCmd(*cb_state, CMD_WRITEACCELERATIONSTRUCTURESPROPERTIESNV);
@@ -739,6 +755,7 @@ bool CoreChecks::PreCallValidateCmdBuildAccelerationStructuresIndirectKHR(VkComm
                                                                           const VkDeviceAddress *pIndirectDeviceAddresses,
                                                                           const uint32_t *pIndirectStrides,
                                                                           const uint32_t *const *ppMaxPrimitiveCounts) const {
+    ZoneScoped;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     assert(cb_state);
     bool skip = false;
@@ -810,6 +827,7 @@ bool CoreChecks::PreCallValidateCmdBuildAccelerationStructuresIndirectKHR(VkComm
 
 bool CoreChecks::ValidateCopyAccelerationStructureInfoKHR(const VkCopyAccelerationStructureInfoKHR *pInfo,
                                                           const char *api_name) const {
+    ZoneScoped;
     bool skip = false;
     if (pInfo->mode == VK_COPY_ACCELERATION_STRUCTURE_MODE_COMPACT_KHR) {
         auto src_as_state = Get<ACCELERATION_STRUCTURE_STATE_KHR>(pInfo->src);
@@ -837,6 +855,7 @@ bool CoreChecks::ValidateCopyAccelerationStructureInfoKHR(const VkCopyAccelerati
 
 bool CoreChecks::PreCallValidateCmdCopyAccelerationStructureKHR(VkCommandBuffer commandBuffer,
                                                                 const VkCopyAccelerationStructureInfoKHR *pInfo) const {
+    ZoneScoped;
     bool skip = false;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     assert(cb_state);
@@ -861,6 +880,7 @@ bool CoreChecks::PreCallValidateCmdCopyAccelerationStructureKHR(VkCommandBuffer 
 
 bool CoreChecks::PreCallValidateCopyAccelerationStructureKHR(VkDevice device, VkDeferredOperationKHR deferredOperation,
                                                              const VkCopyAccelerationStructureInfoKHR *pInfo) const {
+    ZoneScoped;
     bool skip = false;
     if (pInfo) {
         skip |= ValidateCopyAccelerationStructureInfoKHR(pInfo, "vkCopyAccelerationStructureKHR");
@@ -879,6 +899,7 @@ bool CoreChecks::PreCallValidateCopyAccelerationStructureKHR(VkDevice device, Vk
 }
 bool CoreChecks::PreCallValidateCmdCopyAccelerationStructureToMemoryKHR(
     VkCommandBuffer commandBuffer, const VkCopyAccelerationStructureToMemoryInfoKHR *pInfo) const {
+    ZoneScoped;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     assert(cb_state);
     bool skip = false;
@@ -895,6 +916,7 @@ bool CoreChecks::PreCallValidateCmdCopyAccelerationStructureToMemoryKHR(
 
 bool CoreChecks::PreCallValidateCopyMemoryToAccelerationStructureKHR(
     VkDevice device, VkDeferredOperationKHR deferredOperation, const VkCopyMemoryToAccelerationStructureInfoKHR *pInfo) const {
+    ZoneScoped;
     bool skip = false;
 
     auto accel_state = Get<ACCELERATION_STRUCTURE_STATE_KHR>(pInfo->dst);
@@ -908,6 +930,7 @@ bool CoreChecks::PreCallValidateCopyMemoryToAccelerationStructureKHR(
 
 bool CoreChecks::PreCallValidateCmdCopyMemoryToAccelerationStructureKHR(
     VkCommandBuffer commandBuffer, const VkCopyMemoryToAccelerationStructureInfoKHR *pInfo) const {
+    ZoneScoped;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     assert(cb_state);
     bool skip = false;
@@ -924,6 +947,7 @@ bool CoreChecks::PreCallValidateCmdCopyMemoryToAccelerationStructureKHR(
 
 bool CoreChecks::ValidateCmdRayQueryState(const CMD_BUFFER_STATE &cb_state, CMD_TYPE cmd_type,
                                           const VkPipelineBindPoint bind_point) const {
+    ZoneScoped;
     bool skip = false;
     const DrawDispatchVuid &vuid = GetDrawDispatchVuid(cmd_type);
     const auto lv_bind_point = ConvertToLvlBindPoint(bind_point);
@@ -976,6 +1000,7 @@ uint32_t CoreChecks::CalcTotalShaderGroupCount(const PIPELINE_STATE &pipeline) c
 
 bool CoreChecks::PreCallValidateGetRayTracingShaderGroupHandlesKHR(VkDevice device, VkPipeline pipeline, uint32_t firstGroup,
                                                                    uint32_t groupCount, size_t dataSize, void *pData) const {
+    ZoneScoped;
     bool skip = false;
     auto pPipeline = Get<PIPELINE_STATE>(pipeline);
     if (!pPipeline) {
@@ -1019,6 +1044,7 @@ bool CoreChecks::PreCallValidateGetRayTracingShaderGroupHandlesKHR(VkDevice devi
 bool CoreChecks::PreCallValidateGetRayTracingCaptureReplayShaderGroupHandlesKHR(VkDevice device, VkPipeline pipeline,
                                                                                 uint32_t firstGroup, uint32_t groupCount,
                                                                                 size_t dataSize, void *pData) const {
+    ZoneScoped;
     bool skip = false;
     if (dataSize < (phys_dev_ext_props.ray_tracing_props_khr.shaderGroupHandleCaptureReplaySize * groupCount)) {
         skip |= LogError(device, "VUID-vkGetRayTracingCaptureReplayShaderGroupHandlesKHR-dataSize-03484",
@@ -1063,12 +1089,14 @@ bool CoreChecks::PreCallValidateGetRayTracingCaptureReplayShaderGroupHandlesKHR(
 
 bool CoreChecks::PreCallValidateCmdSetRayTracingPipelineStackSizeKHR(VkCommandBuffer commandBuffer,
                                                                      uint32_t pipelineStackSize) const {
+    ZoneScoped;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     return ValidateExtendedDynamicState(*cb_state, CMD_SETRAYTRACINGPIPELINESTACKSIZEKHR, VK_TRUE, nullptr, nullptr);
 }
 
 bool CoreChecks::PreCallValidateGetRayTracingShaderGroupStackSizeKHR(VkDevice device, VkPipeline pipeline, uint32_t group,
                                                                      VkShaderGroupShaderKHR groupShader) const {
+    ZoneScoped;
     bool skip = false;
     auto pipeline_state = Get<PIPELINE_STATE>(pipeline);
     if (pipeline_state) {
@@ -1133,6 +1161,7 @@ bool CoreChecks::ValidateRaytracingShaderBindingTable(VkCommandBuffer commandBuf
                                                       const char *vuid_single_device_memory, const char *vuid_binding_table_flag,
                                                       const VkStridedDeviceAddressRegionKHR &binding_table,
                                                       const char *binding_table_name) const {
+    ZoneScoped;
     bool skip = false;
 
     if (binding_table.deviceAddress == 0) {

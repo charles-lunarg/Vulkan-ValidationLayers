@@ -1068,6 +1068,7 @@ class ObjectTrackerOutputGenerator(OutputGenerator):
                     pre_cv_func_decl = 'bool ObjectLifetimes::PreCallValidate' + func_decl_template + ' const {'
                     self.appendSection('command', '')
                     self.appendSection('command', pre_cv_func_decl)
+                    self.appendSection('command', '    ZoneScoped;\n')
                     self.appendSection('command', '    bool skip = false;')
                     self.appendSection('command', pre_call_validate)
                     self.appendSection('command', '    return skip;')
@@ -1078,6 +1079,7 @@ class ObjectTrackerOutputGenerator(OutputGenerator):
                     pre_cr_func_decl = 'void ObjectLifetimes::PreCallRecord' + func_decl_template + ' {'
                     self.appendSection('command', '')
                     self.appendSection('command', pre_cr_func_decl)
+                    self.appendSection('command', '    ZoneScoped;\n')
                     self.appendSection('command', pre_call_record)
                     self.appendSection('command', '}')
 
@@ -1098,7 +1100,7 @@ class ObjectTrackerOutputGenerator(OutputGenerator):
                     elif result_type.text == 'VkDeviceAddress':
                         post_cr_func_decl = post_cr_func_decl.replace(')', ',\n    VkDeviceAddress                             result)')
                     self.appendSection('command', post_cr_func_decl)
-
+                    self.appendSection('command','    ZoneScoped;\n')
                     self.appendSection('command', post_call_record)
                     self.appendSection('command', '}')
 

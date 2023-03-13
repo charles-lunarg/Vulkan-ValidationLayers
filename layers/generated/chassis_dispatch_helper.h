@@ -1557,6 +1557,7 @@ typedef enum InterceptId{
 } InterceptId;
 
 void ValidationObject::InitObjectDispatchVectors() {
+    ZoneScoped;
 
 #define BUILD_DISPATCH_VECTOR(name) \
     init_object_dispatch_vector(InterceptId ## name, \

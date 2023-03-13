@@ -170,6 +170,7 @@ class ObjectLifetimes : public ValidationObject {
     template <typename T1>
     bool ValidateObject(T1 object, VulkanObjectType object_type, bool null_allowed, const char *invalid_handle_code,
                         const char *wrong_device_code) const {
+        ZoneScoped;
         if (null_allowed && (object == VK_NULL_HANDLE)) {
             return false;
         }
@@ -183,6 +184,7 @@ class ObjectLifetimes : public ValidationObject {
 
     template <typename T1>
     void CreateObject(T1 object, VulkanObjectType object_type, const VkAllocationCallbacks *pAllocator) {
+        ZoneScoped;
         uint64_t object_handle = HandleToUint64(object);
         const bool custom_allocator = (pAllocator != nullptr);
         if (!object_map[object_type].contains(object_handle)) {

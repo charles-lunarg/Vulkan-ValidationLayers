@@ -109,6 +109,7 @@ struct CommandBufferSubmitState {
 
 bool CoreChecks::PreCallValidateQueueSubmit(VkQueue queue, uint32_t submitCount, const VkSubmitInfo *pSubmits,
                                             VkFence fence) const {
+    ZoneScoped;
     auto fence_state = Get<FENCE_STATE>(fence);
     bool skip = ValidateFenceForSubmit(fence_state.get(), "VUID-vkQueueSubmit-fence-00064", "VUID-vkQueueSubmit-fence-00063",
                                        "vkQueueSubmit()");
@@ -234,6 +235,7 @@ bool CoreChecks::PreCallValidateQueueSubmit(VkQueue queue, uint32_t submitCount,
 
 bool CoreChecks::ValidateQueueSubmit2(VkQueue queue, uint32_t submitCount, const VkSubmitInfo2KHR *pSubmits, VkFence fence,
                                       bool is_2khr) const {
+    ZoneScoped;
     auto pFence = Get<FENCE_STATE>(fence);
     const char *func_name = is_2khr ? "vkQueueSubmit2KHR()" : "vkQueueSubmit2()";
     bool skip =
@@ -342,6 +344,7 @@ bool CoreChecks::PreCallValidateQueueSubmit2(VkQueue queue, uint32_t submitCount
 
 void CoreChecks::PostCallRecordQueueSubmit(VkQueue queue, uint32_t submitCount, const VkSubmitInfo *pSubmits, VkFence fence,
                                            VkResult result) {
+    ZoneScoped;
     StateTracker::PostCallRecordQueueSubmit(queue, submitCount, pSubmits, fence, result);
 
     if (result != VK_SUCCESS) return;
@@ -364,6 +367,7 @@ void CoreChecks::PostCallRecordQueueSubmit(VkQueue queue, uint32_t submitCount, 
 
 void CoreChecks::RecordQueueSubmit2(VkQueue queue, uint32_t submitCount, const VkSubmitInfo2KHR *pSubmits, VkFence fence,
                                     VkResult result) {
+    ZoneScoped;
     if (result != VK_SUCCESS) return;
     // The triply nested for duplicates that in the StateTracker, but avoids the need for two additional callbacks.
     for (uint32_t submit_idx = 0; submit_idx < submitCount; submit_idx++) {
@@ -384,12 +388,14 @@ void CoreChecks::RecordQueueSubmit2(VkQueue queue, uint32_t submitCount, const V
 
 void CoreChecks::PostCallRecordQueueSubmit2KHR(VkQueue queue, uint32_t submitCount, const VkSubmitInfo2KHR *pSubmits, VkFence fence,
                                                VkResult result) {
+    ZoneScoped;
     StateTracker::PostCallRecordQueueSubmit2KHR(queue, submitCount, pSubmits, fence, result);
     RecordQueueSubmit2(queue, submitCount, pSubmits, fence, result);
 }
 
 void CoreChecks::PostCallRecordQueueSubmit2(VkQueue queue, uint32_t submitCount, const VkSubmitInfo2 *pSubmits, VkFence fence,
                                             VkResult result) {
+    ZoneScoped;
     StateTracker::PostCallRecordQueueSubmit2(queue, submitCount, pSubmits, fence, result);
     RecordQueueSubmit2(queue, submitCount, pSubmits, fence, result);
 }
@@ -397,6 +403,7 @@ void CoreChecks::PostCallRecordQueueSubmit2(VkQueue queue, uint32_t submitCount,
 // Check that the queue family index of 'queue' matches one of the entries in pQueueFamilyIndices
 bool CoreChecks::ValidImageBufferQueue(const CMD_BUFFER_STATE &cb_state, const VulkanTypedHandle &object, uint32_t queueFamilyIndex,
                                        uint32_t count, const uint32_t *indices) const {
+    ZoneScoped;
     bool found = false;
     bool skip = false;
     for (uint32_t i = 0; i < count; i++) {
@@ -420,6 +427,7 @@ bool CoreChecks::ValidImageBufferQueue(const CMD_BUFFER_STATE &cb_state, const V
 // Validate that queueFamilyIndices of primary command buffers match this queue
 // Secondary command buffers were previously validated in vkCmdExecuteCommands().
 bool CoreChecks::ValidateQueueFamilyIndices(const Location &loc, const CMD_BUFFER_STATE &cb_state, VkQueue queue) const {
+    ZoneScoped;
     using sync_vuid_maps::GetQueueSubmitVUID;
     using sync_vuid_maps::SubmitError;
     bool skip = false;
@@ -469,6 +477,7 @@ bool CoreChecks::ValidateQueueFamilyIndices(const Location &loc, const CMD_BUFFE
 
 bool CoreChecks::ValidateCommandBufferState(const CMD_BUFFER_STATE &cb_state, const char *call_source, int current_submit_count,
                                             const char *vu_id) const {
+    ZoneScoped;
     bool skip = false;
     if (disabled[command_buffer_state]) return skip;
     // Validate ONE_TIME_SUBMIT_BIT CB is not being submitted more than once
@@ -506,6 +515,7 @@ bool CoreChecks::ValidateCommandBufferState(const CMD_BUFFER_STATE &cb_state, co
 
 bool CoreChecks::ValidateCommandBufferSimultaneousUse(const Location &loc, const CMD_BUFFER_STATE &cb_state,
                                                       int current_submit_count) const {
+    ZoneScoped;
     using sync_vuid_maps::GetQueueSubmitVUID;
     using sync_vuid_maps::SubmitError;
 
@@ -527,6 +537,7 @@ bool CoreChecks::ValidatePrimaryCommandBufferState(
     using sync_vuid_maps::GetQueueSubmitVUID;
     using sync_vuid_maps::SubmitError;
 
+    ZoneScoped;
     // Track in-use for resources off of primary and any secondary CBs
     bool skip = false;
 
@@ -578,6 +589,7 @@ bool CoreChecks::ValidatePrimaryCommandBufferState(
 
 bool CoreChecks::PreCallValidateQueueBindSparse(VkQueue queue, uint32_t bindInfoCount, const VkBindSparseInfo *pBindInfo,
                                                 VkFence fence) const {
+    ZoneScoped;
     auto queue_data = Get<QUEUE_STATE>(queue);
     auto fence_state = Get<FENCE_STATE>(fence);
     bool skip = ValidateFenceForSubmit(fence_state.get(), "VUID-vkQueueBindSparse-fence-01114",

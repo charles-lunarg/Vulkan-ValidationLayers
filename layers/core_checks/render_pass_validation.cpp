@@ -43,6 +43,7 @@ bool CoreChecks::ValidateAttachmentCompatibility(const char *type1_string, const
                                                  const char *type2_string, const RENDER_PASS_STATE &rp2_state,
                                                  uint32_t primary_attach, uint32_t secondary_attach, const char *caller,
                                                  const char *error_code) const {
+    ZoneScoped;
     bool skip = false;
     const auto &primary_pass_ci = rp1_state.createInfo;
     const auto &secondary_pass_ci = rp2_state.createInfo;
@@ -84,6 +85,7 @@ bool CoreChecks::ValidateAttachmentCompatibility(const char *type1_string, const
 bool CoreChecks::ValidateSubpassCompatibility(const char *type1_string, const RENDER_PASS_STATE &rp1_state,
                                               const char *type2_string, const RENDER_PASS_STATE &rp2_state, const int subpass,
                                               const char *caller, const char *error_code) const {
+    ZoneScoped;
     bool skip = false;
     const auto &primary_desc = rp1_state.createInfo.pSubpasses[subpass];
     const auto &secondary_desc = rp2_state.createInfo.pSubpasses[subpass];
@@ -184,6 +186,7 @@ bool CoreChecks::ValidateSubpassCompatibility(const char *type1_string, const RE
 bool CoreChecks::ValidateDependencyCompatibility(const char *type1_string, const RENDER_PASS_STATE &rp1_state,
                                                  const char *type2_string, const RENDER_PASS_STATE &rp2_state,
                                                  const uint32_t dependency, const char *caller, const char *error_code) const {
+    ZoneScoped;
     bool skip = false;
 
     const auto &primary_dep = rp1_state.createInfo.pDependencies[dependency];
@@ -285,6 +288,7 @@ bool CoreChecks::LogInvalidDependencyMessage(const char *type1_string, const REN
 bool CoreChecks::ValidateRenderPassCompatibility(const char *type1_string, const RENDER_PASS_STATE &rp1_state,
                                                  const char *type2_string, const RENDER_PASS_STATE &rp2_state, const char *caller,
                                                  const char *error_code) const {
+    ZoneScoped;
     bool skip = false;
 
     // createInfo flags must be identical for the renderpasses to be compatible.
@@ -395,6 +399,7 @@ static bool FormatSpecificLoadAndStoreOpSettings(VkFormat format, T color_depth_
 
 bool CoreChecks::ValidateCmdBeginRenderPass(VkCommandBuffer commandBuffer, RenderPassCreateVersion rp_version,
                                             const VkRenderPassBeginInfo *pRenderPassBegin, CMD_TYPE cmd_type) const {
+    ZoneScoped;
     bool skip = false;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     const char *function_name = CommandTypeString(cmd_type);
@@ -514,6 +519,7 @@ bool CoreChecks::PreCallValidateCmdBeginRenderPass2(VkCommandBuffer commandBuffe
 
 void CoreChecks::RecordCmdBeginRenderPassLayouts(VkCommandBuffer commandBuffer, const VkRenderPassBeginInfo *pRenderPassBegin,
                                                  const VkSubpassContents contents) {
+    ZoneScoped;
     if (!pRenderPassBegin) {
         return;
     }
@@ -528,24 +534,28 @@ void CoreChecks::RecordCmdBeginRenderPassLayouts(VkCommandBuffer commandBuffer, 
 
 void CoreChecks::PreCallRecordCmdBeginRenderPass(VkCommandBuffer commandBuffer, const VkRenderPassBeginInfo *pRenderPassBegin,
                                                  VkSubpassContents contents) {
+    ZoneScoped;
     StateTracker::PreCallRecordCmdBeginRenderPass(commandBuffer, pRenderPassBegin, contents);
     RecordCmdBeginRenderPassLayouts(commandBuffer, pRenderPassBegin, contents);
 }
 
 void CoreChecks::PreCallRecordCmdBeginRenderPass2KHR(VkCommandBuffer commandBuffer, const VkRenderPassBeginInfo *pRenderPassBegin,
                                                      const VkSubpassBeginInfo *pSubpassBeginInfo) {
+    ZoneScoped;
     StateTracker::PreCallRecordCmdBeginRenderPass2KHR(commandBuffer, pRenderPassBegin, pSubpassBeginInfo);
     RecordCmdBeginRenderPassLayouts(commandBuffer, pRenderPassBegin, pSubpassBeginInfo->contents);
 }
 
 void CoreChecks::PreCallRecordCmdBeginRenderPass2(VkCommandBuffer commandBuffer, const VkRenderPassBeginInfo *pRenderPassBegin,
                                                   const VkSubpassBeginInfo *pSubpassBeginInfo) {
+    ZoneScoped;
     StateTracker::PreCallRecordCmdBeginRenderPass2(commandBuffer, pRenderPassBegin, pSubpassBeginInfo);
     RecordCmdBeginRenderPassLayouts(commandBuffer, pRenderPassBegin, pSubpassBeginInfo->contents);
 }
 
 bool CoreChecks::ValidateCmdEndRenderPass(RenderPassCreateVersion rp_version, VkCommandBuffer commandBuffer, CMD_TYPE cmd_type,
                                           const VkSubpassEndInfo *pSubpassEndInfo) const {
+    ZoneScoped;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     assert(cb_state);
     bool skip = false;
@@ -768,28 +778,33 @@ bool CoreChecks::PreCallValidateCmdEndRenderPass2(VkCommandBuffer commandBuffer,
 }
 
 void CoreChecks::RecordCmdEndRenderPassLayouts(VkCommandBuffer commandBuffer) {
+    ZoneScoped;
     auto cb_state = GetWrite<CMD_BUFFER_STATE>(commandBuffer);
     TransitionFinalSubpassLayouts(cb_state.get(), cb_state->activeRenderPassBeginInfo.ptr(), cb_state->activeFramebuffer.get());
 }
 
 void CoreChecks::PostCallRecordCmdEndRenderPass(VkCommandBuffer commandBuffer) {
+    ZoneScoped;
     // Record the end at the CoreLevel to ensure StateTracker cleanup doesn't step on anything we need.
     RecordCmdEndRenderPassLayouts(commandBuffer);
     StateTracker::PostCallRecordCmdEndRenderPass(commandBuffer);
 }
 
 void CoreChecks::PostCallRecordCmdEndRenderPass2KHR(VkCommandBuffer commandBuffer, const VkSubpassEndInfo *pSubpassEndInfo) {
+    ZoneScoped;
     // Record the end at the CoreLevel to ensure StateTracker cleanup doesn't step on anything we need.
     RecordCmdEndRenderPassLayouts(commandBuffer);
     StateTracker::PostCallRecordCmdEndRenderPass2KHR(commandBuffer, pSubpassEndInfo);
 }
 
 void CoreChecks::PostCallRecordCmdEndRenderPass2(VkCommandBuffer commandBuffer, const VkSubpassEndInfo *pSubpassEndInfo) {
+    ZoneScoped;
     RecordCmdEndRenderPassLayouts(commandBuffer);
     StateTracker::PostCallRecordCmdEndRenderPass2(commandBuffer, pSubpassEndInfo);
 }
 
 bool CoreChecks::VerifyRenderAreaBounds(const VkRenderPassBeginInfo *pRenderPassBegin, const char *func_name) const {
+    ZoneScoped;
     bool skip = false;
 
     bool device_group = false;
@@ -917,6 +932,7 @@ bool CoreChecks::VerifyRenderAreaBounds(const VkRenderPassBeginInfo *pRenderPass
 
 bool CoreChecks::VerifyFramebufferAndRenderPassImageViews(const VkRenderPassBeginInfo *pRenderPassBeginInfo,
                                                           const char *func_name) const {
+    ZoneScoped;
     bool skip = false;
     const VkRenderPassAttachmentBeginInfo *render_pass_attachment_begin_info =
         LvlFindInChain<VkRenderPassAttachmentBeginInfo>(pRenderPassBeginInfo->pNext);
@@ -1101,6 +1117,7 @@ bool CoreChecks::VerifyFramebufferAndRenderPassImageViews(const VkRenderPassBegi
 
 static bool FindDependency(const uint32_t index, const uint32_t dependent, const std::vector<DAGNode> &subpass_to_node,
                            vvl::unordered_set<uint32_t> &processed_nodes) {
+    ZoneScoped;
     // If we have already checked this node we have not found a dependency path so return false.
     if (processed_nodes.count(index)) return false;
     processed_nodes.insert(index);
@@ -1119,6 +1136,7 @@ static bool FindDependency(const uint32_t index, const uint32_t dependent, const
 bool CoreChecks::CheckDependencyExists(const VkRenderPass renderpass, const uint32_t subpass, const VkImageLayout layout,
                                        const std::vector<SubpassLayout> &dependent_subpasses,
                                        const std::vector<DAGNode> &subpass_to_node, bool &skip) const {
+    ZoneScoped;
     bool result = true;
     const bool b_image_layout_read_only = IsImageLayoutReadOnly(layout);
     // Loop through all subpasses that share the same attachment and make sure a dependency exists
@@ -1149,6 +1167,7 @@ bool CoreChecks::CheckDependencyExists(const VkRenderPass renderpass, const uint
 bool CoreChecks::CheckPreserved(const VkRenderPass renderpass, const VkRenderPassCreateInfo2 *pCreateInfo, const int index,
                                 const uint32_t attachment, const std::vector<DAGNode> &subpass_to_node, int depth,
                                 bool &skip) const {
+    ZoneScoped;
     const DAGNode &node = subpass_to_node[index];
     // If this node writes to the attachment return true as next nodes need to preserve the attachment.
     const VkSubpassDescription2 &subpass = pCreateInfo->pSubpasses[index];
@@ -1196,6 +1215,7 @@ bool IsRegionOverlapping(VkImageSubresourceRange range1, VkImageSubresourceRange
 
 bool CoreChecks::ValidateAttachmentIndex(RenderPassCreateVersion rp_version, uint32_t attachment, uint32_t attachment_count,
                                          const char *error_type, const char *function_name) const {
+    ZoneScoped;
     bool skip = false;
     const bool use_rp2 = (rp_version == RENDER_PASS_VERSION_2);
     assert(attachment != VK_ATTACHMENT_UNUSED);
@@ -1236,6 +1256,7 @@ char const *StringAttachmentType(uint8_t type) {
 bool CoreChecks::AddAttachmentUse(RenderPassCreateVersion rp_version, uint32_t subpass, std::vector<uint8_t> &attachment_uses,
                                   std::vector<VkImageLayout> &attachment_layouts, uint32_t attachment, uint8_t new_use,
                                   VkImageLayout new_layout) const {
+    ZoneScoped;
     if (attachment >= attachment_uses.size()) return false; /* out of range, but already reported */
 
     bool skip = false;
@@ -1275,6 +1296,7 @@ bool CoreChecks::AddAttachmentUse(RenderPassCreateVersion rp_version, uint32_t s
 bool CoreChecks::ValidateAttachmentReference(RenderPassCreateVersion rp_version, VkAttachmentReference2 reference,
                                              const VkFormat attachment_format, bool input, const char *error_type,
                                              const char *function_name) const {
+    ZoneScoped;
     bool skip = false;
     const bool use_rp2 = (rp_version == RENDER_PASS_VERSION_2);
     const char *vuid;
@@ -1368,6 +1390,7 @@ bool CoreChecks::ValidateAttachmentReference(RenderPassCreateVersion rp_version,
 
 bool CoreChecks::ValidateRenderpassAttachmentUsage(RenderPassCreateVersion rp_version, const VkRenderPassCreateInfo2 *pCreateInfo,
                                                    const char *function_name) const {
+    ZoneScoped;
     bool skip = false;
     const bool use_rp2 = (rp_version == RENDER_PASS_VERSION_2);
     const char *vuid;
@@ -1934,6 +1957,7 @@ bool CoreChecks::ValidateRenderpassAttachmentUsage(RenderPassCreateVersion rp_ve
 }
 
 bool CoreChecks::ValidateDependencies(FRAMEBUFFER_STATE const *framebuffer, RENDER_PASS_STATE const *renderPass) const {
+    ZoneScoped;
     bool skip = false;
     auto const framebuffer_info = framebuffer->createInfo.ptr();
     auto const create_info = renderPass->createInfo.ptr();
@@ -2093,6 +2117,7 @@ static bool HasFramebufferStagePipelineStageFlags(VkPipelineStageFlags2KHR infla
 }
 
 bool CoreChecks::ValidateRenderPassDAG(RenderPassCreateVersion rp_version, const VkRenderPassCreateInfo2 *pCreateInfo) const {
+    ZoneScoped;
     bool skip = false;
     const char *vuid;
     const bool use_rp2 = (rp_version == RENDER_PASS_VERSION_2);
@@ -2186,6 +2211,7 @@ bool CoreChecks::ValidateRenderPassDAG(RenderPassCreateVersion rp_version, const
 
 bool CoreChecks::ValidateCreateRenderPass(VkDevice device, RenderPassCreateVersion rp_version,
                                           const VkRenderPassCreateInfo2 *pCreateInfo, const char *function_name) const {
+    ZoneScoped;
     bool skip = false;
     const bool use_rp2 = (rp_version == RENDER_PASS_VERSION_2);
     const char *vuid;
@@ -2309,6 +2335,7 @@ bool CoreChecks::ValidateCreateRenderPass(VkDevice device, RenderPassCreateVersi
 
 bool CoreChecks::PreCallValidateCreateRenderPass(VkDevice device, const VkRenderPassCreateInfo *pCreateInfo,
                                                  const VkAllocationCallbacks *pAllocator, VkRenderPass *pRenderPass) const {
+    ZoneScoped;
     bool skip = false;
     // Handle extension structs from KHR_multiview and KHR_maintenance2 that can only be validated for RP1 (indices out of bounds)
     const VkRenderPassMultiviewCreateInfo *multiview_info = LvlFindInChain<VkRenderPassMultiviewCreateInfo>(pCreateInfo->pNext);
@@ -2398,6 +2425,7 @@ bool CoreChecks::PreCallValidateCreateRenderPass(VkDevice device, const VkRender
 // VK_KHR_depth_stencil_resolve was added with a requirement on VK_KHR_create_renderpass2 so this will never be able to use
 // VkRenderPassCreateInfo
 bool CoreChecks::ValidateDepthStencilResolve(const VkRenderPassCreateInfo2 *pCreateInfo, const char *function_name) const {
+    ZoneScoped;
     bool skip = false;
 
     // If the pNext list of VkSubpassDescription2 includes a VkSubpassDescriptionDepthStencilResolve structure,
@@ -2605,6 +2633,7 @@ bool CoreChecks::ValidateDepthStencilResolve(const VkRenderPassCreateInfo2 *pCre
 bool CoreChecks::ValidateCreateRenderPass2(VkDevice device, const VkRenderPassCreateInfo2 *pCreateInfo,
                                            const VkAllocationCallbacks *pAllocator, VkRenderPass *pRenderPass,
                                            const char *function_name) const {
+    ZoneScoped;
     bool skip = false;
 
     if (IsExtEnabled(device_extensions.vk_khr_depth_stencil_resolve)) {
@@ -2620,6 +2649,7 @@ bool CoreChecks::ValidateCreateRenderPass2(VkDevice device, const VkRenderPassCr
 }
 
 bool CoreChecks::ValidateFragmentShadingRateAttachments(VkDevice device, const VkRenderPassCreateInfo2 *pCreateInfo) const {
+    ZoneScoped;
     bool skip = false;
 
     if (enabled_features.fragment_shading_rate_features.attachmentFragmentShadingRate) {
@@ -2841,6 +2871,7 @@ bool CoreChecks::PreCallValidateCreateRenderPass2(VkDevice device, const VkRende
 
 bool CoreChecks::ValidateRenderingInfoAttachment(const std::shared_ptr<const IMAGE_VIEW_STATE> &image_view, const char *attachment,
                                                  const VkRenderingInfo *pRenderingInfo, const char *func_name) const {
+    ZoneScoped;
     bool skip = false;
 
     // Upcasting to handle overflow
@@ -2891,6 +2922,7 @@ bool CoreChecks::ValidateRenderingInfoAttachment(const std::shared_ptr<const IMA
 
 bool CoreChecks::ValidateRenderingAttachmentInfo(VkCommandBuffer commandBuffer, const VkRenderingInfo *pRenderingInfo,
                                                  const VkRenderingAttachmentInfo *pAttachment, const char *func_name) const {
+    ZoneScoped;
     bool skip = false;
 
     if (pAttachment->imageView != VK_NULL_HANDLE) {
@@ -3063,6 +3095,7 @@ bool CoreChecks::ValidateRenderingAttachmentInfo(VkCommandBuffer commandBuffer, 
 
 bool CoreChecks::ValidateCmdBeginRendering(VkCommandBuffer commandBuffer, const VkRenderingInfo *pRenderingInfo,
                                            CMD_TYPE cmd_type) const {
+    ZoneScoped;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     if (!cb_state) return false;
     bool skip = false;
@@ -3667,6 +3700,7 @@ bool CoreChecks::ValidateCmdBeginRendering(VkCommandBuffer commandBuffer, const 
 // Flags validation error if the associated call is made inside a render pass. The apiName routine should ONLY be called outside a
 // render pass.
 bool CoreChecks::InsideRenderPass(const CMD_BUFFER_STATE &cb_state, const char *apiName, const char *msgCode) const {
+    ZoneScoped;
     bool inside = false;
     if (cb_state.activeRenderPass) {
         inside = LogError(cb_state.commandBuffer(), msgCode, "%s: It is invalid to issue this call inside an active %s.", apiName,
@@ -3678,6 +3712,7 @@ bool CoreChecks::InsideRenderPass(const CMD_BUFFER_STATE &cb_state, const char *
 // Flags validation error if the associated call is made outside a render pass. The apiName
 // routine should ONLY be called inside a render pass.
 bool CoreChecks::OutsideRenderPass(const CMD_BUFFER_STATE &cb_state, const char *apiName, const char *msgCode) const {
+    ZoneScoped;
     bool outside = false;
     if (((cb_state.createInfo.level == VK_COMMAND_BUFFER_LEVEL_PRIMARY) && (!cb_state.activeRenderPass)) ||
         ((cb_state.createInfo.level == VK_COMMAND_BUFFER_LEVEL_SECONDARY) && (!cb_state.activeRenderPass) &&
@@ -3689,6 +3724,7 @@ bool CoreChecks::OutsideRenderPass(const CMD_BUFFER_STATE &cb_state, const char 
 }
 
 bool CoreChecks::PreCallValidateCmdEndRenderingKHR(VkCommandBuffer commandBuffer) const {
+    ZoneScoped;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     if (!cb_state) return false;
     bool skip = false;
@@ -3708,6 +3744,7 @@ bool CoreChecks::PreCallValidateCmdEndRenderingKHR(VkCommandBuffer commandBuffer
 }
 
 bool CoreChecks::PreCallValidateCmdEndRendering(VkCommandBuffer commandBuffer) const {
+    ZoneScoped;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     if (!cb_state) return false;
     bool skip = false;
@@ -3730,6 +3767,7 @@ bool CoreChecks::ValidateMultisampledRenderToSingleSampleView(VkCommandBuffer co
                                                               const std::shared_ptr<const IMAGE_VIEW_STATE> &image_view_state,
                                                               const VkMultisampledRenderToSingleSampledInfoEXT *msrtss_info,
                                                               const char *attachment_type, const char *func_name) const {
+    ZoneScoped;
     bool skip = false;
     const auto image_view = image_view_state->Handle();
     if (msrtss_info->multisampledRenderToSingleSampledEnable) {
@@ -3789,6 +3827,7 @@ bool CoreChecks::PreCallValidateCmdBeginRendering(VkCommandBuffer commandBuffer,
 
 // If a renderpass is active, verify that the given command type is appropriate for current subpass state
 bool CoreChecks::ValidateCmdSubpassState(const CMD_BUFFER_STATE &cb_state, const CMD_TYPE cmd_type) const {
+    ZoneScoped;
     if (!cb_state.activeRenderPass) return false;
     bool skip = false;
     if (cb_state.createInfo.level == VK_COMMAND_BUFFER_LEVEL_PRIMARY &&
@@ -3805,6 +3844,7 @@ bool CoreChecks::ValidateCmdSubpassState(const CMD_BUFFER_STATE &cb_state, const
 
 bool CoreChecks::ValidateCmdNextSubpass(RenderPassCreateVersion rp_version, VkCommandBuffer commandBuffer,
                                         CMD_TYPE cmd_type) const {
+    ZoneScoped;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     assert(cb_state);
     bool skip = false;
@@ -3841,30 +3881,35 @@ bool CoreChecks::PreCallValidateCmdNextSubpass2(VkCommandBuffer commandBuffer, c
 }
 
 void CoreChecks::RecordCmdNextSubpassLayouts(VkCommandBuffer commandBuffer, VkSubpassContents contents) {
+    ZoneScoped;
     auto cb_state = GetWrite<CMD_BUFFER_STATE>(commandBuffer);
     auto framebuffer = Get<FRAMEBUFFER_STATE>(cb_state->activeRenderPassBeginInfo.framebuffer);
     TransitionSubpassLayouts(cb_state.get(), cb_state->activeRenderPass.get(), cb_state->GetActiveSubpass(), framebuffer.get());
 }
 
 void CoreChecks::PostCallRecordCmdNextSubpass(VkCommandBuffer commandBuffer, VkSubpassContents contents) {
+    ZoneScoped;
     StateTracker::PostCallRecordCmdNextSubpass(commandBuffer, contents);
     RecordCmdNextSubpassLayouts(commandBuffer, contents);
 }
 
 void CoreChecks::PostCallRecordCmdNextSubpass2KHR(VkCommandBuffer commandBuffer, const VkSubpassBeginInfo *pSubpassBeginInfo,
                                                   const VkSubpassEndInfo *pSubpassEndInfo) {
+    ZoneScoped;
     StateTracker::PostCallRecordCmdNextSubpass2KHR(commandBuffer, pSubpassBeginInfo, pSubpassEndInfo);
     RecordCmdNextSubpassLayouts(commandBuffer, pSubpassBeginInfo->contents);
 }
 
 void CoreChecks::PostCallRecordCmdNextSubpass2(VkCommandBuffer commandBuffer, const VkSubpassBeginInfo *pSubpassBeginInfo,
                                                const VkSubpassEndInfo *pSubpassEndInfo) {
+    ZoneScoped;
     StateTracker::PostCallRecordCmdNextSubpass2(commandBuffer, pSubpassBeginInfo, pSubpassEndInfo);
     RecordCmdNextSubpassLayouts(commandBuffer, pSubpassBeginInfo->contents);
 }
 
 bool CoreChecks::MatchUsage(uint32_t count, const VkAttachmentReference2 *attachments, const VkFramebufferCreateInfo *fbci,
                             VkImageUsageFlagBits usage_flag, const char *error_code) const {
+    ZoneScoped;
     bool skip = false;
 
     if (attachments) {
@@ -3915,6 +3960,7 @@ bool CoreChecks::MsRenderedToSingleSampledValidateFBAttachments(uint32_t count, 
                                                                 const VkFramebufferCreateInfo *fbci,
                                                                 const VkRenderPassCreateInfo2 *rpci, uint32_t subpass,
                                                                 VkSampleCountFlagBits sample_count) const {
+    ZoneScoped;
     bool skip = false;
 
     for (uint32_t attach = 0; attach < count; attach++) {
@@ -3967,6 +4013,7 @@ bool CoreChecks::MsRenderedToSingleSampledValidateFBAttachments(uint32_t count, 
 
 bool CoreChecks::PreCallValidateCreateFramebuffer(VkDevice device, const VkFramebufferCreateInfo *pCreateInfo,
                                                   const VkAllocationCallbacks *pAllocator, VkFramebuffer *pFramebuffer) const {
+    ZoneScoped;
     // TODO : Verify that renderPass FB is created with is compatible with FB
     bool skip = false;
     const VkFramebufferAttachmentsCreateInfo *framebuffer_attachments_create_info =
@@ -4655,6 +4702,7 @@ bool CoreChecks::PreCallValidateCreateFramebuffer(VkDevice device, const VkFrame
 
 bool CoreChecks::PreCallValidateDestroyFramebuffer(VkDevice device, VkFramebuffer framebuffer,
                                                    const VkAllocationCallbacks *pAllocator) const {
+    ZoneScoped;
     auto framebuffer_state = Get<FRAMEBUFFER_STATE>(framebuffer);
     bool skip = false;
     if (framebuffer_state) {
@@ -4667,6 +4715,7 @@ bool CoreChecks::PreCallValidateDestroyFramebuffer(VkDevice device, VkFramebuffe
 bool CoreChecks::ValidateInheritanceInfoFramebuffer(VkCommandBuffer primaryBuffer, const CMD_BUFFER_STATE &cb_state,
                                                     VkCommandBuffer secondaryBuffer, const CMD_BUFFER_STATE &sub_cb_state,
                                                     const char *caller) const {
+    ZoneScoped;
     bool skip = false;
     if (!sub_cb_state.beginInfo.pInheritanceInfo) {
         return skip;

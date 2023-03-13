@@ -50,6 +50,11 @@ endif()
 
 target_include_directories(VkLayer_device_profile_api PRIVATE .)
 
+target_link_libraries(VkLayer_device_profile_api PRIVATE Tracy::TracyClient)
+if (VVL_ENABLE_TRACY_PROFILER)
+    target_compile_definitions(VkLayer_device_profile_api PUBLIC TRACY_ENABLE)
+endif()
+
 set(INTERMEDIATE_FILE "${CMAKE_CURRENT_BINARY_DIR}/profiling.json")
 
 if (WIN32)

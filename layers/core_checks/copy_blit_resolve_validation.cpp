@@ -232,6 +232,7 @@ bool CoreChecks::CheckItgExtent(const LogObjectList &objlist, const VkExtent3D &
 
 bool CoreChecks::ValidateImageMipLevel(const CMD_BUFFER_STATE &cb_state, const IMAGE_STATE &img, uint32_t mip_level,
                                        const uint32_t i, const char *function, const char *member, const char *vuid) const {
+    ZoneScoped;
     bool skip = false;
     if (mip_level >= img.createInfo.mipLevels) {
         const LogObjectList objlist(cb_state.Handle(), img.Handle());
@@ -245,6 +246,7 @@ bool CoreChecks::ValidateImageMipLevel(const CMD_BUFFER_STATE &cb_state, const I
 bool CoreChecks::ValidateImageArrayLayerRange(const CMD_BUFFER_STATE &cb_state, const IMAGE_STATE &img, const uint32_t base_layer,
                                               const uint32_t layer_count, const uint32_t i, const char *function,
                                               const char *member, const char *vuid) const {
+    ZoneScoped;
     bool skip = false;
     if (base_layer >= img.createInfo.arrayLayers || layer_count > img.createInfo.arrayLayers ||
         (base_layer + layer_count) > img.createInfo.arrayLayers) {
@@ -440,6 +442,7 @@ template <typename RegionType>
 bool CoreChecks::ValidateBufferImageCopyData(const CMD_BUFFER_STATE &cb_state, uint32_t regionCount, const RegionType *pRegions,
                                              const IMAGE_STATE *image_state, const char *function, CMD_TYPE cmd_type,
                                              bool image_to_buffer) const {
+    ZoneScoped;
     bool skip = false;
     const bool is_2 = (cmd_type == CMD_COPYBUFFERTOIMAGE2KHR || cmd_type == CMD_COPYBUFFERTOIMAGE2);
     const char *vuid;
@@ -754,6 +757,7 @@ template <typename RegionType>
 bool CoreChecks::ValidateCmdCopyBufferBounds(VkCommandBuffer cb, const BUFFER_STATE &src_buffer_state,
                                              const BUFFER_STATE &dst_buffer_state, uint32_t regionCount, const RegionType *pRegions,
                                              CMD_TYPE cmd_type) const {
+    ZoneScoped;
     bool skip = false;
     const bool is_2 = (cmd_type == CMD_COPYBUFFER2KHR || cmd_type == CMD_COPYBUFFER2);
     const char *func_name = CommandTypeString(cmd_type);
@@ -824,6 +828,7 @@ bool CoreChecks::ValidateCmdCopyBufferBounds(VkCommandBuffer cb, const BUFFER_ST
 template <typename RegionType>
 bool CoreChecks::ValidateCmdCopyBuffer(VkCommandBuffer commandBuffer, VkBuffer srcBuffer, VkBuffer dstBuffer, uint32_t regionCount,
                                        const RegionType *pRegions, CMD_TYPE cmd_type) const {
+    ZoneScoped;
     bool skip = false;
     auto cb_state_ptr = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     auto src_buffer_state = Get<BUFFER_STATE>(srcBuffer);
@@ -884,6 +889,7 @@ template <typename RegionType>
 bool CoreChecks::ValidateCopyBufferImageTransferGranularityRequirements(const CMD_BUFFER_STATE &cb_state, const IMAGE_STATE &img,
                                                                         const RegionType *region, const uint32_t i,
                                                                         const char *function, const char *vuid) const {
+    ZoneScoped;
     bool skip = false;
     const LogObjectList objlist(cb_state.Handle(), img.Handle());
     VkExtent3D granularity = GetScaledItg(cb_state, &img);
@@ -899,6 +905,7 @@ template <typename RegionType>
 bool CoreChecks::ValidateCopyImageTransferGranularityRequirements(const CMD_BUFFER_STATE &cb_state, const IMAGE_STATE *src_img,
                                                                   const IMAGE_STATE *dst_img, const RegionType *region,
                                                                   const uint32_t i, const char *function, CMD_TYPE cmd_type) const {
+    ZoneScoped;
     bool skip = false;
     const bool is_2 = (cmd_type == CMD_COPYIMAGE2KHR || cmd_type == CMD_COPYIMAGE2);
     const char *vuid;
@@ -937,6 +944,7 @@ bool CoreChecks::ValidateCopyImageTransferGranularityRequirements(const CMD_BUFF
 template <typename RegionType>
 bool CoreChecks::ValidateImageCopyData(VkCommandBuffer cb, const uint32_t regionCount, const RegionType *pRegions,
                                        const IMAGE_STATE *src_state, const IMAGE_STATE *dst_state, CMD_TYPE cmd_type) const {
+    ZoneScoped;
     bool skip = false;
     const bool is_2 = (cmd_type == CMD_COPYIMAGE2KHR || cmd_type == CMD_COPYIMAGE2);
     const char *func_name = CommandTypeString(cmd_type);
@@ -1231,6 +1239,7 @@ template <typename RegionType>
 bool CoreChecks::ValidateCmdCopyImage(VkCommandBuffer commandBuffer, VkImage srcImage, VkImageLayout srcImageLayout,
                                       VkImage dstImage, VkImageLayout dstImageLayout, uint32_t regionCount,
                                       const RegionType *pRegions, CMD_TYPE cmd_type) const {
+    ZoneScoped;
     bool skip = false;
     auto cb_state_ptr = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     auto src_image_state = Get<IMAGE_STATE>(srcImage);
@@ -1788,6 +1797,7 @@ bool CoreChecks::PreCallValidateCmdCopyImage2(VkCommandBuffer commandBuffer, con
 void CoreChecks::PreCallRecordCmdCopyImage(VkCommandBuffer commandBuffer, VkImage srcImage, VkImageLayout srcImageLayout,
                                            VkImage dstImage, VkImageLayout dstImageLayout, uint32_t regionCount,
                                            const VkImageCopy *pRegions) {
+    ZoneScoped;
     StateTracker::PreCallRecordCmdCopyImage(commandBuffer, srcImage, srcImageLayout, dstImage, dstImageLayout, regionCount,
                                             pRegions);
     auto cb_state_ptr = GetWrite<CMD_BUFFER_STATE>(commandBuffer);
@@ -1803,6 +1813,7 @@ void CoreChecks::PreCallRecordCmdCopyImage(VkCommandBuffer commandBuffer, VkImag
 }
 
 void CoreChecks::RecordCmdCopyImage2(VkCommandBuffer commandBuffer, const VkCopyImageInfo2 *pCopyImageInfo) {
+    ZoneScoped;
     auto cb_state_ptr = GetWrite<CMD_BUFFER_STATE>(commandBuffer);
     auto src_image_state = Get<IMAGE_STATE>(pCopyImageInfo->srcImage);
     auto dst_image_state = Get<IMAGE_STATE>(pCopyImageInfo->dstImage);
@@ -1818,11 +1829,13 @@ void CoreChecks::RecordCmdCopyImage2(VkCommandBuffer commandBuffer, const VkCopy
 }
 
 void CoreChecks::PreCallRecordCmdCopyImage2KHR(VkCommandBuffer commandBuffer, const VkCopyImageInfo2KHR *pCopyImageInfo) {
+    ZoneScoped;
     StateTracker::PreCallRecordCmdCopyImage2KHR(commandBuffer, pCopyImageInfo);
     RecordCmdCopyImage2(commandBuffer, pCopyImageInfo);
 }
 
 void CoreChecks::PreCallRecordCmdCopyImage2(VkCommandBuffer commandBuffer, const VkCopyImageInfo2 *pCopyImageInfo) {
+    ZoneScoped;
     StateTracker::PreCallRecordCmdCopyImage2(commandBuffer, pCopyImageInfo);
     RecordCmdCopyImage2(commandBuffer, pCopyImageInfo);
 }
@@ -1830,6 +1843,7 @@ void CoreChecks::PreCallRecordCmdCopyImage2(VkCommandBuffer commandBuffer, const
 template <typename RegionType>
 void CoreChecks::RecordCmdCopyBuffer(VkCommandBuffer commandBuffer, VkBuffer srcBuffer, VkBuffer dstBuffer, uint32_t regionCount,
                                      const RegionType *pRegions, CMD_TYPE cmd_type) {
+    ZoneScoped;
     const bool is_2 = (cmd_type == CMD_COPYBUFFER2KHR || cmd_type == CMD_COPYBUFFER2);
     const char *func_name = CommandTypeString(cmd_type);
     const char *vuid = is_2 ? "VUID-VkCopyBufferInfo2-pRegions-00117" : "VUID-vkCmdCopyBuffer-pRegions-00117";
@@ -1887,6 +1901,7 @@ void CoreChecks::PreCallRecordCmdCopyBuffer2(VkCommandBuffer commandBuffer, cons
 template <typename RegionType>
 bool CoreChecks::ValidateImageBounds(VkCommandBuffer cb, const IMAGE_STATE &image_state, const uint32_t regionCount,
                                      const RegionType *pRegions, const char *func_name, const char *msg_code) const {
+    ZoneScoped;
     bool skip = false;
     const VkImageCreateInfo *image_info = &(image_state.createInfo);
 
@@ -1925,6 +1940,7 @@ template <typename RegionType>
 bool CoreChecks::ValidateBufferBounds(VkCommandBuffer cb, const IMAGE_STATE &image_state, const BUFFER_STATE &buff_state,
                                       uint32_t regionCount, const RegionType *pRegions, const char *func_name,
                                       const char *msg_code) const {
+    ZoneScoped;
     bool skip = false;
 
     const VkDeviceSize buffer_size = buff_state.createInfo.size;
@@ -1952,6 +1968,7 @@ bool CoreChecks::ValidateBufferBounds(VkCommandBuffer cb, const IMAGE_STATE &ima
 // Validate that an image's sampleCount matches the requirement for a specific API call
 bool CoreChecks::ValidateImageSampleCount(VkCommandBuffer cb, const IMAGE_STATE &image_state, VkSampleCountFlagBits sample_count,
                                           const char *location, const std::string &msgCode) const {
+    ZoneScoped;
     bool skip = false;
     if (image_state.createInfo.samples != sample_count) {
         const LogObjectList objlist(cb, image_state.Handle());
@@ -1966,6 +1983,7 @@ template <typename RegionType>
 bool CoreChecks::ValidateCmdCopyImageToBuffer(VkCommandBuffer commandBuffer, VkImage srcImage, VkImageLayout srcImageLayout,
                                               VkBuffer dstBuffer, uint32_t regionCount, const RegionType *pRegions,
                                               CMD_TYPE cmd_type) const {
+    ZoneScoped;
     bool skip = false;
     auto cb_state_ptr = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     auto src_image_state = Get<IMAGE_STATE>(srcImage);
@@ -2093,6 +2111,7 @@ bool CoreChecks::PreCallValidateCmdCopyImageToBuffer2(VkCommandBuffer commandBuf
 
 void CoreChecks::PreCallRecordCmdCopyImageToBuffer(VkCommandBuffer commandBuffer, VkImage srcImage, VkImageLayout srcImageLayout,
                                                    VkBuffer dstBuffer, uint32_t regionCount, const VkBufferImageCopy *pRegions) {
+    ZoneScoped;
     StateTracker::PreCallRecordCmdCopyImageToBuffer(commandBuffer, srcImage, srcImageLayout, dstBuffer, regionCount, pRegions);
 
     auto cb_state_ptr = GetWrite<CMD_BUFFER_STATE>(commandBuffer);
@@ -2107,6 +2126,7 @@ void CoreChecks::PreCallRecordCmdCopyImageToBuffer(VkCommandBuffer commandBuffer
 
 void CoreChecks::PreCallRecordCmdCopyImageToBuffer2KHR(VkCommandBuffer commandBuffer,
                                                        const VkCopyImageToBufferInfo2KHR *pCopyImageToBufferInfo) {
+    ZoneScoped;
     StateTracker::PreCallRecordCmdCopyImageToBuffer2KHR(commandBuffer, pCopyImageToBufferInfo);
 
     auto cb_state_ptr = GetWrite<CMD_BUFFER_STATE>(commandBuffer);
@@ -2122,6 +2142,7 @@ void CoreChecks::PreCallRecordCmdCopyImageToBuffer2KHR(VkCommandBuffer commandBu
 
 void CoreChecks::PreCallRecordCmdCopyImageToBuffer2(VkCommandBuffer commandBuffer,
                                                     const VkCopyImageToBufferInfo2 *pCopyImageToBufferInfo) {
+    ZoneScoped;
     StateTracker::PreCallRecordCmdCopyImageToBuffer2(commandBuffer, pCopyImageToBufferInfo);
 
     auto cb_state_ptr = GetWrite<CMD_BUFFER_STATE>(commandBuffer);
@@ -2139,6 +2160,7 @@ template <typename RegionType>
 bool CoreChecks::ValidateCmdCopyBufferToImage(VkCommandBuffer commandBuffer, VkBuffer srcBuffer, VkImage dstImage,
                                               VkImageLayout dstImageLayout, uint32_t regionCount, const RegionType *pRegions,
                                               CMD_TYPE cmd_type) const {
+    ZoneScoped;
     bool skip = false;
     auto cb_state_ptr = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     auto src_buffer_state = Get<BUFFER_STATE>(srcBuffer);
@@ -2267,6 +2289,7 @@ bool CoreChecks::PreCallValidateCmdCopyBufferToImage2(VkCommandBuffer commandBuf
 void CoreChecks::PreCallRecordCmdCopyBufferToImage(VkCommandBuffer commandBuffer, VkBuffer srcBuffer, VkImage dstImage,
                                                    VkImageLayout dstImageLayout, uint32_t regionCount,
                                                    const VkBufferImageCopy *pRegions) {
+    ZoneScoped;
     StateTracker::PreCallRecordCmdCopyBufferToImage(commandBuffer, srcBuffer, dstImage, dstImageLayout, regionCount, pRegions);
 
     auto cb_state_ptr = GetWrite<CMD_BUFFER_STATE>(commandBuffer);
@@ -2281,6 +2304,7 @@ void CoreChecks::PreCallRecordCmdCopyBufferToImage(VkCommandBuffer commandBuffer
 
 void CoreChecks::PreCallRecordCmdCopyBufferToImage2KHR(VkCommandBuffer commandBuffer,
                                                        const VkCopyBufferToImageInfo2KHR *pCopyBufferToImageInfo2KHR) {
+    ZoneScoped;
     StateTracker::PreCallRecordCmdCopyBufferToImage2KHR(commandBuffer, pCopyBufferToImageInfo2KHR);
 
     auto cb_state_ptr = GetWrite<CMD_BUFFER_STATE>(commandBuffer);
@@ -2296,6 +2320,7 @@ void CoreChecks::PreCallRecordCmdCopyBufferToImage2KHR(VkCommandBuffer commandBu
 
 void CoreChecks::PreCallRecordCmdCopyBufferToImage2(VkCommandBuffer commandBuffer,
                                                     const VkCopyBufferToImageInfo2 *pCopyBufferToImageInfo) {
+    ZoneScoped;
     StateTracker::PreCallRecordCmdCopyBufferToImage2(commandBuffer, pCopyBufferToImageInfo);
 
     auto cb_state_ptr = GetWrite<CMD_BUFFER_STATE>(commandBuffer);
@@ -2313,6 +2338,7 @@ template <typename RegionType>
 bool CoreChecks::ValidateCmdBlitImage(VkCommandBuffer commandBuffer, VkImage srcImage, VkImageLayout srcImageLayout,
                                       VkImage dstImage, VkImageLayout dstImageLayout, uint32_t regionCount,
                                       const RegionType *pRegions, VkFilter filter, CMD_TYPE cmd_type) const {
+    ZoneScoped;
     bool skip = false;
     auto cb_state_ptr = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     auto src_image_state = Get<IMAGE_STATE>(srcImage);
@@ -2687,6 +2713,7 @@ template <typename RegionType>
 void CoreChecks::RecordCmdBlitImage(VkCommandBuffer commandBuffer, VkImage srcImage, VkImageLayout srcImageLayout, VkImage dstImage,
                                     VkImageLayout dstImageLayout, uint32_t regionCount, const RegionType *pRegions,
                                     VkFilter filter) {
+    ZoneScoped;
     auto cb_state_ptr = GetWrite<CMD_BUFFER_STATE>(commandBuffer);
     auto src_image_state = Get<IMAGE_STATE>(srcImage);
     auto dst_image_state = Get<IMAGE_STATE>(dstImage);
@@ -2702,12 +2729,14 @@ void CoreChecks::RecordCmdBlitImage(VkCommandBuffer commandBuffer, VkImage srcIm
 void CoreChecks::PreCallRecordCmdBlitImage(VkCommandBuffer commandBuffer, VkImage srcImage, VkImageLayout srcImageLayout,
                                            VkImage dstImage, VkImageLayout dstImageLayout, uint32_t regionCount,
                                            const VkImageBlit *pRegions, VkFilter filter) {
+    ZoneScoped;
     StateTracker::PreCallRecordCmdBlitImage(commandBuffer, srcImage, srcImageLayout, dstImage, dstImageLayout, regionCount,
                                             pRegions, filter);
     RecordCmdBlitImage(commandBuffer, srcImage, srcImageLayout, dstImage, dstImageLayout, regionCount, pRegions, filter);
 }
 
 void CoreChecks::PreCallRecordCmdBlitImage2KHR(VkCommandBuffer commandBuffer, const VkBlitImageInfo2KHR *pBlitImageInfo) {
+    ZoneScoped;
     StateTracker::PreCallRecordCmdBlitImage2KHR(commandBuffer, pBlitImageInfo);
     RecordCmdBlitImage(commandBuffer, pBlitImageInfo->srcImage, pBlitImageInfo->srcImageLayout, pBlitImageInfo->dstImage,
                        pBlitImageInfo->dstImageLayout, pBlitImageInfo->regionCount, pBlitImageInfo->pRegions,
@@ -2715,6 +2744,7 @@ void CoreChecks::PreCallRecordCmdBlitImage2KHR(VkCommandBuffer commandBuffer, co
 }
 
 void CoreChecks::PreCallRecordCmdBlitImage2(VkCommandBuffer commandBuffer, const VkBlitImageInfo2KHR *pBlitImageInfo) {
+    ZoneScoped;
     StateTracker::PreCallRecordCmdBlitImage2(commandBuffer, pBlitImageInfo);
     RecordCmdBlitImage(commandBuffer, pBlitImageInfo->srcImage, pBlitImageInfo->srcImageLayout, pBlitImageInfo->dstImage,
                        pBlitImageInfo->dstImageLayout, pBlitImageInfo->regionCount, pBlitImageInfo->pRegions,
@@ -2725,6 +2755,7 @@ template <typename RegionType>
 bool CoreChecks::ValidateCmdResolveImage(VkCommandBuffer commandBuffer, VkImage srcImage, VkImageLayout srcImageLayout,
                                          VkImage dstImage, VkImageLayout dstImageLayout, uint32_t regionCount,
                                          const RegionType *pRegions, CMD_TYPE cmd_type) const {
+    ZoneScoped;
     bool skip = false;
     auto cb_state_ptr = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     auto src_image_state = Get<IMAGE_STATE>(srcImage);

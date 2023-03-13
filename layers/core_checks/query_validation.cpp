@@ -27,6 +27,7 @@
 
 bool CoreChecks::PreCallValidateDestroyQueryPool(VkDevice device, VkQueryPool queryPool,
                                                  const VkAllocationCallbacks *pAllocator) const {
+    ZoneScoped;
     if (disabled[query_validation]) return false;
     auto qp_state = Get<QUERY_POOL_STATE>(queryPool);
     bool skip = false;
@@ -48,6 +49,7 @@ bool CoreChecks::PreCallValidateDestroyQueryPool(VkDevice device, VkQueryPool qu
 
 bool CoreChecks::ValidatePerformanceQueryResults(const char *cmd_name, const QUERY_POOL_STATE *query_pool_state,
                                                  uint32_t firstQuery, uint32_t queryCount, VkQueryResultFlags flags) const {
+    ZoneScoped;
     bool skip = false;
 
     if (flags & (VK_QUERY_RESULT_WITH_AVAILABILITY_BIT | VK_QUERY_RESULT_PARTIAL_BIT | VK_QUERY_RESULT_64_BIT)) {
@@ -91,6 +93,7 @@ bool CoreChecks::ValidatePerformanceQueryResults(const char *cmd_name, const QUE
 bool CoreChecks::ValidateGetQueryPoolPerformanceResults(VkQueryPool queryPool, uint32_t firstQuery, uint32_t queryCount,
                                                         void *pData, VkDeviceSize stride, VkQueryResultFlags flags,
                                                         const char *apiName) const {
+    ZoneScoped;
     bool skip = false;
     auto query_pool_state = Get<QUERY_POOL_STATE>(queryPool);
 
@@ -113,6 +116,7 @@ bool CoreChecks::ValidateGetQueryPoolPerformanceResults(VkQueryPool queryPool, u
 bool CoreChecks::PreCallValidateGetQueryPoolResults(VkDevice device, VkQueryPool queryPool, uint32_t firstQuery,
                                                     uint32_t queryCount, size_t dataSize, void *pData, VkDeviceSize stride,
                                                     VkQueryResultFlags flags) const {
+    ZoneScoped;
     if (disabled[query_validation]) return false;
     bool skip = false;
     skip |= ValidateQueryPoolIndex(queryPool, firstQuery, queryCount, "vkGetQueryPoolResults()",
@@ -219,6 +223,7 @@ bool CoreChecks::PreCallValidateGetQueryPoolResults(VkDevice device, VkQueryPool
 
 bool CoreChecks::PreCallValidateCreateQueryPool(VkDevice device, const VkQueryPoolCreateInfo *pCreateInfo,
                                                 const VkAllocationCallbacks *pAllocator, VkQueryPool *pQueryPool) const {
+    ZoneScoped;
     if (disabled[query_validation]) return false;
     bool skip = false;
     if (pCreateInfo && pCreateInfo->queryType == VK_QUERY_TYPE_PIPELINE_STATISTICS) {
@@ -274,6 +279,7 @@ bool CoreChecks::PreCallValidateCreateQueryPool(VkDevice device, const VkQueryPo
 
 bool CoreChecks::ValidateCmdQueueFlags(const CMD_BUFFER_STATE &cb_state, const char *caller_name, VkQueueFlags required_flags,
                                        const char *error_code) const {
+    ZoneScoped;
     auto pool = cb_state.command_pool;
     if (pool) {
         const uint32_t queue_family_index = pool->queueFamilyIndex;
@@ -301,6 +307,7 @@ bool CoreChecks::ValidateCmdQueueFlags(const CMD_BUFFER_STATE &cb_state, const c
 
 bool CoreChecks::ValidateBeginQuery(const CMD_BUFFER_STATE &cb_state, const QueryObject &query_obj, VkFlags flags, uint32_t index,
                                     CMD_TYPE cmd, const ValidateBeginQueryVuids *vuids) const {
+    ZoneScoped;
     bool skip = false;
     auto query_pool_state = Get<QUERY_POOL_STATE>(query_obj.pool);
     const auto &query_pool_ci = query_pool_state->createInfo;
@@ -511,6 +518,7 @@ bool CoreChecks::ValidateBeginQuery(const CMD_BUFFER_STATE &cb_state, const Quer
 
 bool CoreChecks::PreCallValidateCmdBeginQuery(VkCommandBuffer commandBuffer, VkQueryPool queryPool, uint32_t slot,
                                               VkFlags flags) const {
+    ZoneScoped;
     if (disabled[query_validation]) return false;
     bool skip = false;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
@@ -562,6 +570,7 @@ static QueryState GetLocalQueryState(const QueryMap *localQueryToStateMap, VkQue
 
 bool CoreChecks::VerifyQueryIsReset(const CMD_BUFFER_STATE &cb_state, const QueryObject &query_obj, const CMD_TYPE cmd_type,
                                     VkQueryPool &firstPerfQueryPool, uint32_t perfPass, QueryMap *localQueryToStateMap) {
+    ZoneScoped;
     bool skip = false;
     auto state_data = cb_state.dev_data;
 
@@ -597,6 +606,7 @@ bool CoreChecks::VerifyQueryIsReset(const CMD_BUFFER_STATE &cb_state, const Quer
 
 bool CoreChecks::ValidatePerformanceQuery(const CMD_BUFFER_STATE &cb_state, const QueryObject &query_obj, const CMD_TYPE cmd_type,
                                           VkQueryPool &firstPerfQueryPool, uint32_t perfPass, QueryMap *localQueryToStateMap) {
+    ZoneScoped;
     auto state_data = cb_state.dev_data;
     auto query_pool_state = state_data->Get<QUERY_POOL_STATE>(query_obj.pool);
     const auto &query_pool_ci = query_pool_state->createInfo;
@@ -647,6 +657,7 @@ bool CoreChecks::ValidatePerformanceQuery(const CMD_BUFFER_STATE &cb_state, cons
 }
 
 void CoreChecks::EnqueueVerifyBeginQuery(VkCommandBuffer command_buffer, const QueryObject &query_obj, const CMD_TYPE cmd_type) {
+    ZoneScoped;
     auto cb_state = GetWrite<CMD_BUFFER_STATE>(command_buffer);
 
     // Enqueue the submit time validation here, ahead of the submit time state update in the StateTracker's PostCallRecord
@@ -669,6 +680,7 @@ void CoreChecks::PreCallRecordCmdBeginQuery(VkCommandBuffer commandBuffer, VkQue
 
 void CoreChecks::EnqueueVerifyEndQuery(CMD_BUFFER_STATE &cb_state, const QueryObject &query_obj) {
     // Enqueue the submit time validation here, ahead of the submit time state update in the StateTracker's PostCallRecord
+    ZoneScoped;
     cb_state.queryUpdates.emplace_back([query_obj](CMD_BUFFER_STATE &cb_state_arg, bool do_validate,
                                                    VkQueryPool &firstPerfQueryPool, uint32_t perfPass,
                                                    QueryMap *localQueryToStateMap) {
@@ -690,6 +702,7 @@ void CoreChecks::EnqueueVerifyEndQuery(CMD_BUFFER_STATE &cb_state, const QueryOb
 
 bool CoreChecks::ValidateCmdEndQuery(const CMD_BUFFER_STATE &cb_state, const QueryObject &query_obj, uint32_t index, CMD_TYPE cmd,
                                      const ValidateEndQueryVuids *vuids) const {
+    ZoneScoped;
     bool skip = false;
     const char *cmd_name = CommandTypeString(cmd);
     if (!cb_state.activeQueries.count(query_obj)) {
@@ -717,6 +730,7 @@ bool CoreChecks::ValidateCmdEndQuery(const CMD_BUFFER_STATE &cb_state, const Que
 }
 
 bool CoreChecks::PreCallValidateCmdEndQuery(VkCommandBuffer commandBuffer, VkQueryPool queryPool, uint32_t slot) const {
+    ZoneScoped;
     if (disabled[query_validation]) return false;
     bool skip = false;
     QueryObject query_obj = {queryPool, slot};
@@ -746,6 +760,7 @@ bool CoreChecks::PreCallValidateCmdEndQuery(VkCommandBuffer commandBuffer, VkQue
 }
 
 void CoreChecks::PreCallRecordCmdEndQuery(VkCommandBuffer commandBuffer, VkQueryPool queryPool, uint32_t slot) {
+    ZoneScoped;
     if (disabled[query_validation]) return;
     auto cb_state = GetWrite<CMD_BUFFER_STATE>(commandBuffer);
     QueryObject query_obj = {queryPool, slot};
@@ -755,6 +770,7 @@ void CoreChecks::PreCallRecordCmdEndQuery(VkCommandBuffer commandBuffer, VkQuery
 
 bool CoreChecks::ValidateQueryPoolIndex(VkQueryPool queryPool, uint32_t firstQuery, uint32_t queryCount, const char *func_name,
                                         const char *first_vuid, const char *sum_vuid) const {
+    ZoneScoped;
     bool skip = false;
     auto query_pool_state = Get<QUERY_POOL_STATE>(queryPool);
     if (query_pool_state) {
@@ -776,6 +792,7 @@ bool CoreChecks::ValidateQueryPoolIndex(VkQueryPool queryPool, uint32_t firstQue
 
 bool CoreChecks::PreCallValidateCmdResetQueryPool(VkCommandBuffer commandBuffer, VkQueryPool queryPool, uint32_t firstQuery,
                                                   uint32_t queryCount) const {
+    ZoneScoped;
     if (disabled[query_validation]) return false;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     assert(cb_state);
@@ -818,6 +835,7 @@ static QueryResultType GetQueryResultType(QueryState state, VkQueryResultFlags f
 bool CoreChecks::ValidateCopyQueryPoolResults(const CMD_BUFFER_STATE &cb_state, VkQueryPool queryPool, uint32_t firstQuery,
                                               uint32_t queryCount, uint32_t perfPass, VkQueryResultFlags flags,
                                               QueryMap *localQueryToStateMap) {
+    ZoneScoped;
     const auto state_data = cb_state.dev_data;
     bool skip = false;
     for (uint32_t i = 0; i < queryCount; i++) {
@@ -836,6 +854,7 @@ bool CoreChecks::ValidateCopyQueryPoolResults(const CMD_BUFFER_STATE &cb_state, 
 bool CoreChecks::PreCallValidateCmdCopyQueryPoolResults(VkCommandBuffer commandBuffer, VkQueryPool queryPool, uint32_t firstQuery,
                                                         uint32_t queryCount, VkBuffer dstBuffer, VkDeviceSize dstOffset,
                                                         VkDeviceSize stride, VkQueryResultFlags flags) const {
+    ZoneScoped;
     if (disabled[query_validation]) return false;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     auto dst_buff_state = Get<BUFFER_STATE>(dstBuffer);
@@ -914,6 +933,7 @@ bool CoreChecks::PreCallValidateCmdCopyQueryPoolResults(VkCommandBuffer commandB
 void CoreChecks::PreCallRecordCmdCopyQueryPoolResults(VkCommandBuffer commandBuffer, VkQueryPool queryPool, uint32_t firstQuery,
                                                       uint32_t queryCount, VkBuffer dstBuffer, VkDeviceSize dstOffset,
                                                       VkDeviceSize stride, VkQueryResultFlags flags) {
+    ZoneScoped;
     if (disabled[query_validation]) return;
     auto cb_state = GetWrite<CMD_BUFFER_STATE>(commandBuffer);
     cb_state->queryUpdates.emplace_back([queryPool, firstQuery, queryCount, flags](
@@ -926,6 +946,7 @@ void CoreChecks::PreCallRecordCmdCopyQueryPoolResults(VkCommandBuffer commandBuf
 
 bool CoreChecks::PreCallValidateCmdWriteTimestamp(VkCommandBuffer commandBuffer, VkPipelineStageFlagBits pipelineStage,
                                                   VkQueryPool queryPool, uint32_t slot) const {
+    ZoneScoped;
     if (disabled[query_validation]) return false;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     assert(cb_state);
@@ -959,6 +980,7 @@ bool CoreChecks::PreCallValidateCmdWriteTimestamp(VkCommandBuffer commandBuffer,
 
 bool CoreChecks::ValidateCmdWriteTimestamp2(VkCommandBuffer commandBuffer, VkPipelineStageFlags2 stage, VkQueryPool queryPool,
                                             uint32_t slot, CMD_TYPE cmd_type) const {
+    ZoneScoped;
     if (disabled[query_validation]) return false;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     assert(cb_state);
@@ -1020,6 +1042,7 @@ bool CoreChecks::PreCallValidateCmdWriteTimestamp2(VkCommandBuffer commandBuffer
 
 void CoreChecks::PreCallRecordCmdWriteTimestamp(VkCommandBuffer commandBuffer, VkPipelineStageFlagBits pipelineStage,
                                                 VkQueryPool queryPool, uint32_t slot) {
+    ZoneScoped;
     if (disabled[query_validation]) return;
     // Enqueue the submit time validation check here, before the submit time state update in StateTracker::PostCall...
     auto cb_state = GetWrite<CMD_BUFFER_STATE>(commandBuffer);
@@ -1035,6 +1058,7 @@ void CoreChecks::PreCallRecordCmdWriteTimestamp(VkCommandBuffer commandBuffer, V
 
 void CoreChecks::PreCallRecordCmdWriteTimestamp2KHR(VkCommandBuffer commandBuffer, VkPipelineStageFlags2KHR pipelineStage,
                                                     VkQueryPool queryPool, uint32_t slot) {
+    ZoneScoped;
     if (disabled[query_validation]) return;
     // Enqueue the submit time validation check here, before the submit time state update in StateTracker::PostCall...
     auto cb_state = GetWrite<CMD_BUFFER_STATE>(commandBuffer);
@@ -1050,6 +1074,7 @@ void CoreChecks::PreCallRecordCmdWriteTimestamp2KHR(VkCommandBuffer commandBuffe
 
 void CoreChecks::PreCallRecordCmdWriteTimestamp2(VkCommandBuffer commandBuffer, VkPipelineStageFlags2 pipelineStage,
                                                  VkQueryPool queryPool, uint32_t slot) {
+    ZoneScoped;
     if (disabled[query_validation]) return;
     // Enqueue the submit time validation check here, before the submit time state update in StateTracker::PostCall...
     auto cb_state = GetWrite<CMD_BUFFER_STATE>(commandBuffer);
@@ -1065,6 +1090,7 @@ void CoreChecks::PreCallRecordCmdWriteTimestamp2(VkCommandBuffer commandBuffer, 
 
 bool CoreChecks::PreCallValidateCmdBeginQueryIndexedEXT(VkCommandBuffer commandBuffer, VkQueryPool queryPool, uint32_t query,
                                                         VkQueryControlFlags flags, uint32_t index) const {
+    ZoneScoped;
     if (disabled[query_validation]) return false;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     assert(cb_state);
@@ -1151,6 +1177,7 @@ bool CoreChecks::PreCallValidateCmdBeginQueryIndexedEXT(VkCommandBuffer commandB
 
 void CoreChecks::PreCallRecordCmdBeginQueryIndexedEXT(VkCommandBuffer commandBuffer, VkQueryPool queryPool, uint32_t query,
                                                       VkQueryControlFlags flags, uint32_t index) {
+    ZoneScoped;
     if (disabled[query_validation]) return;
     QueryObject query_obj = {queryPool, query, index};
     EnqueueVerifyBeginQuery(commandBuffer, query_obj, CMD_BEGINQUERYINDEXEDEXT);
@@ -1158,6 +1185,7 @@ void CoreChecks::PreCallRecordCmdBeginQueryIndexedEXT(VkCommandBuffer commandBuf
 
 void CoreChecks::PreCallRecordCmdEndQueryIndexedEXT(VkCommandBuffer commandBuffer, VkQueryPool queryPool, uint32_t query,
                                                     uint32_t index) {
+    ZoneScoped;
     if (disabled[query_validation]) return;
     auto cb_state = GetWrite<CMD_BUFFER_STATE>(commandBuffer);
     QueryObject query_obj = {queryPool, query, index};
@@ -1167,6 +1195,7 @@ void CoreChecks::PreCallRecordCmdEndQueryIndexedEXT(VkCommandBuffer commandBuffe
 
 bool CoreChecks::PreCallValidateCmdEndQueryIndexedEXT(VkCommandBuffer commandBuffer, VkQueryPool queryPool, uint32_t query,
                                                       uint32_t index) const {
+    ZoneScoped;
     if (disabled[query_validation]) return false;
     QueryObject query_obj = {queryPool, query, index};
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
@@ -1244,6 +1273,7 @@ bool CoreChecks::PreCallValidateCmdEndQueryIndexedEXT(VkCommandBuffer commandBuf
 bool CoreChecks::ValidateQueryRange(VkDevice device, VkQueryPool queryPool, uint32_t totalCount, uint32_t firstQuery,
                                     uint32_t queryCount, const char *vuid_badfirst, const char *vuid_badrange,
                                     const char *apiName) const {
+    ZoneScoped;
     bool skip = false;
 
     if (firstQuery >= totalCount) {
@@ -1263,6 +1293,7 @@ bool CoreChecks::ValidateQueryRange(VkDevice device, VkQueryPool queryPool, uint
 
 bool CoreChecks::ValidateResetQueryPool(VkDevice device, VkQueryPool queryPool, uint32_t firstQuery, uint32_t queryCount,
                                         const char *apiName) const {
+    ZoneScoped;
     if (disabled[query_validation]) return false;
 
     bool skip = false;
@@ -1293,6 +1324,7 @@ bool CoreChecks::PreCallValidateResetQueryPool(VkDevice device, VkQueryPool quer
 bool CoreChecks::ValidateQueryPoolStride(const std::string &vuid_not_64, const std::string &vuid_64, const VkDeviceSize stride,
                                          const char *parameter_name, const uint64_t parameter_value,
                                          const VkQueryResultFlags flags) const {
+    ZoneScoped;
     bool skip = false;
     if (flags & VK_QUERY_RESULT_64_BIT) {
         static const int condition_multiples = 0b0111;
@@ -1313,6 +1345,7 @@ bool CoreChecks::ValidateQueryPoolStride(const std::string &vuid_not_64, const s
 void CoreChecks::PostCallRecordGetQueryPoolResults(VkDevice device, VkQueryPool queryPool, uint32_t firstQuery, uint32_t queryCount,
                                                    size_t dataSize, void *pData, VkDeviceSize stride, VkQueryResultFlags flags,
                                                    VkResult result) {
+    ZoneScoped;
     if (result != VK_SUCCESS) {
         return;
     }
@@ -1325,6 +1358,7 @@ void CoreChecks::PostCallRecordGetQueryPoolResults(VkDevice device, VkQueryPool 
 }
 
 bool CoreChecks::PreCallValidateReleaseProfilingLockKHR(VkDevice device) const {
+    ZoneScoped;
     bool skip = false;
 
     if (!performance_lock_acquired) {

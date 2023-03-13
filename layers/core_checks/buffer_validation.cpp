@@ -41,6 +41,7 @@ template bool CoreChecks::ValidateBufferUsageFlags(VkDevice, BUFFER_STATE const 
 
 bool CoreChecks::ValidateBufferViewRange(const BUFFER_STATE *buffer_state, const VkBufferViewCreateInfo *pCreateInfo,
                                          const VkPhysicalDeviceLimits *device_limits) const {
+    ZoneScoped;
     bool skip = false;
 
     const VkDeviceSize &range = pCreateInfo->range;
@@ -98,6 +99,7 @@ bool CoreChecks::ValidateBufferViewRange(const BUFFER_STATE *buffer_state, const
 }
 
 bool CoreChecks::ValidateBufferViewBuffer(const BUFFER_STATE *buffer_state, const VkBufferViewCreateInfo *pCreateInfo) const {
+    ZoneScoped;
     bool skip = false;
     const VkFormat format = pCreateInfo->format;
     const VkFormatProperties3KHR format_properties = GetPDFormatProperties(format);
@@ -125,6 +127,7 @@ bool CoreChecks::ValidateBufferViewBuffer(const BUFFER_STATE *buffer_state, cons
 
 bool CoreChecks::PreCallValidateCreateBuffer(VkDevice device, const VkBufferCreateInfo *pCreateInfo,
                                              const VkAllocationCallbacks *pAllocator, VkBuffer *pBuffer) const {
+    ZoneScoped;
     bool skip = false;
 
     auto chained_devaddr_struct = LvlFindInChain<VkBufferDeviceAddressCreateInfoEXT>(pCreateInfo->pNext);
@@ -308,6 +311,7 @@ bool CoreChecks::PreCallValidateCreateBuffer(VkDevice device, const VkBufferCrea
 
 bool CoreChecks::PreCallValidateCreateBufferView(VkDevice device, const VkBufferViewCreateInfo *pCreateInfo,
                                                  const VkAllocationCallbacks *pAllocator, VkBufferView *pView) const {
+    ZoneScoped;
     bool skip = false;
     auto buffer_state = Get<BUFFER_STATE>(pCreateInfo->buffer);
 
@@ -413,6 +417,7 @@ bool CoreChecks::PreCallValidateCreateBufferView(VkDevice device, const VkBuffer
 }
 
 bool CoreChecks::PreCallValidateDestroyBuffer(VkDevice device, VkBuffer buffer, const VkAllocationCallbacks *pAllocator) const {
+    ZoneScoped;
     auto buffer_state = Get<BUFFER_STATE>(buffer);
 
     bool skip = false;
@@ -424,6 +429,7 @@ bool CoreChecks::PreCallValidateDestroyBuffer(VkDevice device, VkBuffer buffer, 
 
 bool CoreChecks::PreCallValidateDestroyBufferView(VkDevice device, VkBufferView bufferView,
                                                   const VkAllocationCallbacks *pAllocator) const {
+    ZoneScoped;
     auto buffer_view_state = Get<BUFFER_VIEW_STATE>(bufferView);
     bool skip = false;
     if (buffer_view_state) {
@@ -434,6 +440,7 @@ bool CoreChecks::PreCallValidateDestroyBufferView(VkDevice device, VkBufferView 
 
 bool CoreChecks::PreCallValidateCmdFillBuffer(VkCommandBuffer commandBuffer, VkBuffer dstBuffer, VkDeviceSize dstOffset,
                                               VkDeviceSize size, uint32_t data) const {
+    ZoneScoped;
     bool skip = false;
     auto cb_state_ptr = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     auto buffer_state = Get<BUFFER_STATE>(dstBuffer);
@@ -477,6 +484,7 @@ bool CoreChecks::PreCallValidateCmdFillBuffer(VkCommandBuffer commandBuffer, VkB
 // Validates the buffer is allowed to be protected
 bool CoreChecks::ValidateProtectedBuffer(const CMD_BUFFER_STATE &cb_state, const BUFFER_STATE &buffer_state, const char *cmd_name,
                                          const char *vuid, const char *more_message) const {
+    ZoneScoped;
     bool skip = false;
 
     // if driver supports protectedNoFault the operation is valid, just has undefined values
@@ -492,6 +500,7 @@ bool CoreChecks::ValidateProtectedBuffer(const CMD_BUFFER_STATE &cb_state, const
 // Validates the buffer is allowed to be unprotected
 bool CoreChecks::ValidateUnprotectedBuffer(const CMD_BUFFER_STATE &cb_state, const BUFFER_STATE &buffer_state, const char *cmd_name,
                                            const char *vuid, const char *more_message) const {
+    ZoneScoped;
     bool skip = false;
 
     // if driver supports protectedNoFault the operation is valid, just has undefined values

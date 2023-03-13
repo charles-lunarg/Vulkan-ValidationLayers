@@ -36,6 +36,8 @@
 #include <intrin.h>  // For __lzcnt()
 #endif
 
+#include <tracy/Tracy.hpp>
+
 #define STRINGIFY(s) STRINGIFY_HELPER(s)
 #define STRINGIFY_HELPER(s) #s
 

@@ -2104,6 +2104,7 @@ const DrawDispatchVuid &CoreChecks::GetDrawDispatchVuid(CMD_TYPE cmd_type) const
 // Generic function to handle validation for all CmdDraw* type functions
 bool CoreChecks::ValidateCmdDrawType(const CMD_BUFFER_STATE &cb_state, bool indexed, VkPipelineBindPoint bind_point,
                                      CMD_TYPE cmd_type) const {
+    ZoneScoped;
     bool skip = false;
     skip |= ValidateCmd(cb_state, cmd_type);
     skip |= ValidateCmdBufDrawState(cb_state, cmd_type, indexed, bind_point);
@@ -2113,6 +2114,7 @@ bool CoreChecks::ValidateCmdDrawType(const CMD_BUFFER_STATE &cb_state, bool inde
 
 bool CoreChecks::ValidateCmdDrawInstance(const CMD_BUFFER_STATE &cb_state, uint32_t instanceCount, uint32_t firstInstance,
                                          CMD_TYPE cmd_type) const {
+    ZoneScoped;
     bool skip = false;
     const DrawDispatchVuid &vuid = GetDrawDispatchVuid(cmd_type);
     const char *caller = CommandTypeString(cmd_type);
@@ -2131,6 +2133,7 @@ bool CoreChecks::ValidateCmdDrawInstance(const CMD_BUFFER_STATE &cb_state, uint3
 }
 
 bool CoreChecks::ValidateVTGShaderStages(const CMD_BUFFER_STATE &cb_state, CMD_TYPE cmd_type) const {
+    ZoneScoped;
     bool skip = false;
     const DrawDispatchVuid &vuid = GetDrawDispatchVuid(cmd_type);
     const char *api_name = CommandTypeString(cmd_type);
@@ -2147,6 +2150,7 @@ bool CoreChecks::ValidateVTGShaderStages(const CMD_BUFFER_STATE &cb_state, CMD_T
 }
 
 bool CoreChecks::ValidateMeshShaderStage(const CMD_BUFFER_STATE &cb_state, CMD_TYPE cmd_type, bool is_NV) const {
+    ZoneScoped;
     bool skip = false;
     const DrawDispatchVuid &vuid = GetDrawDispatchVuid(cmd_type);
     const char *api_name = CommandTypeString(cmd_type);
@@ -2173,6 +2177,7 @@ bool CoreChecks::ValidateMeshShaderStage(const CMD_BUFFER_STATE &cb_state, CMD_T
 
 bool CoreChecks::PreCallValidateCmdDraw(VkCommandBuffer commandBuffer, uint32_t vertexCount, uint32_t instanceCount,
                                         uint32_t firstVertex, uint32_t firstInstance) const {
+    ZoneScoped;
     bool skip = false;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     skip |= ValidateCmdDrawInstance(*cb_state, instanceCount, firstInstance, CMD_DRAW);
@@ -2184,6 +2189,7 @@ bool CoreChecks::PreCallValidateCmdDraw(VkCommandBuffer commandBuffer, uint32_t 
 bool CoreChecks::PreCallValidateCmdDrawMultiEXT(VkCommandBuffer commandBuffer, uint32_t drawCount,
                                                 const VkMultiDrawInfoEXT *pVertexInfo, uint32_t instanceCount,
                                                 uint32_t firstInstance, uint32_t stride) const {
+    ZoneScoped;
     bool skip = false;
     if (!enabled_features.multi_draw_features.multiDraw) {
         skip |= LogError(commandBuffer, "VUID-vkCmdDrawMultiEXT-None-04933",
@@ -2205,6 +2211,7 @@ bool CoreChecks::PreCallValidateCmdDrawMultiEXT(VkCommandBuffer commandBuffer, u
 
 bool CoreChecks::ValidateCmdDrawIndexedBufferSize(const CMD_BUFFER_STATE &cb_state, uint32_t indexCount, uint32_t firstIndex,
                                                   const char *caller, const char *first_index_vuid) const {
+    ZoneScoped;
     bool skip = false;
     if (!enabled_features.robustness2_features.robustBufferAccess2 && cb_state.index_buffer_binding.bound()) {
         const auto &index_buffer_binding = cb_state.index_buffer_binding;
@@ -2224,6 +2231,7 @@ bool CoreChecks::ValidateCmdDrawIndexedBufferSize(const CMD_BUFFER_STATE &cb_sta
 
 bool CoreChecks::PreCallValidateCmdDrawIndexed(VkCommandBuffer commandBuffer, uint32_t indexCount, uint32_t instanceCount,
                                                uint32_t firstIndex, int32_t vertexOffset, uint32_t firstInstance) const {
+    ZoneScoped;
     bool skip = false;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     skip |= ValidateCmdDrawInstance(*cb_state, instanceCount, firstInstance, CMD_DRAWINDEXED);
@@ -2238,6 +2246,7 @@ bool CoreChecks::PreCallValidateCmdDrawMultiIndexedEXT(VkCommandBuffer commandBu
                                                        const VkMultiDrawIndexedInfoEXT *pIndexInfo, uint32_t instanceCount,
                                                        uint32_t firstInstance, uint32_t stride,
                                                        const int32_t *pVertexOffset) const {
+    ZoneScoped;
     bool skip = false;
     if (!enabled_features.multi_draw_features.multiDraw) {
         skip |= LogError(commandBuffer, "VUID-vkCmdDrawMultiIndexedEXT-None-04937",
@@ -2265,6 +2274,7 @@ bool CoreChecks::PreCallValidateCmdDrawMultiIndexedEXT(VkCommandBuffer commandBu
 
 bool CoreChecks::PreCallValidateCmdDrawIndirect(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset,
                                                 uint32_t drawCount, uint32_t stride) const {
+    ZoneScoped;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     bool skip = ValidateCmdDrawType(*cb_state, false, VK_PIPELINE_BIND_POINT_GRAPHICS, CMD_DRAWINDIRECT);
     auto buffer_state = Get<BUFFER_STATE>(buffer);
@@ -2290,6 +2300,7 @@ bool CoreChecks::PreCallValidateCmdDrawIndirect(VkCommandBuffer commandBuffer, V
 
 bool CoreChecks::PreCallValidateCmdDrawIndexedIndirect(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset,
                                                        uint32_t drawCount, uint32_t stride) const {
+    ZoneScoped;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     bool skip = ValidateCmdDrawType(*cb_state, true, VK_PIPELINE_BIND_POINT_GRAPHICS, CMD_DRAWINDEXEDINDIRECT);
     auto buffer_state = Get<BUFFER_STATE>(buffer);
@@ -2315,6 +2326,7 @@ bool CoreChecks::PreCallValidateCmdDrawIndexedIndirect(VkCommandBuffer commandBu
 }
 
 bool CoreChecks::PreCallValidateCmdDispatch(VkCommandBuffer commandBuffer, uint32_t x, uint32_t y, uint32_t z) const {
+    ZoneScoped;
     bool skip = false;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     skip |= ValidateCmdDrawType(*cb_state, false, VK_PIPELINE_BIND_POINT_COMPUTE, CMD_DISPATCH);
@@ -2323,6 +2335,7 @@ bool CoreChecks::PreCallValidateCmdDispatch(VkCommandBuffer commandBuffer, uint3
 
 bool CoreChecks::ValidateBaseGroups(const CMD_BUFFER_STATE &cb_state, uint32_t baseGroupX, uint32_t baseGroupY, uint32_t baseGroupZ,
                                     const char *apiName) const {
+    ZoneScoped;
     bool skip = false;
     if (baseGroupX || baseGroupY || baseGroupZ) {
         const auto lv_bind_point = ConvertToLvlBindPoint(VK_PIPELINE_BIND_POINT_COMPUTE);
@@ -2340,6 +2353,7 @@ bool CoreChecks::ValidateBaseGroups(const CMD_BUFFER_STATE &cb_state, uint32_t b
 bool CoreChecks::PreCallValidateCmdDispatchBase(VkCommandBuffer commandBuffer, uint32_t baseGroupX, uint32_t baseGroupY,
                                                 uint32_t baseGroupZ, uint32_t groupCountX, uint32_t groupCountY,
                                                 uint32_t groupCountZ) const {
+    ZoneScoped;
     bool skip = false;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     skip |= ValidateCmdDrawType(*cb_state, false, VK_PIPELINE_BIND_POINT_COMPUTE, CMD_DISPATCHBASE);
@@ -2350,6 +2364,7 @@ bool CoreChecks::PreCallValidateCmdDispatchBase(VkCommandBuffer commandBuffer, u
 bool CoreChecks::PreCallValidateCmdDispatchBaseKHR(VkCommandBuffer commandBuffer, uint32_t baseGroupX, uint32_t baseGroupY,
                                                    uint32_t baseGroupZ, uint32_t groupCountX, uint32_t groupCountY,
                                                    uint32_t groupCountZ) const {
+    ZoneScoped;
     bool skip = false;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     skip |= ValidateCmdDrawType(*cb_state, false, VK_PIPELINE_BIND_POINT_COMPUTE, CMD_DISPATCHBASEKHR);
@@ -2358,6 +2373,7 @@ bool CoreChecks::PreCallValidateCmdDispatchBaseKHR(VkCommandBuffer commandBuffer
 }
 
 bool CoreChecks::PreCallValidateCmdDispatchIndirect(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset) const {
+    ZoneScoped;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     bool skip = ValidateCmdDrawType(*cb_state, false, VK_PIPELINE_BIND_POINT_COMPUTE, CMD_DISPATCHINDIRECT);
     auto buffer_state = Get<BUFFER_STATE>(buffer);
@@ -2372,6 +2388,7 @@ bool CoreChecks::PreCallValidateCmdDispatchIndirect(VkCommandBuffer commandBuffe
 bool CoreChecks::ValidateCmdDrawIndirectCount(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset,
                                               VkBuffer countBuffer, VkDeviceSize countBufferOffset, uint32_t maxDrawCount,
                                               uint32_t stride, CMD_TYPE cmd_type) const {
+    ZoneScoped;
     bool skip = false;
     const char *apiName = CommandTypeString(cmd_type);
     if ((device_extensions.vk_khr_draw_indirect_count != kEnabledByCreateinfo) &&
@@ -2417,6 +2434,7 @@ bool CoreChecks::PreCallValidateCmdDrawIndirectCount(VkCommandBuffer commandBuff
 bool CoreChecks::ValidateCmdDrawIndexedIndirectCount(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset,
                                                      VkBuffer countBuffer, VkDeviceSize countBufferOffset, uint32_t maxDrawCount,
                                                      uint32_t stride, CMD_TYPE cmd_type) const {
+    ZoneScoped;
     bool skip = false;
     const char *apiName = CommandTypeString(cmd_type);
     if ((device_extensions.vk_khr_draw_indirect_count != kEnabledByCreateinfo) &&
@@ -2461,6 +2479,7 @@ bool CoreChecks::PreCallValidateCmdDrawIndirectByteCountEXT(VkCommandBuffer comm
                                                             uint32_t firstInstance, VkBuffer counterBuffer,
                                                             VkDeviceSize counterBufferOffset, uint32_t counterOffset,
                                                             uint32_t vertexStride) const {
+    ZoneScoped;
     bool skip = false;
     if (!enabled_features.transform_feedback_features.transformFeedback) {
         skip |= LogError(commandBuffer, "VUID-vkCmdDrawIndirectByteCountEXT-transformFeedback-02287",
@@ -2488,6 +2507,7 @@ bool CoreChecks::PreCallValidateCmdTraceRaysNV(VkCommandBuffer commandBuffer, Vk
                                                VkDeviceSize hitShaderBindingStride, VkBuffer callableShaderBindingTableBuffer,
                                                VkDeviceSize callableShaderBindingOffset, VkDeviceSize callableShaderBindingStride,
                                                uint32_t width, uint32_t height, uint32_t depth) const {
+    ZoneScoped;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     bool skip = ValidateCmdDrawType(*cb_state, true, VK_PIPELINE_BIND_POINT_RAY_TRACING_NV, CMD_TRACERAYSNV);
     auto callable_shader_buffer_state = Get<BUFFER_STATE>(callableShaderBindingTableBuffer);
@@ -2533,6 +2553,7 @@ bool CoreChecks::ValidateCmdTraceRaysKHR(bool isIndirect, VkCommandBuffer comman
                                          const VkStridedDeviceAddressRegionKHR *pMissShaderBindingTable,
                                          const VkStridedDeviceAddressRegionKHR *pHitShaderBindingTable,
                                          const VkStridedDeviceAddressRegionKHR *pCallableShaderBindingTable) const {
+    ZoneScoped;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     bool skip = ValidateCmdDrawType(*cb_state, true, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, CMD_TRACERAYSKHR);
     const auto lv_bind_point = ConvertToLvlBindPoint(VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR);
@@ -2654,12 +2675,14 @@ bool CoreChecks::PreCallValidateCmdTraceRaysIndirectKHR(VkCommandBuffer commandB
 
 bool CoreChecks::PreCallValidateCmdTraceRaysIndirect2KHR(VkCommandBuffer commandBuffer,
                                                          VkDeviceAddress indirectDeviceAddress) const {
+    ZoneScoped;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     bool skip = ValidateCmdDrawType(*cb_state, true, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, CMD_TRACERAYSINDIRECTKHR);
     return skip;
 }
 
 bool CoreChecks::PreCallValidateCmdDrawMeshTasksNV(VkCommandBuffer commandBuffer, uint32_t taskCount, uint32_t firstTask) const {
+    ZoneScoped;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     bool skip = ValidateCmdDrawType(*cb_state, false, VK_PIPELINE_BIND_POINT_GRAPHICS, CMD_DRAWMESHTASKSNV);
     skip |= ValidateMeshShaderStage(*cb_state, CMD_DRAWMESHTASKSNV, true);
@@ -2668,6 +2691,7 @@ bool CoreChecks::PreCallValidateCmdDrawMeshTasksNV(VkCommandBuffer commandBuffer
 
 bool CoreChecks::PreCallValidateCmdDrawMeshTasksIndirectNV(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset,
                                                            uint32_t drawCount, uint32_t stride) const {
+    ZoneScoped;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     bool skip = ValidateCmdDrawType(*cb_state, false, VK_PIPELINE_BIND_POINT_GRAPHICS, CMD_DRAWMESHTASKSINDIRECTNV);
     auto buffer_state = Get<BUFFER_STATE>(buffer);
@@ -2689,6 +2713,7 @@ bool CoreChecks::PreCallValidateCmdDrawMeshTasksIndirectNV(VkCommandBuffer comma
 bool CoreChecks::PreCallValidateCmdDrawMeshTasksIndirectCountNV(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset,
                                                                 VkBuffer countBuffer, VkDeviceSize countBufferOffset,
                                                                 uint32_t maxDrawCount, uint32_t stride) const {
+    ZoneScoped;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     bool skip = ValidateCmdDrawType(*cb_state, false, VK_PIPELINE_BIND_POINT_GRAPHICS, CMD_DRAWMESHTASKSINDIRECTCOUNTNV);
     auto buffer_state = Get<BUFFER_STATE>(buffer);
@@ -2708,6 +2733,7 @@ bool CoreChecks::PreCallValidateCmdDrawMeshTasksIndirectCountNV(VkCommandBuffer 
 
 bool CoreChecks::PreCallValidateCmdDrawMeshTasksEXT(VkCommandBuffer commandBuffer, uint32_t groupCountX, uint32_t groupCountY,
                                                     uint32_t groupCountZ) const {
+    ZoneScoped;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     bool skip = ValidateCmdDrawType(*cb_state, false, VK_PIPELINE_BIND_POINT_GRAPHICS, CMD_DRAWMESHTASKSEXT);
     skip |= ValidateMeshShaderStage(*cb_state, CMD_DRAWMESHTASKSEXT, false);
@@ -2716,6 +2742,7 @@ bool CoreChecks::PreCallValidateCmdDrawMeshTasksEXT(VkCommandBuffer commandBuffe
 
 bool CoreChecks::PreCallValidateCmdDrawMeshTasksIndirectEXT(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset,
                                                             uint32_t drawCount, uint32_t stride) const {
+    ZoneScoped;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     bool skip = ValidateCmdDrawType(*cb_state, false, VK_PIPELINE_BIND_POINT_GRAPHICS, CMD_DRAWMESHTASKSINDIRECTEXT);
     auto buffer_state = Get<BUFFER_STATE>(buffer);
@@ -2743,6 +2770,7 @@ bool CoreChecks::PreCallValidateCmdDrawMeshTasksIndirectCountEXT(VkCommandBuffer
                                                                  VkDeviceSize offset, VkBuffer countBuffer,
                                                                  VkDeviceSize countBufferOffset, uint32_t maxDrawCount,
                                                                  uint32_t stride) const {
+    ZoneScoped;
     const CMD_TYPE cmd_type = CMD_DRAWMESHTASKSINDIRECTCOUNTEXT;
     const DrawDispatchVuid &vuid = GetDrawDispatchVuid(cmd_type);
     const char *caller_name = CommandTypeString(cmd_type);
@@ -2771,6 +2799,7 @@ bool CoreChecks::PreCallValidateCmdDrawMeshTasksIndirectCountEXT(VkCommandBuffer
 // Validate overall state at the time of a draw call
 bool CoreChecks::ValidateCmdBufDrawState(const CMD_BUFFER_STATE &cb_state, CMD_TYPE cmd_type, const bool indexed,
                                          const VkPipelineBindPoint bind_point) const {
+    ZoneScoped;
     const DrawDispatchVuid &vuid = GetDrawDispatchVuid(cmd_type);
     const char *function = CommandTypeString(cmd_type);
     const auto lv_bind_point = ConvertToLvlBindPoint(bind_point);
@@ -2991,6 +3020,7 @@ bool CoreChecks::MatchSampleLocationsInfo(const VkSampleLocationsInfoEXT *pSampl
 }
 
 bool CoreChecks::ValidateIndirectCmd(const CMD_BUFFER_STATE &cb_state, const BUFFER_STATE &buffer_state, CMD_TYPE cmd_type) const {
+    ZoneScoped;
     bool skip = false;
     const DrawDispatchVuid &vuid = GetDrawDispatchVuid(cmd_type);
     const char *caller_name = CommandTypeString(cmd_type);
@@ -3008,6 +3038,7 @@ bool CoreChecks::ValidateIndirectCmd(const CMD_BUFFER_STATE &cb_state, const BUF
 
 bool CoreChecks::ValidateIndirectCountCmd(const CMD_BUFFER_STATE &cb_state, const BUFFER_STATE &count_buffer_state,
                                           VkDeviceSize count_buffer_offset, CMD_TYPE cmd_type) const {
+    ZoneScoped;
     bool skip = false;
     const DrawDispatchVuid &vuid = GetDrawDispatchVuid(cmd_type);
     const char *caller_name = CommandTypeString(cmd_type);

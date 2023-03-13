@@ -27,6 +27,8 @@
 #include "vk_validation_error_messages.h"
 #include "xxhash.h"
 
+#include <tracy/Tracy.hpp>
+
 VKAPI_ATTR void SetDebugUtilsSeverityFlags(std::vector<VkLayerDbgFunctionState> &callbacks, debug_report_data *debug_data) {
     // For all callback in list, return their complete set of severities and modes
     for (const auto &item : callbacks) {
@@ -336,6 +338,7 @@ static bool LogMsgEnabled(const debug_report_data *debug_data, const std::string
 }
 
 VKAPI_ATTR bool LogMsg(const debug_report_data *debug_data, VkFlags msg_flags, const LogObjectList &objects, const std::string &vuid_text, const char *format, va_list argptr) {
+    ZoneScoped;
     VkDebugUtilsMessageSeverityFlagsEXT severity;
     VkDebugUtilsMessageTypeFlagsEXT type;
 

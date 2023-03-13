@@ -95,6 +95,10 @@ if (VVL_CLANG_TIDY)
     set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY}")
 endif()
 
+option(VVL_ENABLE_TRACY_PROFILER "Enables the Tracy Profiler")
+find_package(Tracy CONFIG REQUIRED)
+find_package(Threads REQUIRED)
+
 if(${CMAKE_CXX_COMPILER_ID} MATCHES "(GNU|Clang)")
     add_compile_options(
         -Wall
@@ -109,10 +113,10 @@ if(${CMAKE_CXX_COMPILER_ID} MATCHES "(GNU|Clang)")
         )
     endif()
 elseif(MSVC)
-    add_compile_options("/W3") # TODO: Update to /W4   
+    add_compile_options("/W3") # TODO: Update to /W4
     add_compile_options("/w34456") # Warn about nested declarations
     add_compile_options("/w34701") # Warn about potentially uninitialized variables
-    add_compile_options("/w34703") # Warn about potentially uninitialized variables    
+    add_compile_options("/w34703") # Warn about potentially uninitialized variables
     add_compile_options("/w34057") # Warn about different indirection types.
     add_compile_options("/w34245") # Warn about signed/unsigned mismatch.
     add_compile_options("/we4189") # Warn about unused variables

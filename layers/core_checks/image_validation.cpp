@@ -37,6 +37,7 @@ bool CoreChecks::FormatRequiresYcbcrConversionExplicitly(const VkFormat format) 
 }
 
 bool CoreChecks::ValidateImageFormatFeatures(const VkImageCreateInfo *pCreateInfo) const {
+    ZoneScoped;
     bool skip = false;
 
     // validates based on imageCreateFormatFeatures from vkspec.html#resources-image-creation-limits
@@ -106,6 +107,7 @@ bool CoreChecks::ValidateImageFormatFeatures(const VkImageCreateInfo *pCreateInf
 
 bool CoreChecks::PreCallValidateCreateImage(VkDevice device, const VkImageCreateInfo *pCreateInfo,
                                             const VkAllocationCallbacks *pAllocator, VkImage *pImage) const {
+    ZoneScoped;
     bool skip = false;
 
     if (IsExtEnabled(device_extensions.vk_android_external_memory_android_hardware_buffer)) {
@@ -604,6 +606,7 @@ bool CoreChecks::PreCallValidateCreateImage(VkDevice device, const VkImageCreate
 
 void CoreChecks::PostCallRecordCreateImage(VkDevice device, const VkImageCreateInfo *pCreateInfo,
                                            const VkAllocationCallbacks *pAllocator, VkImage *pImage, VkResult result) {
+    ZoneScoped;
     if (VK_SUCCESS != result) return;
 
     StateTracker::PostCallRecordCreateImage(device, pCreateInfo, pAllocator, pImage, result);
@@ -615,6 +618,7 @@ void CoreChecks::PostCallRecordCreateImage(VkDevice device, const VkImageCreateI
 }
 
 bool CoreChecks::PreCallValidateDestroyImage(VkDevice device, VkImage image, const VkAllocationCallbacks *pAllocator) const {
+    ZoneScoped;
     auto image_state = Get<IMAGE_STATE>(image);
     bool skip = false;
     if (image_state) {
@@ -630,6 +634,7 @@ bool CoreChecks::PreCallValidateDestroyImage(VkDevice device, VkImage image, con
 }
 
 void CoreChecks::PreCallRecordDestroyImage(VkDevice device, VkImage image, const VkAllocationCallbacks *pAllocator) {
+    ZoneScoped;
     // Clean up validation specific data
     auto image_state = Get<IMAGE_STATE>(image);
     qfo_release_image_barrier_map.erase(image);
@@ -639,6 +644,7 @@ void CoreChecks::PreCallRecordDestroyImage(VkDevice device, VkImage image, const
 
 bool CoreChecks::ValidateClearImageAttributes(const CMD_BUFFER_STATE &cb_state, const IMAGE_STATE *image_state,
                                               const VkImageSubresourceRange &range, const char *param_name) const {
+    ZoneScoped;
     bool skip = false;
     const VkImage image = image_state->image();
     const VkFormat format = image_state->createInfo.format;
@@ -674,6 +680,7 @@ bool CoreChecks::ValidateClearImageAttributes(const CMD_BUFFER_STATE &cb_state, 
 bool CoreChecks::PreCallValidateCmdClearColorImage(VkCommandBuffer commandBuffer, VkImage image, VkImageLayout imageLayout,
                                                    const VkClearColorValue *pColor, uint32_t rangeCount,
                                                    const VkImageSubresourceRange *pRanges) const {
+    ZoneScoped;
     bool skip = false;
     // TODO : Verify memory is in VK_IMAGE_STATE_CLEAR state
     auto cb_state_ptr = GetRead<CMD_BUFFER_STATE>(commandBuffer);
@@ -712,6 +719,7 @@ bool CoreChecks::PreCallValidateCmdClearColorImage(VkCommandBuffer commandBuffer
 void CoreChecks::PreCallRecordCmdClearColorImage(VkCommandBuffer commandBuffer, VkImage image, VkImageLayout imageLayout,
                                                  const VkClearColorValue *pColor, uint32_t rangeCount,
                                                  const VkImageSubresourceRange *pRanges) {
+    ZoneScoped;
     StateTracker::PreCallRecordCmdClearColorImage(commandBuffer, image, imageLayout, pColor, rangeCount, pRanges);
 
     auto cb_state_ptr = GetWrite<CMD_BUFFER_STATE>(commandBuffer);
@@ -725,6 +733,7 @@ void CoreChecks::PreCallRecordCmdClearColorImage(VkCommandBuffer commandBuffer, 
 
 bool CoreChecks::ValidateClearDepthStencilValue(VkCommandBuffer commandBuffer, VkClearDepthStencilValue clearValue,
                                                 const char *apiName) const {
+    ZoneScoped;
     bool skip = false;
 
     // The extension was not created with a feature bit whichs prevents displaying the 2 variations of the VUIDs
@@ -744,6 +753,7 @@ bool CoreChecks::ValidateClearDepthStencilValue(VkCommandBuffer commandBuffer, V
 bool CoreChecks::PreCallValidateCmdClearDepthStencilImage(VkCommandBuffer commandBuffer, VkImage image, VkImageLayout imageLayout,
                                                           const VkClearDepthStencilValue *pDepthStencil, uint32_t rangeCount,
                                                           const VkImageSubresourceRange *pRanges) const {
+    ZoneScoped;
     bool skip = false;
 
     // TODO : Verify memory is in VK_IMAGE_STATE_CLEAR state
@@ -853,6 +863,7 @@ bool CoreChecks::PreCallValidateCmdClearDepthStencilImage(VkCommandBuffer comman
 void CoreChecks::PreCallRecordCmdClearDepthStencilImage(VkCommandBuffer commandBuffer, VkImage image, VkImageLayout imageLayout,
                                                         const VkClearDepthStencilValue *pDepthStencil, uint32_t rangeCount,
                                                         const VkImageSubresourceRange *pRanges) {
+    ZoneScoped;
     StateTracker::PreCallRecordCmdClearDepthStencilImage(commandBuffer, image, imageLayout, pDepthStencil, rangeCount, pRanges);
 
     auto cb_state_ptr = GetWrite<CMD_BUFFER_STATE>(commandBuffer);
@@ -876,6 +887,7 @@ static inline bool ContainsRect(VkRect2D rect, VkRect2D sub_rect) {
 bool CoreChecks::ValidateClearAttachmentExtent(const CMD_BUFFER_STATE &cb_state, const VkRect2D &render_area,
                                                uint32_t render_pass_layer_count, uint32_t rect_count,
                                                const VkClearRect *clear_rects) const {
+    ZoneScoped;
     bool skip = false;
 
     for (uint32_t i = 0; i < rect_count; i++) {
@@ -903,6 +915,7 @@ bool CoreChecks::ValidateClearAttachmentExtent(const CMD_BUFFER_STATE &cb_state,
 bool CoreChecks::PreCallValidateCmdClearAttachments(VkCommandBuffer commandBuffer, uint32_t attachmentCount,
                                                     const VkClearAttachment *pAttachments, uint32_t rectCount,
                                                     const VkClearRect *pRects) const {
+    ZoneScoped;
     bool skip = false;
     auto cb_state_ptr = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     if (!cb_state_ptr) {
@@ -1087,6 +1100,7 @@ bool CoreChecks::PreCallValidateCmdClearAttachments(VkCommandBuffer commandBuffe
 void CoreChecks::PreCallRecordCmdClearAttachments(VkCommandBuffer commandBuffer, uint32_t attachmentCount,
                                                   const VkClearAttachment *pAttachments, uint32_t rectCount,
                                                   const VkClearRect *pRects) {
+    ZoneScoped;
     auto cb_state_ptr = GetWrite<CMD_BUFFER_STATE>(commandBuffer);
     if (!cb_state_ptr) {
         return;
@@ -1174,6 +1188,7 @@ void CoreChecks::PreCallRecordCmdClearAttachments(VkCommandBuffer commandBuffer,
 bool CoreChecks::ValidateUsageFlags(VkFlags actual, VkFlags desired, VkBool32 strict, const LogObjectList &objlist,
                                     const VulkanTypedHandle &typed_handle, const char *msgCode, char const *func_name,
                                     char const *usage_str) const {
+    ZoneScoped;
     bool correct_usage = false;
     bool skip = false;
     const char *type_str = object_string[typed_handle.type];
@@ -1204,6 +1219,7 @@ bool CoreChecks::ValidateImageUsageFlags(VkCommandBuffer cb, IMAGE_STATE const &
 
 bool CoreChecks::ValidateImageFormatFeatureFlags(VkCommandBuffer cb, IMAGE_STATE const &image_state,
                                                  VkFormatFeatureFlags2KHR desired, char const *func_name, const char *vuid) const {
+    ZoneScoped;
     bool skip = false;
     const VkFormatFeatureFlags2KHR image_format_features = image_state.format_features;
     if ((image_format_features & desired) != desired) {
@@ -1232,6 +1248,7 @@ bool CoreChecks::ValidateImageFormatFeatureFlags(VkCommandBuffer cb, IMAGE_STATE
 bool CoreChecks::ValidateImageSubresourceLayers(const CMD_BUFFER_STATE &cb_state,
                                                 const VkImageSubresourceLayers *subresource_layers, char const *func_name,
                                                 char const *member, uint32_t i) const {
+    ZoneScoped;
     bool skip = false;
     const VkImageAspectFlags apsect_mask = subresource_layers->aspectMask;
     // layerCount must not be zero
@@ -1265,6 +1282,7 @@ bool CoreChecks::ValidateImageSubresourceLayers(const CMD_BUFFER_STATE &cb_state
 // For the given format verify that the aspect masks make sense
 bool CoreChecks::ValidateImageAspectMask(VkImage image, VkFormat format, VkImageAspectFlags aspect_mask, bool is_image_disjoint,
                                          const char *func_name, const char *vuid) const {
+    ZoneScoped;
     bool skip = false;
     // checks color format and (single-plane or non-disjoint)
     // if ycbcr extension is not supported then single-plane and non-disjoint are always both true
@@ -1335,6 +1353,7 @@ bool CoreChecks::ValidateImageSubresourceRange(const uint32_t image_mip_count, c
                                                const VkImageSubresourceRange &subresourceRange, const char *cmd_name,
                                                const char *param_name, const char *image_layer_count_var_name, const VkImage image,
                                                const SubresourceRangeErrorCodes &errorCodes) const {
+    ZoneScoped;
     bool skip = false;
 
     // Validate mip levels
@@ -1403,6 +1422,7 @@ bool CoreChecks::ValidateImageSubresourceRange(const uint32_t image_mip_count, c
 
 bool CoreChecks::ValidateCreateImageViewSubresourceRange(const IMAGE_STATE *image_state, bool is_imageview_2d_type,
                                                          const VkImageSubresourceRange &subresourceRange) const {
+    ZoneScoped;
     const bool is_khr_maintenance1 = IsExtEnabled(device_extensions.vk_khr_maintenance1);
     const bool is_2d_compatible =
         image_state->createInfo.flags & (VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT | VK_IMAGE_CREATE_2D_VIEW_COMPATIBLE_BIT_EXT);
@@ -1445,6 +1465,7 @@ bool CoreChecks::ValidateCreateImageViewSubresourceRange(const IMAGE_STATE *imag
 bool CoreChecks::ValidateCmdClearColorSubresourceRange(const IMAGE_STATE *image_state,
                                                        const VkImageSubresourceRange &subresourceRange,
                                                        const char *param_name) const {
+    ZoneScoped;
     SubresourceRangeErrorCodes subresource_range_error_codes = {};
     subresource_range_error_codes.base_mip_err = "VUID-vkCmdClearColorImage-baseMipLevel-01470";
     subresource_range_error_codes.mip_count_err = "VUID-vkCmdClearColorImage-pRanges-01692";
@@ -1459,6 +1480,7 @@ bool CoreChecks::ValidateCmdClearColorSubresourceRange(const IMAGE_STATE *image_
 bool CoreChecks::ValidateCmdClearDepthSubresourceRange(const IMAGE_STATE *image_state,
                                                        const VkImageSubresourceRange &subresourceRange,
                                                        const char *param_name) const {
+    ZoneScoped;
     SubresourceRangeErrorCodes subresource_range_error_codes = {};
     subresource_range_error_codes.base_mip_err = "VUID-vkCmdClearDepthStencilImage-baseMipLevel-01474";
     subresource_range_error_codes.mip_count_err = "VUID-vkCmdClearDepthStencilImage-pRanges-01694";
@@ -1479,6 +1501,7 @@ bool CoreChecks::ValidateImageBarrierSubresourceRange(const Location &loc, const
 
 bool CoreChecks::ValidateImageViewFormatFeatures(const IMAGE_STATE *image_state, const VkFormat view_format,
                                                  const VkImageUsageFlags image_usage) const {
+    ZoneScoped;
     // Pass in image_usage here instead of extracting it from image_state in case there's a chained VkImageViewUsageCreateInfo
     bool skip = false;
 
@@ -1564,6 +1587,7 @@ bool CoreChecks::ValidateImageViewFormatFeatures(const IMAGE_STATE *image_state,
 bool CoreChecks::PreCallValidateCreateImageView(VkDevice device, const VkImageViewCreateInfo *pCreateInfo,
                                                 [[maybe_unused]] const VkAllocationCallbacks *pAllocator,
                                                 [[maybe_unused]] VkImageView *pView) const {
+    ZoneScoped;
     bool skip = false;
     auto image_state = Get<IMAGE_STATE>(pCreateInfo->image);
     if (!image_state) {
@@ -2139,6 +2163,7 @@ bool CoreChecks::PreCallValidateCreateImageView(VkDevice device, const VkImageVi
 
 bool CoreChecks::PreCallValidateDestroyImageView(VkDevice device, VkImageView imageView,
                                                  const VkAllocationCallbacks *pAllocator) const {
+    ZoneScoped;
     auto image_view_state = Get<IMAGE_VIEW_STATE>(imageView);
 
     bool skip = false;
@@ -2150,6 +2175,7 @@ bool CoreChecks::PreCallValidateDestroyImageView(VkDevice device, VkImageView im
 bool CoreChecks::ValidateGetImageSubresourceLayout(VkDevice device, const IMAGE_STATE &image_state,
                                                    const VkImageSubresource &subresource, VkSubresourceLayout &layout,
                                                    bool is_ext) const {
+    ZoneScoped;
     bool skip = false;
     const char *caller = is_ext ? "vkGetImageSubresourceLayout2EXT()" : "vkGetImageSubresourceLayout()";
     const VkImageAspectFlags aspect_mask = subresource.aspectMask;
@@ -2310,6 +2336,7 @@ bool CoreChecks::ValidateGetImageSubresourceLayout(VkDevice device, const IMAGE_
 
 bool CoreChecks::PreCallValidateGetImageSubresourceLayout(VkDevice device, VkImage image, const VkImageSubresource *pSubresource,
                                                           VkSubresourceLayout *pLayout) const {
+    ZoneScoped;
     bool skip = false;
     auto image_state = Get<IMAGE_STATE>(image);
     if (pSubresource && pLayout && image_state) {
@@ -2338,6 +2365,7 @@ bool CoreChecks::PreCallValidateGetImageSubresourceLayout2EXT(VkDevice device, V
                                                               VkSubresourceLayout2EXT *pLayout) const
 
 {
+    ZoneScoped;
     bool skip = false;
     auto image_state = Get<IMAGE_STATE>(image);
     if (pSubresource && pLayout && image_state) {
@@ -2350,6 +2378,7 @@ bool CoreChecks::PreCallValidateGetImageSubresourceLayout2EXT(VkDevice device, V
 // Validates the image is allowed to be protected
 bool CoreChecks::ValidateProtectedImage(const CMD_BUFFER_STATE &cb_state, const IMAGE_STATE &image_state, const char *cmd_name,
                                         const char *vuid, const char *more_message) const {
+    ZoneScoped;
     bool skip = false;
 
     // if driver supports protectedNoFault the operation is valid, just has undefined values
@@ -2365,6 +2394,7 @@ bool CoreChecks::ValidateProtectedImage(const CMD_BUFFER_STATE &cb_state, const 
 // Validates the image is allowed to be unprotected
 bool CoreChecks::ValidateUnprotectedImage(const CMD_BUFFER_STATE &cb_state, const IMAGE_STATE &image_state, const char *cmd_name,
                                           const char *vuid, const char *more_message) const {
+    ZoneScoped;
     bool skip = false;
 
     // if driver supports protectedNoFault the operation is valid, just has undefined values

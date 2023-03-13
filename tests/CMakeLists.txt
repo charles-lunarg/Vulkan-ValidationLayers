@@ -100,6 +100,15 @@ if (VVL_ENABLE_ASAN)
     target_compile_definitions(vk_layer_validation_tests PRIVATE VVL_ENABLE_ASAN=1)
 endif()
 
+target_link_libraries(vk_layer_validation_tests PRIVATE Tracy::TracyClient)
+if (VVL_ENABLE_TRACY_PROFILER)
+    target_compile_definitions(vk_layer_validation_tests PUBLIC TRACY_ENABLE)
+    if(WIN32)
+        add_custom_command(TARGET vk_layer_validation_tests POST_BUILD
+                       COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:Tracy::TracyClient> $<TARGET_FILE_DIR:vk_layer_validation_tests>)
+    endif()
+endif()
+
 # gtest_discover_tests has problem with cross-compiling, but it is faster and more robust
 if (CMAKE_CROSSCOMPILING)
     gtest_add_tests(TARGET vk_layer_validation_tests)

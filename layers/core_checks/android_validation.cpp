@@ -111,6 +111,7 @@ std::map<VkImageCreateFlags, uint64_t> ahb_create_map_v2a = {
 // AHB-extension new APIs
 //
 bool CoreChecks::PreCallValidateGetAndroidHardwareBufferPropertiesANDROID(
+    ZoneScoped;
     VkDevice device, const struct AHardwareBuffer *buffer, VkAndroidHardwareBufferPropertiesANDROID *pProperties) const {
     bool skip = false;
     //  buffer must be a valid Android hardware buffer object with at least one of the AHARDWAREBUFFER_USAGE_GPU_* usage flags.
@@ -131,6 +132,7 @@ bool CoreChecks::PreCallValidateGetAndroidHardwareBufferPropertiesANDROID(
 bool CoreChecks::PreCallValidateGetMemoryAndroidHardwareBufferANDROID(VkDevice device,
                                                                       const VkMemoryGetAndroidHardwareBufferInfoANDROID *pInfo,
                                                                       struct AHardwareBuffer **pBuffer) const {
+    ZoneScoped;
     bool skip = false;
     auto mem_info = Get<DEVICE_MEMORY_STATE>(pInfo->memory);
 
@@ -166,6 +168,7 @@ bool CoreChecks::PreCallValidateGetMemoryAndroidHardwareBufferANDROID(VkDevice d
 // AHB-specific validation within non-AHB APIs
 //
 bool CoreChecks::ValidateAllocateMemoryANDROID(const VkMemoryAllocateInfo *alloc_info) const {
+    ZoneScoped;
     bool skip = false;
     auto import_ahb_info = LvlFindInChain<VkImportAndroidHardwareBufferInfoANDROID>(alloc_info->pNext);
     auto exp_mem_alloc_info = LvlFindInChain<VkExportMemoryAllocateInfo>(alloc_info->pNext);
@@ -398,6 +401,7 @@ bool CoreChecks::ValidateAllocateMemoryANDROID(const VkMemoryAllocateInfo *alloc
 }
 
 bool CoreChecks::ValidateGetImageMemoryRequirementsANDROID(const VkImage image, const char *func_name) const {
+    ZoneScoped;
     bool skip = false;
 
     auto image_state = Get<IMAGE_STATE>(image);
@@ -418,6 +422,7 @@ bool CoreChecks::ValidateGetImageMemoryRequirementsANDROID(const VkImage image, 
 }
 
 bool CoreChecks::ValidateGetPhysicalDeviceImageFormatProperties2ANDROID(
+    ZoneScoped;
     const VkPhysicalDeviceImageFormatInfo2 *pImageFormatInfo, const VkImageFormatProperties2 *pImageFormatProperties) const {
     bool skip = false;
     const VkAndroidHardwareBufferUsageANDROID *ahb_usage =
@@ -438,6 +443,7 @@ bool CoreChecks::ValidateGetPhysicalDeviceImageFormatProperties2ANDROID(
 
 bool CoreChecks::ValidateBufferImportedHandleANDROID(const char *func_name, VkExternalMemoryHandleTypeFlags handleType,
                                                      VkDeviceMemory memory, VkBuffer buffer) const {
+    ZoneScoped;
     bool skip = false;
     if ((handleType & VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID) == 0) {
         const char *vuid = (strcmp(func_name, "vkBindBufferMemory()") == 0) ? "VUID-vkBindBufferMemory-memory-02986"
@@ -455,6 +461,7 @@ bool CoreChecks::ValidateBufferImportedHandleANDROID(const char *func_name, VkEx
 
 bool CoreChecks::ValidateImageImportedHandleANDROID(const char *func_name, VkExternalMemoryHandleTypeFlags handleType,
                                                     VkDeviceMemory memory, VkImage image) const {
+    ZoneScoped;
     bool skip = false;
     if ((handleType & VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID) == 0) {
         const char *vuid = (strcmp(func_name, "vkBindImageMemory()") == 0) ? "VUID-vkBindImageMemory-memory-02990"
@@ -473,6 +480,7 @@ bool CoreChecks::ValidateImageImportedHandleANDROID(const char *func_name, VkExt
 // Validate creating an image with an external format
 // This could be wrapped with VK_USE_PLATFORM_ANDROID_KHR instead of AHB_VALIDATION_SUPPORT, but this check is only for AHB
 bool CoreChecks::ValidateCreateImageANDROID(const VkImageCreateInfo *create_info) const {
+    ZoneScoped;
     bool skip = false;
 
     const VkExternalFormatANDROID *ext_fmt_android = LvlFindInChain<VkExternalFormatANDROID>(create_info->pNext);
@@ -550,6 +558,7 @@ bool CoreChecks::ValidateCreateImageANDROID(const VkImageCreateInfo *create_info
 // Validate creating an image view with an AHB format
 // This could be wrapped with VK_USE_PLATFORM_ANDROID_KHR instead of AHB_VALIDATION_SUPPORT, but this check is only for AHB
 bool CoreChecks::ValidateCreateImageViewANDROID(const VkImageViewCreateInfo *create_info) const {
+    ZoneScoped;
     bool skip = false;
     auto image_state = Get<IMAGE_STATE>(create_info->image);
 
@@ -601,6 +610,7 @@ bool CoreChecks::ValidateCreateImageViewANDROID(const VkImageViewCreateInfo *cre
 // Case building for Android without AHB Validation
 #ifdef VK_USE_PLATFORM_ANDROID_KHR
 bool CoreChecks::PreCallValidateGetAndroidHardwareBufferPropertiesANDROID(
+    ZoneScoped;
     VkDevice device, const struct AHardwareBuffer *buffer, VkAndroidHardwareBufferPropertiesANDROID *pProperties) const {
     return false;
 }

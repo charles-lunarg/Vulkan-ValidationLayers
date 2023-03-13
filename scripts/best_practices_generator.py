@@ -293,6 +293,7 @@ class BestPracticesOutputGenerator(OutputGenerator):
                 params_text += 'state_data, '
             params_text = params_text[:-2] + ');\n'
             intercept += '    ValidationStateTracker::PostCallRecord'+cmdname[2:] + '(' + params_text
+            intercept += '    ZoneScoped;\n'
             if cmdname in self.manual_postcallrecord_list:
                 intercept += '    ManualPostCallRecord'+cmdname[2:] + '(' + params_text
             intercept += '    if (result != VK_SUCCESS) {\n'

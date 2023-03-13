@@ -94,6 +94,7 @@ static WriteLockGuard CBWriteLock() { return WriteLockGuard(secondary_cb_map_mut
 
 bool StatelessValidation::ValidateString(const char *apiName, const ParameterName &stringName, const std::string &vuid,
                                          const char *validateString) const {
+    ZoneScoped;
     bool skip = false;
 
     VkStringErrorFlags result = vk_string_validate(kMaxParamCheckerStringLength, validateString);
@@ -111,6 +112,7 @@ bool StatelessValidation::ValidateString(const char *apiName, const ParameterNam
 }
 
 bool StatelessValidation::ValidateApiVersion(uint32_t api_version, uint32_t effective_api_version) const {
+    ZoneScoped;
     bool skip = false;
     uint32_t api_version_nopatch = VK_MAKE_VERSION(VK_VERSION_MAJOR(api_version), VK_VERSION_MINOR(api_version), 0);
     if (api_version_nopatch != effective_api_version) {
@@ -130,6 +132,7 @@ bool StatelessValidation::ValidateApiVersion(uint32_t api_version, uint32_t effe
 }
 
 bool StatelessValidation::ValidateInstanceExtensions(const VkInstanceCreateInfo *pCreateInfo) const {
+    ZoneScoped;
     bool skip = false;
     // Create and use a local instance extension object, as an actual instance has not been created yet
     uint32_t specified_version = (pCreateInfo->pApplicationInfo ? pCreateInfo->pApplicationInfo->apiVersion : VK_API_VERSION_1_0);
@@ -213,6 +216,7 @@ ExtEnabled extension_state_by_name(const ExtensionState &extensions, const char 
 bool StatelessValidation::manual_PreCallValidateCreateInstance(const VkInstanceCreateInfo *pCreateInfo,
                                                                const VkAllocationCallbacks *pAllocator,
                                                                VkInstance *pInstance) const {
+    ZoneScoped;
     bool skip = false;
     // Note: From the spec--
     //  Providing a NULL VkInstanceCreateInfo::pApplicationInfo or providing an apiVersion of 0 is equivalent to providing
@@ -247,6 +251,7 @@ bool StatelessValidation::manual_PreCallValidateCreateInstance(const VkInstanceC
 void StatelessValidation::PostCallRecordCreateInstance(const VkInstanceCreateInfo *pCreateInfo,
                                                        const VkAllocationCallbacks *pAllocator, VkInstance *pInstance,
                                                        VkResult result) {
+    ZoneScoped;
     auto instance_data = GetLayerDataPtr(get_dispatch_key(*pInstance), layer_data_map);
     // Copy extension data into local object
     if (result != VK_SUCCESS) return;
@@ -256,6 +261,7 @@ void StatelessValidation::PostCallRecordCreateInstance(const VkInstanceCreateInf
 
 void StatelessValidation::CommonPostCallRecordEnumeratePhysicalDevice(const VkPhysicalDevice *phys_devices, const int count) {
     // Assume phys_devices is valid
+    ZoneScoped;
     assert(phys_devices);
     for (int i = 0; i < count; ++i) {
         const auto &phys_device = phys_devices[i];
@@ -288,6 +294,7 @@ void StatelessValidation::CommonPostCallRecordEnumeratePhysicalDevice(const VkPh
 
 void StatelessValidation::PostCallRecordEnumeratePhysicalDevices(VkInstance instance, uint32_t *pPhysicalDeviceCount,
                                                                  VkPhysicalDevice *pPhysicalDevices, VkResult result) {
+    ZoneScoped;
     if ((VK_SUCCESS != result) && (VK_INCOMPLETE != result)) {
         return;
     }
@@ -300,6 +307,7 @@ void StatelessValidation::PostCallRecordEnumeratePhysicalDevices(VkInstance inst
 void StatelessValidation::PostCallRecordEnumeratePhysicalDeviceGroups(
     VkInstance instance, uint32_t *pPhysicalDeviceGroupCount, VkPhysicalDeviceGroupProperties *pPhysicalDeviceGroupProperties,
     VkResult result) {
+    ZoneScoped;
     if ((VK_SUCCESS != result) && (VK_INCOMPLETE != result)) {
         return;
     }
@@ -313,6 +321,7 @@ void StatelessValidation::PostCallRecordEnumeratePhysicalDeviceGroups(
 }
 
 void StatelessValidation::PreCallRecordDestroyInstance(VkInstance instance, const VkAllocationCallbacks *pAllocator) {
+    ZoneScoped;
     for (auto it = physical_device_properties_map.begin(); it != physical_device_properties_map.end();) {
         delete (it->second);
         it = physical_device_properties_map.erase(it);
@@ -330,6 +339,7 @@ void StatelessValidation::GetPhysicalDeviceProperties2(VkPhysicalDevice physical
 
 void StatelessValidation::PostCallRecordCreateDevice(VkPhysicalDevice physicalDevice, const VkDeviceCreateInfo *pCreateInfo,
                                                      const VkAllocationCallbacks *pAllocator, VkDevice *pDevice, VkResult result) {
+    ZoneScoped;
     auto device_data = GetLayerDataPtr(get_dispatch_key(*pDevice), layer_data_map);
     if (result != VK_SUCCESS) return;
     ValidationObject *validation_data = GetValidationObject(device_data->object_dispatch, LayerObjectTypeParameterValidation);
@@ -458,6 +468,7 @@ void StatelessValidation::PostCallRecordCreateDevice(VkPhysicalDevice physicalDe
 
 bool StatelessValidation::manual_PreCallValidateCreateDevice(VkPhysicalDevice physicalDevice, const VkDeviceCreateInfo *pCreateInfo,
                                                              const VkAllocationCallbacks *pAllocator, VkDevice *pDevice) const {
+    ZoneScoped;
     bool skip = false;
 
     for (size_t i = 0; i < pCreateInfo->enabledLayerCount; i++) {
@@ -806,6 +817,7 @@ bool StatelessValidation::RequireDeviceExtension(bool flag, char const *function
 
 bool StatelessValidation::manual_PreCallValidateCreateBuffer(VkDevice device, const VkBufferCreateInfo *pCreateInfo,
                                                              const VkAllocationCallbacks *pAllocator, VkBuffer *pBuffer) const {
+    ZoneScoped;
     bool skip = false;
 
     if (pCreateInfo != nullptr) {
@@ -875,6 +887,7 @@ bool StatelessValidation::manual_PreCallValidateCreateBuffer(VkDevice device, co
 
 bool StatelessValidation::manual_PreCallValidateCreateImage(VkDevice device, const VkImageCreateInfo *pCreateInfo,
                                                             const VkAllocationCallbacks *pAllocator, VkImage *pImage) const {
+    ZoneScoped;
     bool skip = false;
 
     if (pCreateInfo != nullptr) {
@@ -1497,6 +1510,7 @@ bool StatelessValidation::manual_PreCallValidateCreateImage(VkDevice device, con
 
 bool StatelessValidation::manual_PreCallValidateCreateImageView(VkDevice device, const VkImageViewCreateInfo *pCreateInfo,
                                                                 const VkAllocationCallbacks *pAllocator, VkImageView *pView) const {
+    ZoneScoped;
     bool skip = false;
 
     if (pCreateInfo != nullptr) {
@@ -1568,6 +1582,7 @@ bool StatelessValidation::manual_PreCallValidateCreateImageView(VkDevice device,
 
 bool StatelessValidation::manual_PreCallValidateViewport(const VkViewport &viewport, const char *fn_name,
                                                          const ParameterName &parameter_name, VkCommandBuffer object) const {
+    ZoneScoped;
     bool skip = false;
 
     // Note: for numerical correctness
@@ -1728,6 +1743,7 @@ static SampleOrderInfo sample_order_infos[] = {
 };
 
 bool StatelessValidation::ValidateCoarseSampleOrderCustomNV(const VkCoarseSampleOrderCustomNV *order) const {
+    ZoneScoped;
     bool skip = false;
 
     SampleOrderInfo *sample_order_info;
@@ -1814,6 +1830,7 @@ bool StatelessValidation::ValidateCoarseSampleOrderCustomNV(const VkCoarseSample
 bool StatelessValidation::manual_PreCallValidateCreatePipelineLayout(VkDevice device, const VkPipelineLayoutCreateInfo *pCreateInfo,
                                                                      const VkAllocationCallbacks *pAllocator,
                                                                      VkPipelineLayout *pPipelineLayout) const {
+    ZoneScoped;
     bool skip = false;
     // Validate layout count against device physical limit
     if (pCreateInfo->setLayoutCount > device_limits.maxBoundDescriptorSets) {
@@ -1895,6 +1912,7 @@ bool StatelessValidation::manual_PreCallValidateCreatePipelineLayout(VkDevice de
 
 bool StatelessValidation::ValidatePipelineShaderStageCreateInfo(const char *func_name, const char *msg,
                                                                 const VkPipelineShaderStageCreateInfo *pCreateInfo) const {
+    ZoneScoped;
     bool skip = false;
 
     const auto *required_subgroup_size_features =
@@ -1916,6 +1934,7 @@ bool StatelessValidation::ValidatePipelineShaderStageCreateInfo(const char *func
 // TODO Issue 4847 - Move logic to be autogenerated
 bool StatelessValidation::ValidatePipelineTessellationStateCreateInfo(const VkPipelineTessellationStateCreateInfo &info,
                                                                       uint32_t index) const {
+    ZoneScoped;
     bool skip = false;
 
     skip |= ValidateStructType("vkCreateGraphicsPipelines",
@@ -1942,6 +1961,7 @@ bool StatelessValidation::ValidatePipelineTessellationStateCreateInfo(const VkPi
 // TODO Issue 4847 - Move logic to be autogenerated
 bool StatelessValidation::ValidatePipelineVertexInputStateCreateInfo(const VkPipelineVertexInputStateCreateInfo &info,
                                                                      uint32_t index) const {
+    ZoneScoped;
     bool skip = false;
 
     constexpr std::array allowed_structs = {VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_DIVISOR_STATE_CREATE_INFO_EXT};
@@ -2013,6 +2033,7 @@ bool StatelessValidation::ValidatePipelineVertexInputStateCreateInfo(const VkPip
 // TODO Issue 4847 - Move logic to be autogenerated
 bool StatelessValidation::ValidatePipelineViewportStateCreateInfo(const VkPipelineViewportStateCreateInfo &info,
                                                                   uint32_t index) const {
+    ZoneScoped;
     bool skip = false;
 
     skip |= ValidateStructType(
@@ -2046,6 +2067,7 @@ bool StatelessValidation::ValidatePipelineViewportStateCreateInfo(const VkPipeli
 // TODO Issue 4847 - Move logic to be autogenerated
 bool StatelessValidation::ValidatePipelineMultisampleStateCreateInfo(const VkPipelineMultisampleStateCreateInfo &info,
                                                                      uint32_t index) const {
+    ZoneScoped;
     bool skip = false;
 
     skip |= ValidateStructType(
@@ -2099,6 +2121,7 @@ bool StatelessValidation::ValidatePipelineMultisampleStateCreateInfo(const VkPip
 // TODO Issue 4847 - Move logic to be autogenerated
 bool StatelessValidation::ValidatePipelineColorBlendAttachmentState(const VkPipelineColorBlendAttachmentState &attachment_state,
                                                                     uint32_t pipe_index, uint32_t attachment_index) const {
+    ZoneScoped;
     bool skip = false;
 
     skip |= ValidateBool32("vkCreateGraphicsPipelines",
@@ -2154,6 +2177,7 @@ bool StatelessValidation::ValidatePipelineColorBlendAttachmentState(const VkPipe
 // TODO Issue 4847 - Move logic to be autogenerated
 bool StatelessValidation::ValidatePipelineColorBlendStateCreateInfo(const VkPipelineColorBlendStateCreateInfo &info,
                                                                     uint32_t index) const {
+    ZoneScoped;
     bool skip = false;
 
     skip |= ValidateStructType(
@@ -2185,6 +2209,7 @@ bool StatelessValidation::ValidatePipelineColorBlendStateCreateInfo(const VkPipe
 // TODO Issue 4847 - Move logic to be autogenerated
 bool StatelessValidation::ValidatePipelineDepthStencilStateCreateInfo(const VkPipelineDepthStencilStateCreateInfo &info,
                                                                       uint32_t index) const {
+    ZoneScoped;
     bool skip = false;
 
     skip |= ValidateStructType("vkCreateGraphicsPipelines",
@@ -2271,6 +2296,7 @@ bool StatelessValidation::ValidatePipelineDepthStencilStateCreateInfo(const VkPi
 // TODO Issue 4847 - Move logic to be autogenerated
 bool StatelessValidation::ValidatePipelineInputAssemblyStateCreateInfo(const VkPipelineInputAssemblyStateCreateInfo &info,
                                                                        uint32_t index) const {
+    ZoneScoped;
     bool skip = false;
 
     skip |= ValidateStructType("vkCreateGraphicsPipelines",
@@ -2306,6 +2332,7 @@ bool StatelessValidation::manual_PreCallValidateCreateGraphicsPipelines(VkDevice
                                                                         const VkGraphicsPipelineCreateInfo *pCreateInfos,
                                                                         const VkAllocationCallbacks *pAllocator,
                                                                         VkPipeline *pPipelines) const {
+    ZoneScoped;
     bool skip = false;
 
     if (pCreateInfos != nullptr) {
@@ -3647,6 +3674,7 @@ bool StatelessValidation::manual_PreCallValidateCreateComputePipelines(VkDevice 
                                                                        const VkComputePipelineCreateInfo *pCreateInfos,
                                                                        const VkAllocationCallbacks *pAllocator,
                                                                        VkPipeline *pPipelines) const {
+    ZoneScoped;
     bool skip = false;
     for (uint32_t i = 0; i < createInfoCount; i++) {
         skip |=
@@ -3782,6 +3810,7 @@ bool StatelessValidation::manual_PreCallValidateCreateComputePipelines(VkDevice 
 
 bool StatelessValidation::manual_PreCallValidateCreateSampler(VkDevice device, const VkSamplerCreateInfo *pCreateInfo,
                                                               const VkAllocationCallbacks *pAllocator, VkSampler *pSampler) const {
+    ZoneScoped;
     bool skip = false;
 
     if (pCreateInfo != nullptr) {
@@ -4019,6 +4048,7 @@ bool StatelessValidation::manual_PreCallValidateCreateSampler(VkDevice device, c
 bool StatelessValidation::ValidateMutableDescriptorTypeCreateInfo(const VkDescriptorSetLayoutCreateInfo &create_info,
                                                                   const VkMutableDescriptorTypeCreateInfoEXT &mutable_create_info,
                                                                   const char *func_name) const {
+    ZoneScoped;
     bool skip = false;
 
     for (uint32_t i = 0; i < create_info.bindingCount; ++i) {
@@ -4120,6 +4150,7 @@ bool StatelessValidation::ExportMetalObjectsPNextUtil(VkExportMetalObjectTypeFla
 bool StatelessValidation::manual_PreCallValidateCreateSemaphore(VkDevice device, const VkSemaphoreCreateInfo *pCreateInfo,
                                                                 const VkAllocationCallbacks *pAllocator,
                                                                 VkSemaphore *pSemaphore) const {
+    ZoneScoped;
     bool skip = false;
 #ifdef VK_USE_PLATFORM_METAL_EXT
     skip |= ExportMetalObjectsPNextUtil(
@@ -4130,6 +4161,7 @@ bool StatelessValidation::manual_PreCallValidateCreateSemaphore(VkDevice device,
 }
 bool StatelessValidation::manual_PreCallValidateCreateEvent(VkDevice device, const VkEventCreateInfo *pCreateInfo,
                                                             const VkAllocationCallbacks *pAllocator, VkEvent *pEvent) const {
+    ZoneScoped;
     bool skip = false;
 #ifdef VK_USE_PLATFORM_METAL_EXT
     skip |= ExportMetalObjectsPNextUtil(
@@ -4141,6 +4173,7 @@ bool StatelessValidation::manual_PreCallValidateCreateEvent(VkDevice device, con
 bool StatelessValidation::manual_PreCallValidateCreateBufferView(VkDevice device, const VkBufferViewCreateInfo *pCreateInfo,
                                                                  const VkAllocationCallbacks *pAllocator,
                                                                  VkBufferView *pBufferView) const {
+    ZoneScoped;
     bool skip = false;
 #ifdef VK_USE_PLATFORM_METAL_EXT
     skip |= ExportMetalObjectsPNextUtil(
@@ -4154,6 +4187,7 @@ bool StatelessValidation::manual_PreCallValidateCreateDescriptorSetLayout(VkDevi
                                                                           const VkDescriptorSetLayoutCreateInfo *pCreateInfo,
                                                                           const VkAllocationCallbacks *pAllocator,
                                                                           VkDescriptorSetLayout *pSetLayout) const {
+    ZoneScoped;
     bool skip = false;
 
     const auto *mutable_descriptor_type = LvlFindInChain<VkMutableDescriptorTypeCreateInfoEXT>(pCreateInfo->pNext);
@@ -4341,6 +4375,7 @@ bool StatelessValidation::manual_PreCallValidateFreeDescriptorSets(VkDevice devi
     // Validation for parameters excluded from the generated validation code due to a 'noautovalidity' tag in vk.xml
     // This is an array of handles, where the elements are allowed to be VK_NULL_HANDLE, and does not require any validation beyond
     // ValidateArray()
+    ZoneScoped;
     return ValidateArray("vkFreeDescriptorSets", "descriptorSetCount", "pDescriptorSets", descriptorSetCount, &pDescriptorSets,
                          true, true, kVUIDUndefined, kVUIDUndefined);
 }
@@ -4348,6 +4383,7 @@ bool StatelessValidation::manual_PreCallValidateFreeDescriptorSets(VkDevice devi
 bool StatelessValidation::ValidateWriteDescriptorSet(const char *vkCallingFunction, const uint32_t descriptorWriteCount,
                                                      const VkWriteDescriptorSet *pDescriptorWrites,
                                                      const bool isPushDescriptor) const {
+    ZoneScoped;
     bool skip = false;
 
     if (pDescriptorWrites != NULL) {
@@ -4571,12 +4607,14 @@ bool StatelessValidation::manual_PreCallValidateUpdateDescriptorSets(VkDevice de
                                                                      const VkWriteDescriptorSet *pDescriptorWrites,
                                                                      uint32_t descriptorCopyCount,
                                                                      const VkCopyDescriptorSet *pDescriptorCopies) const {
+    ZoneScoped;
     return ValidateWriteDescriptorSet("vkUpdateDescriptorSets", descriptorWriteCount, pDescriptorWrites, false);
 }
 
 bool StatelessValidation::ValidateCreateRenderPass(VkDevice device, const VkRenderPassCreateInfo2 *pCreateInfo,
                                                    const VkAllocationCallbacks *pAllocator, VkRenderPass *pRenderPass,
                                                    RenderPassCreateVersion rp_version) const {
+    ZoneScoped;
     bool skip = false;
     uint32_t max_color_attachments = device_limits.maxColorAttachments;
     const bool use_rp2 = (rp_version == RENDER_PASS_VERSION_2);
@@ -5022,6 +5060,7 @@ bool StatelessValidation::ValidateCreateRenderPass(VkDevice device, const VkRend
 bool StatelessValidation::manual_PreCallValidateCreateRenderPass(VkDevice device, const VkRenderPassCreateInfo *pCreateInfo,
                                                                  const VkAllocationCallbacks *pAllocator,
                                                                  VkRenderPass *pRenderPass) const {
+    ZoneScoped;
     safe_VkRenderPassCreateInfo2 create_info_2 = ConvertVkRenderPassCreateInfoToV2KHR(*pCreateInfo);
     return ValidateCreateRenderPass(device, create_info_2.ptr(), pAllocator, pRenderPass, RENDER_PASS_VERSION_1);
 }
@@ -5029,6 +5068,7 @@ bool StatelessValidation::manual_PreCallValidateCreateRenderPass(VkDevice device
 bool StatelessValidation::manual_PreCallValidateCreateRenderPass2(VkDevice device, const VkRenderPassCreateInfo2 *pCreateInfo,
                                                                   const VkAllocationCallbacks *pAllocator,
                                                                   VkRenderPass *pRenderPass) const {
+    ZoneScoped;
     safe_VkRenderPassCreateInfo2 create_info_2(pCreateInfo);
     return ValidateCreateRenderPass(device, create_info_2.ptr(), pAllocator, pRenderPass, RENDER_PASS_VERSION_2);
 }
@@ -5036,6 +5076,7 @@ bool StatelessValidation::manual_PreCallValidateCreateRenderPass2(VkDevice devic
 bool StatelessValidation::manual_PreCallValidateCreateRenderPass2KHR(VkDevice device, const VkRenderPassCreateInfo2 *pCreateInfo,
                                                                      const VkAllocationCallbacks *pAllocator,
                                                                      VkRenderPass *pRenderPass) const {
+    ZoneScoped;
     safe_VkRenderPassCreateInfo2 create_info_2(pCreateInfo);
     return ValidateCreateRenderPass(device, create_info_2.ptr(), pAllocator, pRenderPass, RENDER_PASS_VERSION_2);
 }
@@ -5043,6 +5084,7 @@ bool StatelessValidation::manual_PreCallValidateCreateRenderPass2KHR(VkDevice de
 bool StatelessValidation::manual_PreCallValidateFreeCommandBuffers(VkDevice device, VkCommandPool commandPool,
                                                                    uint32_t commandBufferCount,
                                                                    const VkCommandBuffer *pCommandBuffers) const {
+    ZoneScoped;
     bool skip = false;
 
     // Validation for parameters excluded from the generated validation code due to a 'noautovalidity' tag in vk.xml
@@ -5055,6 +5097,7 @@ bool StatelessValidation::manual_PreCallValidateFreeCommandBuffers(VkDevice devi
 
 bool StatelessValidation::manual_PreCallValidateBeginCommandBuffer(VkCommandBuffer commandBuffer,
                                                                    const VkCommandBufferBeginInfo *pBeginInfo) const {
+    ZoneScoped;
     bool skip = false;
 
     // VkCommandBufferInheritanceInfo validation, due to a 'noautovalidity' of pBeginInfo->pInheritanceInfo in vkBeginCommandBuffer
@@ -5144,6 +5187,7 @@ bool StatelessValidation::manual_PreCallValidateBeginCommandBuffer(VkCommandBuff
 
 bool StatelessValidation::manual_PreCallValidateCmdSetViewport(VkCommandBuffer commandBuffer, uint32_t firstViewport,
                                                                uint32_t viewportCount, const VkViewport *pViewports) const {
+    ZoneScoped;
     bool skip = false;
 
     if (!physical_device_features.multiViewport) {
@@ -5181,6 +5225,7 @@ bool StatelessValidation::manual_PreCallValidateCmdSetViewport(VkCommandBuffer c
 
 bool StatelessValidation::manual_PreCallValidateCmdSetScissor(VkCommandBuffer commandBuffer, uint32_t firstScissor,
                                                               uint32_t scissorCount, const VkRect2D *pScissors) const {
+    ZoneScoped;
     bool skip = false;
 
     if (!physical_device_features.multiViewport) {
@@ -5242,6 +5287,7 @@ bool StatelessValidation::manual_PreCallValidateCmdSetScissor(VkCommandBuffer co
 }
 
 bool StatelessValidation::manual_PreCallValidateCmdSetLineWidth(VkCommandBuffer commandBuffer, float lineWidth) const {
+    ZoneScoped;
     bool skip = false;
 
     if (!physical_device_features.wideLines && (lineWidth != 1.0f)) {
@@ -5254,6 +5300,7 @@ bool StatelessValidation::manual_PreCallValidateCmdSetLineWidth(VkCommandBuffer 
 
 bool StatelessValidation::manual_PreCallValidateCmdDrawIndirect(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset,
                                                                 uint32_t drawCount, uint32_t stride) const {
+    ZoneScoped;
     bool skip = false;
 
     if (!physical_device_features.multiDrawIndirect && ((drawCount > 1))) {
@@ -5277,6 +5324,7 @@ bool StatelessValidation::manual_PreCallValidateCmdDrawIndirect(VkCommandBuffer 
 bool StatelessValidation::manual_PreCallValidateCmdDrawIndexedIndirect(VkCommandBuffer commandBuffer, VkBuffer buffer,
                                                                        VkDeviceSize offset, uint32_t drawCount,
                                                                        uint32_t stride) const {
+    ZoneScoped;
     bool skip = false;
     if (!physical_device_features.multiDrawIndirect && ((drawCount > 1))) {
         skip |= LogError(
@@ -5299,6 +5347,7 @@ bool StatelessValidation::manual_PreCallValidateCmdDrawIndexedIndirect(VkCommand
 
 bool StatelessValidation::ValidateCmdDrawIndirectCount(VkCommandBuffer commandBuffer, VkDeviceSize offset,
                                                        VkDeviceSize countBufferOffset, CMD_TYPE cmd_type) const {
+    ZoneScoped;
     bool skip = false;
     if (offset & 3) {
         skip |= LogError(commandBuffer, "VUID-vkCmdDrawIndirectCount-offset-02710",
@@ -5318,6 +5367,7 @@ bool StatelessValidation::manual_PreCallValidateCmdDrawIndirectCount(VkCommandBu
                                                                      VkDeviceSize offset, VkBuffer countBuffer,
                                                                      VkDeviceSize countBufferOffset, uint32_t maxDrawCount,
                                                                      uint32_t stride) const {
+    ZoneScoped;
     return ValidateCmdDrawIndirectCount(commandBuffer, offset, countBufferOffset, CMD_DRAWINDIRECTCOUNT);
 }
 
@@ -5325,6 +5375,7 @@ bool StatelessValidation::manual_PreCallValidateCmdDrawIndirectCountAMD(VkComman
                                                                         VkDeviceSize offset, VkBuffer countBuffer,
                                                                         VkDeviceSize countBufferOffset, uint32_t maxDrawCount,
                                                                         uint32_t stride) const {
+    ZoneScoped;
     return ValidateCmdDrawIndirectCount(commandBuffer, offset, countBufferOffset, CMD_DRAWINDIRECTCOUNTAMD);
 }
 
@@ -5332,11 +5383,13 @@ bool StatelessValidation::manual_PreCallValidateCmdDrawIndirectCountKHR(VkComman
                                                                         VkDeviceSize offset, VkBuffer countBuffer,
                                                                         VkDeviceSize countBufferOffset, uint32_t maxDrawCount,
                                                                         uint32_t stride) const {
+    ZoneScoped;
     return ValidateCmdDrawIndirectCount(commandBuffer, offset, countBufferOffset, CMD_DRAWINDIRECTCOUNTKHR);
 }
 
 bool StatelessValidation::ValidateCmdDrawIndexedIndirectCount(VkCommandBuffer commandBuffer, VkDeviceSize offset,
                                                               VkDeviceSize countBufferOffset, CMD_TYPE cmd_type) const {
+    ZoneScoped;
     bool skip = false;
     if (offset & 3) {
         skip |= LogError(commandBuffer, "VUID-vkCmdDrawIndexedIndirectCount-offset-02710",
@@ -5356,6 +5409,7 @@ bool StatelessValidation::manual_PreCallValidateCmdDrawIndexedIndirectCount(VkCo
                                                                             VkDeviceSize offset, VkBuffer countBuffer,
                                                                             VkDeviceSize countBufferOffset, uint32_t maxDrawCount,
                                                                             uint32_t stride) const {
+    ZoneScoped;
     return ValidateCmdDrawIndexedIndirectCount(commandBuffer, offset, countBufferOffset, CMD_DRAWINDEXEDINDIRECTCOUNT);
 }
 
@@ -5363,6 +5417,7 @@ bool StatelessValidation::manual_PreCallValidateCmdDrawIndexedIndirectCountAMD(V
                                                                                VkDeviceSize offset, VkBuffer countBuffer,
                                                                                VkDeviceSize countBufferOffset,
                                                                                uint32_t maxDrawCount, uint32_t stride) const {
+    ZoneScoped;
     return ValidateCmdDrawIndexedIndirectCount(commandBuffer, offset, countBufferOffset, CMD_DRAWINDEXEDINDIRECTCOUNTAMD);
 }
 
@@ -5370,12 +5425,14 @@ bool StatelessValidation::manual_PreCallValidateCmdDrawIndexedIndirectCountKHR(V
                                                                                VkDeviceSize offset, VkBuffer countBuffer,
                                                                                VkDeviceSize countBufferOffset,
                                                                                uint32_t maxDrawCount, uint32_t stride) const {
+    ZoneScoped;
     return ValidateCmdDrawIndexedIndirectCount(commandBuffer, offset, countBufferOffset, CMD_DRAWINDEXEDINDIRECTCOUNTKHR);
 }
 
 bool StatelessValidation::manual_PreCallValidateCmdDrawMultiEXT(VkCommandBuffer commandBuffer, uint32_t drawCount,
                                                                 const VkMultiDrawInfoEXT *pVertexInfo, uint32_t instanceCount,
                                                                 uint32_t firstInstance, uint32_t stride) const {
+    ZoneScoped;
     bool skip = false;
     if (stride & 3) {
         skip |= LogError(commandBuffer, "VUID-vkCmdDrawMultiEXT-stride-04936",
@@ -5393,6 +5450,7 @@ bool StatelessValidation::manual_PreCallValidateCmdDrawMultiIndexedEXT(VkCommand
                                                                        const VkMultiDrawIndexedInfoEXT *pIndexInfo,
                                                                        uint32_t instanceCount, uint32_t firstInstance,
                                                                        uint32_t stride, const int32_t *pVertexOffset) const {
+    ZoneScoped;
     bool skip = false;
     if (stride & 3) {
         skip |= LogError(commandBuffer, "VUID-vkCmdDrawMultiIndexedEXT-stride-04941",
@@ -5409,6 +5467,7 @@ bool StatelessValidation::manual_PreCallValidateCmdDrawMultiIndexedEXT(VkCommand
 bool StatelessValidation::manual_PreCallValidateCmdClearAttachments(VkCommandBuffer commandBuffer, uint32_t attachmentCount,
                                                                     const VkClearAttachment *pAttachments, uint32_t rectCount,
                                                                     const VkClearRect *pRects) const {
+    ZoneScoped;
     bool skip = false;
     for (uint32_t rect = 0; rect < rectCount; rect++) {
         if (pRects[rect].layerCount == 0) {
@@ -5431,6 +5490,7 @@ bool StatelessValidation::ValidateGetPhysicalDeviceImageFormatProperties2(VkPhys
                                                                           const VkPhysicalDeviceImageFormatInfo2 *pImageFormatInfo,
                                                                           VkImageFormatProperties2 *pImageFormatProperties,
                                                                           const char *apiName) const {
+    ZoneScoped;
     bool skip = false;
 
     if (pImageFormatInfo != nullptr) {
@@ -5493,6 +5553,7 @@ bool StatelessValidation::ValidateGetPhysicalDeviceImageFormatProperties2(VkPhys
 bool StatelessValidation::manual_PreCallValidateGetPhysicalDeviceImageFormatProperties2(
     VkPhysicalDevice physicalDevice, const VkPhysicalDeviceImageFormatInfo2 *pImageFormatInfo,
     VkImageFormatProperties2 *pImageFormatProperties) const {
+    ZoneScoped;
     return ValidateGetPhysicalDeviceImageFormatProperties2(physicalDevice, pImageFormatInfo, pImageFormatProperties,
                                                            "vkGetPhysicalDeviceImageFormatProperties2");
 }
@@ -5500,6 +5561,7 @@ bool StatelessValidation::manual_PreCallValidateGetPhysicalDeviceImageFormatProp
 bool StatelessValidation::manual_PreCallValidateGetPhysicalDeviceImageFormatProperties2KHR(
     VkPhysicalDevice physicalDevice, const VkPhysicalDeviceImageFormatInfo2 *pImageFormatInfo,
     VkImageFormatProperties2 *pImageFormatProperties) const {
+    ZoneScoped;
     return ValidateGetPhysicalDeviceImageFormatProperties2(physicalDevice, pImageFormatInfo, pImageFormatProperties,
                                                            "vkGetPhysicalDeviceImageFormatProperties2KHR");
 }
@@ -5507,6 +5569,7 @@ bool StatelessValidation::manual_PreCallValidateGetPhysicalDeviceImageFormatProp
 bool StatelessValidation::manual_PreCallValidateGetPhysicalDeviceImageFormatProperties(
     VkPhysicalDevice physicalDevice, VkFormat format, VkImageType type, VkImageTiling tiling, VkImageUsageFlags usage,
     VkImageCreateFlags flags, VkImageFormatProperties *pImageFormatProperties) const {
+    ZoneScoped;
     bool skip = false;
 
     if (tiling == VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT) {
@@ -5519,6 +5582,7 @@ bool StatelessValidation::manual_PreCallValidateGetPhysicalDeviceImageFormatProp
 
 bool StatelessValidation::manual_PreCallValidateCmdCopyBuffer(VkCommandBuffer commandBuffer, VkBuffer srcBuffer, VkBuffer dstBuffer,
                                                               uint32_t regionCount, const VkBufferCopy *pRegions) const {
+    ZoneScoped;
     bool skip = false;
 
     if (pRegions != nullptr) {
@@ -5534,6 +5598,7 @@ bool StatelessValidation::manual_PreCallValidateCmdCopyBuffer(VkCommandBuffer co
 
 bool StatelessValidation::manual_PreCallValidateCmdCopyBuffer2KHR(VkCommandBuffer commandBuffer,
                                                                   const VkCopyBufferInfo2KHR *pCopyBufferInfo) const {
+    ZoneScoped;
     bool skip = false;
 
     if (pCopyBufferInfo->pRegions != nullptr) {
@@ -5549,6 +5614,7 @@ bool StatelessValidation::manual_PreCallValidateCmdCopyBuffer2KHR(VkCommandBuffe
 
 bool StatelessValidation::manual_PreCallValidateCmdCopyBuffer2(VkCommandBuffer commandBuffer,
                                                                const VkCopyBufferInfo2 *pCopyBufferInfo) const {
+    ZoneScoped;
     bool skip = false;
 
     if (pCopyBufferInfo->pRegions != nullptr) {
@@ -5565,6 +5631,7 @@ bool StatelessValidation::manual_PreCallValidateCmdCopyBuffer2(VkCommandBuffer c
 bool StatelessValidation::manual_PreCallValidateCmdUpdateBuffer(VkCommandBuffer commandBuffer, VkBuffer dstBuffer,
                                                                 VkDeviceSize dstOffset, VkDeviceSize dataSize,
                                                                 const void *pData) const {
+    ZoneScoped;
     bool skip = false;
 
     if (dstOffset & 3) {
@@ -5588,6 +5655,7 @@ bool StatelessValidation::manual_PreCallValidateCmdUpdateBuffer(VkCommandBuffer 
 
 bool StatelessValidation::manual_PreCallValidateCmdFillBuffer(VkCommandBuffer commandBuffer, VkBuffer dstBuffer,
                                                               VkDeviceSize dstOffset, VkDeviceSize size, uint32_t data) const {
+    ZoneScoped;
     bool skip = false;
 
     if (dstOffset & 3) {
@@ -5610,6 +5678,7 @@ bool StatelessValidation::manual_PreCallValidateCmdFillBuffer(VkCommandBuffer co
 }
 
 bool StatelessValidation::ValidateSwapchainCreateInfo(const char *func_name, VkSwapchainCreateInfoKHR const *pCreateInfo) const {
+    ZoneScoped;
     bool skip = false;
 
     if (pCreateInfo != nullptr) {
@@ -5709,6 +5778,7 @@ bool StatelessValidation::ValidateSwapchainCreateInfo(const char *func_name, VkS
 bool StatelessValidation::manual_PreCallValidateCreateSwapchainKHR(VkDevice device, const VkSwapchainCreateInfoKHR *pCreateInfo,
                                                                    const VkAllocationCallbacks *pAllocator,
                                                                    VkSwapchainKHR *pSwapchain) const {
+    ZoneScoped;
     bool skip = false;
     skip |= ValidateSwapchainCreateInfo("vkCreateSwapchainKHR()", pCreateInfo);
     return skip;
@@ -5718,6 +5788,7 @@ bool StatelessValidation::manual_PreCallValidateCreateSharedSwapchainsKHR(VkDevi
                                                                           const VkSwapchainCreateInfoKHR *pCreateInfos,
                                                                           const VkAllocationCallbacks *pAllocator,
                                                                           VkSwapchainKHR *pSwapchains) const {
+    ZoneScoped;
     bool skip = false;
     if (pCreateInfos) {
         for (uint32_t i = 0; i < swapchainCount; i++) {
@@ -5730,6 +5801,7 @@ bool StatelessValidation::manual_PreCallValidateCreateSharedSwapchainsKHR(VkDevi
 }
 
 bool StatelessValidation::manual_PreCallValidateQueuePresentKHR(VkQueue queue, const VkPresentInfoKHR *pPresentInfo) const {
+    ZoneScoped;
     bool skip = false;
 
     if (pPresentInfo && pPresentInfo->pNext) {
@@ -5765,6 +5837,7 @@ bool StatelessValidation::manual_PreCallValidateCreateDisplayModeKHR(VkPhysicalD
                                                                      const VkDisplayModeCreateInfoKHR *pCreateInfo,
                                                                      const VkAllocationCallbacks *pAllocator,
                                                                      VkDisplayModeKHR *pMode) const {
+    ZoneScoped;
     bool skip = false;
 
     const VkDisplayModeParametersKHR display_mode_parameters = pCreateInfo->parameters;
@@ -5789,6 +5862,7 @@ bool StatelessValidation::manual_PreCallValidateCreateWin32SurfaceKHR(VkInstance
                                                                       const VkWin32SurfaceCreateInfoKHR *pCreateInfo,
                                                                       const VkAllocationCallbacks *pAllocator,
                                                                       VkSurfaceKHR *pSurface) const {
+    ZoneScoped;
     bool skip = false;
 
     if (pCreateInfo->hwnd == nullptr) {
@@ -5805,6 +5879,7 @@ bool StatelessValidation::manual_PreCallValidateCreateWaylandSurfaceKHR(VkInstan
                                                                         const VkWaylandSurfaceCreateInfoKHR *pCreateInfo,
                                                                         const VkAllocationCallbacks *pAllocator,
                                                                         VkSurfaceKHR *pSurface) const {
+    ZoneScoped;
     bool skip = false;
 
     const auto display = pCreateInfo->display;
@@ -5829,6 +5904,7 @@ bool StatelessValidation::manual_PreCallValidateCreateXcbSurfaceKHR(VkInstance i
                                                                     const VkXcbSurfaceCreateInfoKHR *pCreateInfo,
                                                                     const VkAllocationCallbacks *pAllocator,
                                                                     VkSurfaceKHR *pSurface) const {
+    ZoneScoped;
     bool skip = false;
 
     const auto connection = pCreateInfo->connection;
@@ -5853,6 +5929,7 @@ bool StatelessValidation::manual_PreCallValidateCreateXlibSurfaceKHR(VkInstance 
                                                                      const VkXlibSurfaceCreateInfoKHR *pCreateInfo,
                                                                      const VkAllocationCallbacks *pAllocator,
                                                                      VkSurfaceKHR *pSurface) const {
+    ZoneScoped;
     bool skip = false;
 
     const auto display = pCreateInfo->dpy;
@@ -5872,6 +5949,7 @@ bool StatelessValidation::manual_PreCallValidateCreateXlibSurfaceKHR(VkInstance 
 #endif  // VK_USE_PLATFORM_XLIB_KHR
 
 static bool MutableDescriptorTypePartialOverlap(const VkDescriptorPoolCreateInfo *pCreateInfo, uint32_t i, uint32_t j) {
+    ZoneScoped;
     bool partial_overlap = false;
 
     constexpr std::array all_descriptor_types = {
@@ -5939,6 +6017,7 @@ static bool MutableDescriptorTypePartialOverlap(const VkDescriptorPoolCreateInfo
 bool StatelessValidation::manual_PreCallValidateCreateDescriptorPool(VkDevice device, const VkDescriptorPoolCreateInfo *pCreateInfo,
                                                                      const VkAllocationCallbacks *pAllocator,
                                                                      VkDescriptorPool *pDescriptorPool) const {
+    ZoneScoped;
     bool skip = false;
 
     if (pCreateInfo) {
@@ -6010,6 +6089,7 @@ bool StatelessValidation::manual_PreCallValidateCreateDescriptorPool(VkDevice de
 
 bool StatelessValidation::manual_PreCallValidateCmdDispatch(VkCommandBuffer commandBuffer, uint32_t groupCountX,
                                                             uint32_t groupCountY, uint32_t groupCountZ) const {
+    ZoneScoped;
     bool skip = false;
 
     if (groupCountX > device_limits.maxComputeWorkGroupCount[0]) {
@@ -6038,6 +6118,7 @@ bool StatelessValidation::manual_PreCallValidateCmdDispatch(VkCommandBuffer comm
 
 bool StatelessValidation::manual_PreCallValidateCmdDispatchIndirect(VkCommandBuffer commandBuffer, VkBuffer buffer,
                                                                     VkDeviceSize offset) const {
+    ZoneScoped;
     bool skip = false;
 
     if (offset & 3) {
@@ -6050,6 +6131,7 @@ bool StatelessValidation::manual_PreCallValidateCmdDispatchIndirect(VkCommandBuf
 bool StatelessValidation::manual_PreCallValidateCmdDispatchBaseKHR(VkCommandBuffer commandBuffer, uint32_t baseGroupX,
                                                                    uint32_t baseGroupY, uint32_t baseGroupZ, uint32_t groupCountX,
                                                                    uint32_t groupCountY, uint32_t groupCountZ) const {
+    ZoneScoped;
     bool skip = false;
 
     // Paired if {} else if {} tests used to avoid any possible uint underflow
@@ -6100,6 +6182,7 @@ bool StatelessValidation::manual_PreCallValidateCmdPushDescriptorSetKHR(VkComman
                                                                         VkPipelineLayout layout, uint32_t set,
                                                                         uint32_t descriptorWriteCount,
                                                                         const VkWriteDescriptorSet *pDescriptorWrites) const {
+    ZoneScoped;
     return ValidateWriteDescriptorSet("vkCmdPushDescriptorSetKHR", descriptorWriteCount, pDescriptorWrites, true);
 }
 
@@ -6107,6 +6190,7 @@ bool StatelessValidation::manual_PreCallValidateCmdSetExclusiveScissorNV(VkComma
                                                                          uint32_t firstExclusiveScissor,
                                                                          uint32_t exclusiveScissorCount,
                                                                          const VkRect2D *pExclusiveScissors) const {
+    ZoneScoped;
     bool skip = false;
 
     if (!physical_device_features.multiViewport) {
@@ -6174,6 +6258,7 @@ bool StatelessValidation::manual_PreCallValidateCmdSetExclusiveScissorNV(VkComma
 bool StatelessValidation::manual_PreCallValidateCmdSetViewportWScalingNV(VkCommandBuffer commandBuffer, uint32_t firstViewport,
                                                                          uint32_t viewportCount,
                                                                          const VkViewportWScalingNV *pViewportWScalings) const {
+    ZoneScoped;
     bool skip = false;
     const uint64_t sum = static_cast<uint64_t>(firstViewport) + static_cast<uint64_t>(viewportCount);
     if ((sum < 1) || (sum > device_limits.maxViewports)) {
@@ -6189,6 +6274,7 @@ bool StatelessValidation::manual_PreCallValidateCmdSetViewportWScalingNV(VkComma
 bool StatelessValidation::manual_PreCallValidateCmdSetViewportShadingRatePaletteNV(
     VkCommandBuffer commandBuffer, uint32_t firstViewport, uint32_t viewportCount,
     const VkShadingRatePaletteNV *pShadingRatePalettes) const {
+    ZoneScoped;
     bool skip = false;
 
     if (!physical_device_features.multiViewport) {
@@ -6222,6 +6308,7 @@ bool StatelessValidation::manual_PreCallValidateCmdSetViewportShadingRatePalette
 bool StatelessValidation::manual_PreCallValidateCmdSetCoarseSampleOrderNV(
     VkCommandBuffer commandBuffer, VkCoarseSampleOrderTypeNV sampleOrderType, uint32_t customSampleOrderCount,
     const VkCoarseSampleOrderCustomNV *pCustomSampleOrders) const {
+    ZoneScoped;
     bool skip = false;
 
     if (sampleOrderType != VK_COARSE_SAMPLE_ORDER_TYPE_CUSTOM_NV && customSampleOrderCount != 0) {
@@ -6239,6 +6326,7 @@ bool StatelessValidation::manual_PreCallValidateCmdSetCoarseSampleOrderNV(
 
 bool StatelessValidation::manual_PreCallValidateCmdDrawMeshTasksNV(VkCommandBuffer commandBuffer, uint32_t taskCount,
                                                                    uint32_t firstTask) const {
+    ZoneScoped;
     bool skip = false;
 
     if (taskCount > phys_dev_ext_props.mesh_shader_props_nv.maxDrawMeshTasksCount) {
@@ -6255,6 +6343,7 @@ bool StatelessValidation::manual_PreCallValidateCmdDrawMeshTasksNV(VkCommandBuff
 bool StatelessValidation::manual_PreCallValidateCmdDrawMeshTasksIndirectNV(VkCommandBuffer commandBuffer, VkBuffer buffer,
                                                                            VkDeviceSize offset, uint32_t drawCount,
                                                                            uint32_t stride) const {
+    ZoneScoped;
     bool skip = false;
     if (offset & 3) {
         skip |= LogError(
@@ -6286,6 +6375,7 @@ bool StatelessValidation::manual_PreCallValidateCmdDrawMeshTasksIndirectCountNV(
                                                                                 VkDeviceSize offset, VkBuffer countBuffer,
                                                                                 VkDeviceSize countBufferOffset,
                                                                                 uint32_t maxDrawCount, uint32_t stride) const {
+    ZoneScoped;
     bool skip = false;
 
     if (offset & 3) {
@@ -6307,6 +6397,7 @@ bool StatelessValidation::manual_PreCallValidateCmdDrawMeshTasksIndirectCountNV(
 
 bool StatelessValidation::manual_PreCallValidateCmdDrawMeshTasksEXT(VkCommandBuffer commandBuffer, uint32_t groupCountX,
                                                                     uint32_t groupCountY, uint32_t groupCountZ) const {
+    ZoneScoped;
     bool skip = false;
 
     if (groupCountX > phys_dev_ext_props.mesh_shader_props_ext.maxTaskWorkGroupCount[0]) {
@@ -6362,6 +6453,7 @@ bool StatelessValidation::manual_PreCallValidateCmdDrawMeshTasksEXT(VkCommandBuf
 bool StatelessValidation::manual_PreCallValidateCmdDrawMeshTasksIndirectEXT(VkCommandBuffer commandBuffer, VkBuffer buffer,
                                                                             VkDeviceSize offset, uint32_t drawCount,
                                                                             uint32_t stride) const {
+    ZoneScoped;
     bool skip = false;
 
     // TODO: vkMapMemory() and check the contents of buffer at offset
@@ -6385,6 +6477,7 @@ bool StatelessValidation::manual_PreCallValidateCmdDrawMeshTasksIndirectEXT(VkCo
 bool StatelessValidation::manual_PreCallValidateCreateQueryPool(VkDevice device, const VkQueryPoolCreateInfo *pCreateInfo,
                                                                 const VkAllocationCallbacks *pAllocator,
                                                                 VkQueryPool *pQueryPool) const {
+    ZoneScoped;
     bool skip = false;
 
     // Validation for parameters excluded from the generated validation code due to a 'noautovalidity' tag in vk.xml
@@ -6409,6 +6502,7 @@ bool StatelessValidation::manual_PreCallValidateCreateQueryPool(VkDevice device,
 bool StatelessValidation::manual_PreCallValidateEnumerateDeviceExtensionProperties(VkPhysicalDevice physicalDevice,
                                                                                    const char *pLayerName, uint32_t *pPropertyCount,
                                                                                    VkExtensionProperties *pProperties) const {
+    ZoneScoped;
     return ValidateArray("vkEnumerateDeviceExtensionProperties", "pPropertyCount", "pProperties", pPropertyCount, &pProperties,
                          true, false, false, kVUIDUndefined, "VUID-vkEnumerateDeviceExtensionProperties-pProperties-parameter");
 }
@@ -6416,6 +6510,7 @@ bool StatelessValidation::manual_PreCallValidateEnumerateDeviceExtensionProperti
 void StatelessValidation::PostCallRecordCreateRenderPass(VkDevice device, const VkRenderPassCreateInfo *pCreateInfo,
                                                          const VkAllocationCallbacks *pAllocator, VkRenderPass *pRenderPass,
                                                          VkResult result) {
+    ZoneScoped;
     if (result != VK_SUCCESS) return;
     RecordRenderPass(*pRenderPass, pCreateInfo);
 }
@@ -6424,6 +6519,7 @@ void StatelessValidation::PostCallRecordCreateRenderPass2KHR(VkDevice device, co
                                                              const VkAllocationCallbacks *pAllocator, VkRenderPass *pRenderPass,
                                                              VkResult result) {
     // Track the state necessary for checking vkCreateGraphicsPipeline (subpass usage of depth and color attachments)
+    ZoneScoped;
     if (result != VK_SUCCESS) return;
     RecordRenderPass(*pRenderPass, pCreateInfo);
 }
@@ -6431,12 +6527,14 @@ void StatelessValidation::PostCallRecordCreateRenderPass2KHR(VkDevice device, co
 void StatelessValidation::PostCallRecordDestroyRenderPass(VkDevice device, VkRenderPass renderPass,
                                                           const VkAllocationCallbacks *pAllocator) {
     // Track the state necessary for checking vkCreateGraphicsPipeline (subpass usage of depth and color attachments)
+    ZoneScoped;
     std::unique_lock<std::mutex> lock(renderpass_map_mutex);
     renderpasses_states.erase(renderPass);
 }
 
 void StatelessValidation::PostCallRecordAllocateCommandBuffers(VkDevice device, const VkCommandBufferAllocateInfo *pAllocateInfo,
                                                                VkCommandBuffer *pCommandBuffers, VkResult result) {
+    ZoneScoped;
     if ((result == VK_SUCCESS) && pAllocateInfo && (pAllocateInfo->level == VK_COMMAND_BUFFER_LEVEL_SECONDARY)) {
         auto lock = CBWriteLock();
         for (uint32_t cb_index = 0; cb_index < pAllocateInfo->commandBufferCount; cb_index++) {
@@ -6447,6 +6545,7 @@ void StatelessValidation::PostCallRecordAllocateCommandBuffers(VkDevice device, 
 
 void StatelessValidation::PostCallRecordFreeCommandBuffers(VkDevice device, VkCommandPool commandPool, uint32_t commandBufferCount,
                                                            const VkCommandBuffer *pCommandBuffers) {
+    ZoneScoped;
     auto lock = CBWriteLock();
     for (uint32_t cb_index = 0; cb_index < commandBufferCount; cb_index++) {
         secondary_cb_map.erase(pCommandBuffers[cb_index]);
@@ -6455,6 +6554,7 @@ void StatelessValidation::PostCallRecordFreeCommandBuffers(VkDevice device, VkCo
 
 void StatelessValidation::PostCallRecordDestroyCommandPool(VkDevice device, VkCommandPool commandPool,
                                                            const VkAllocationCallbacks *pAllocator) {
+    ZoneScoped;
     auto lock = CBWriteLock();
     for (auto item = secondary_cb_map.begin(); item != secondary_cb_map.end();) {
         if (item->second == commandPool) {
@@ -6468,6 +6568,7 @@ void StatelessValidation::PostCallRecordDestroyCommandPool(VkDevice device, VkCo
 bool StatelessValidation::manual_PreCallValidateAllocateMemory(VkDevice device, const VkMemoryAllocateInfo *pAllocateInfo,
                                                                const VkAllocationCallbacks *pAllocator,
                                                                VkDeviceMemory *pMemory) const {
+    ZoneScoped;
     bool skip = false;
 
     if (pAllocateInfo) {
@@ -6565,6 +6666,7 @@ bool StatelessValidation::manual_PreCallValidateAllocateMemory(VkDevice device, 
 
 bool StatelessValidation::ValidateGeometryTrianglesNV(const VkGeometryTrianglesNV &triangles,
                                                       VkAccelerationStructureNV object_handle, const char *func_name) const {
+    ZoneScoped;
     bool skip = false;
 
     if (triangles.vertexFormat != VK_FORMAT_R32G32B32_SFLOAT && triangles.vertexFormat != VK_FORMAT_R16G16B16_SFLOAT &&
@@ -6612,6 +6714,7 @@ bool StatelessValidation::ValidateGeometryTrianglesNV(const VkGeometryTrianglesN
 
 bool StatelessValidation::ValidateGeometryAABBNV(const VkGeometryAABBNV &aabbs, VkAccelerationStructureNV object_handle,
                                                  const char *func_name) const {
+    ZoneScoped;
     bool skip = false;
 
     if (SafeModulo(aabbs.offset, 8) != 0) {
@@ -6626,6 +6729,7 @@ bool StatelessValidation::ValidateGeometryAABBNV(const VkGeometryAABBNV &aabbs, 
 
 bool StatelessValidation::ValidateGeometryNV(const VkGeometryNV &geometry, VkAccelerationStructureNV object_handle,
                                              const char *func_name) const {
+    ZoneScoped;
     bool skip = false;
     if (geometry.geometryType == VK_GEOMETRY_TYPE_TRIANGLES_NV) {
         skip = ValidateGeometryTrianglesNV(geometry.geometry.triangles, object_handle, func_name);
@@ -6638,6 +6742,7 @@ bool StatelessValidation::ValidateGeometryNV(const VkGeometryNV &geometry, VkAcc
 bool StatelessValidation::ValidateAccelerationStructureInfoNV(const VkAccelerationStructureInfoNV &info,
                                                               VkAccelerationStructureNV object_handle, const char *func_name,
                                                               bool is_cmd) const {
+    ZoneScoped;
     bool skip = false;
     if (info.type == VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_NV && info.geometryCount != 0) {
         skip |= LogError(object_handle, "VUID-VkAccelerationStructureInfoNV-type-02425",
@@ -6719,6 +6824,7 @@ bool StatelessValidation::ValidateAccelerationStructureInfoNV(const VkAccelerati
 bool StatelessValidation::manual_PreCallValidateCreateAccelerationStructureNV(
     VkDevice device, const VkAccelerationStructureCreateInfoNV *pCreateInfo, const VkAllocationCallbacks *pAllocator,
     VkAccelerationStructureNV *pAccelerationStructure) const {
+    ZoneScoped;
     bool skip = false;
     if (pCreateInfo) {
         if ((pCreateInfo->compactedSize != 0) &&
@@ -6741,6 +6847,7 @@ bool StatelessValidation::manual_PreCallValidateCmdBuildAccelerationStructureNV(
                                                                                 VkBool32 update, VkAccelerationStructureNV dst,
                                                                                 VkAccelerationStructureNV src, VkBuffer scratch,
                                                                                 VkDeviceSize scratchOffset) const {
+    ZoneScoped;
     bool skip = false;
 
     if (pInfo != nullptr) {
@@ -6753,6 +6860,7 @@ bool StatelessValidation::manual_PreCallValidateCmdBuildAccelerationStructureNV(
 bool StatelessValidation::manual_PreCallValidateCreateAccelerationStructureKHR(
     VkDevice device, const VkAccelerationStructureCreateInfoKHR *pCreateInfo, const VkAllocationCallbacks *pAllocator,
     VkAccelerationStructureKHR *pAccelerationStructure) const {
+    ZoneScoped;
     bool skip = false;
     const auto *acceleration_structure_features =
         LvlFindInChain<VkPhysicalDeviceAccelerationStructureFeaturesKHR>(device_createinfo_pnext);
@@ -6819,6 +6927,7 @@ bool StatelessValidation::manual_PreCallValidateCreateAccelerationStructureKHR(
 bool StatelessValidation::manual_PreCallValidateGetAccelerationStructureHandleNV(VkDevice device,
                                                                                  VkAccelerationStructureNV accelerationStructure,
                                                                                  size_t dataSize, void *pData) const {
+    ZoneScoped;
     bool skip = false;
     if (dataSize < 8) {
         skip = LogError(accelerationStructure, "VUID-vkGetAccelerationStructureHandleNV-dataSize-02240",
@@ -6830,6 +6939,7 @@ bool StatelessValidation::manual_PreCallValidateGetAccelerationStructureHandleNV
 bool StatelessValidation::manual_PreCallValidateCmdWriteAccelerationStructuresPropertiesNV(
     VkCommandBuffer commandBuffer, uint32_t accelerationStructureCount, const VkAccelerationStructureNV *pAccelerationStructures,
     VkQueryType queryType, VkQueryPool queryPool, uint32_t firstQuery) const {
+    ZoneScoped;
     bool skip = false;
     if (queryType != VK_QUERY_TYPE_ACCELERATION_STRUCTURE_COMPACTED_SIZE_NV) {
         skip |= LogError(device, "VUID-vkCmdWriteAccelerationStructuresPropertiesNV-queryType-06216",
@@ -6844,6 +6954,7 @@ bool StatelessValidation::manual_PreCallValidateCreateRayTracingPipelinesNV(VkDe
                                                                             const VkRayTracingPipelineCreateInfoNV *pCreateInfos,
                                                                             const VkAllocationCallbacks *pAllocator,
                                                                             VkPipeline *pPipelines) const {
+    ZoneScoped;
     bool skip = false;
 
     for (uint32_t i = 0; i < createInfoCount; i++) {
@@ -6978,6 +7089,7 @@ bool StatelessValidation::manual_PreCallValidateCreateRayTracingPipelinesNV(VkDe
 bool StatelessValidation::manual_PreCallValidateCreateRayTracingPipelinesKHR(
     VkDevice device, VkDeferredOperationKHR deferredOperation, VkPipelineCache pipelineCache, uint32_t createInfoCount,
     const VkRayTracingPipelineCreateInfoKHR *pCreateInfos, const VkAllocationCallbacks *pAllocator, VkPipeline *pPipelines) const {
+    ZoneScoped;
     bool skip = false;
     const auto *raytracing_features = LvlFindInChain<VkPhysicalDeviceRayTracingPipelineFeaturesKHR>(device_createinfo_pnext);
     if (!raytracing_features || raytracing_features->rayTracingPipeline == VK_FALSE) {
@@ -7192,6 +7304,7 @@ bool StatelessValidation::manual_PreCallValidateCreateRayTracingPipelinesKHR(
 bool StatelessValidation::PreCallValidateGetDeviceGroupSurfacePresentModes2EXT(VkDevice device,
                                                                                const VkPhysicalDeviceSurfaceInfo2KHR *pSurfaceInfo,
                                                                                VkDeviceGroupPresentModeFlagsKHR *pModes) const {
+    ZoneScoped;
     bool skip = false;
     if (!IsExtEnabled(device_extensions.vk_khr_swapchain))
         skip |= OutputExtensionError("vkGetDeviceGroupSurfacePresentModes2EXT", VK_KHR_SWAPCHAIN_EXTENSION_NAME);
@@ -7234,6 +7347,7 @@ bool StatelessValidation::manual_PreCallValidateCreateFramebuffer(VkDevice devic
                                                                   const VkAllocationCallbacks *pAllocator,
                                                                   VkFramebuffer *pFramebuffer) const {
     // Validation for pAttachments which is excluded from the generated validation code due to a 'noautovalidity' tag in vk.xml
+    ZoneScoped;
     bool skip = false;
     if ((pCreateInfo->flags & VK_FRAMEBUFFER_CREATE_IMAGELESS_BIT) == 0) {
         skip |= ValidateArray("vkCreateFramebuffer", "attachmentCount", "pAttachments", pCreateInfo->attachmentCount,
@@ -7244,6 +7358,7 @@ bool StatelessValidation::manual_PreCallValidateCreateFramebuffer(VkDevice devic
 
 bool StatelessValidation::manual_PreCallValidateCmdSetLineStippleEXT(VkCommandBuffer commandBuffer, uint32_t lineStippleFactor,
                                                                      uint16_t lineStipplePattern) const {
+    ZoneScoped;
     bool skip = false;
 
     if (lineStippleFactor < 1 || lineStippleFactor > 256) {
@@ -7256,6 +7371,7 @@ bool StatelessValidation::manual_PreCallValidateCmdSetLineStippleEXT(VkCommandBu
 
 bool StatelessValidation::manual_PreCallValidateCmdBindIndexBuffer(VkCommandBuffer commandBuffer, VkBuffer buffer,
                                                                    VkDeviceSize offset, VkIndexType indexType) const {
+    ZoneScoped;
     bool skip = false;
 
     if (indexType == VK_INDEX_TYPE_NONE_NV) {
@@ -7275,6 +7391,7 @@ bool StatelessValidation::manual_PreCallValidateCmdBindIndexBuffer(VkCommandBuff
 bool StatelessValidation::manual_PreCallValidateCmdBindVertexBuffers(VkCommandBuffer commandBuffer, uint32_t firstBinding,
                                                                      uint32_t bindingCount, const VkBuffer *pBuffers,
                                                                      const VkDeviceSize *pOffsets) const {
+    ZoneScoped;
     bool skip = false;
     if (firstBinding > device_limits.maxVertexInputBindings) {
         skip |=
@@ -7312,6 +7429,7 @@ bool StatelessValidation::manual_PreCallValidateCmdBindVertexBuffers(VkCommandBu
 
 bool StatelessValidation::ValidateDebugUtilsObjectNameInfoEXT(const std::string &api_name, VkDevice device,
                                                               const VkDebugUtilsObjectNameInfoEXT *pNameInfo) const {
+    ZoneScoped;
     bool skip = false;
     if ((pNameInfo->objectType == VK_OBJECT_TYPE_UNKNOWN) && (pNameInfo->objectHandle == HandleToUint64(VK_NULL_HANDLE))) {
         skip |= LogError(device, "VUID-VkDebugUtilsObjectNameInfoEXT-objectType-02589",
@@ -7322,6 +7440,7 @@ bool StatelessValidation::ValidateDebugUtilsObjectNameInfoEXT(const std::string 
 
 bool StatelessValidation::manual_PreCallValidateSetDebugUtilsObjectNameEXT(VkDevice device,
                                                                            const VkDebugUtilsObjectNameInfoEXT *pNameInfo) const {
+    ZoneScoped;
     bool skip = false;
     if (pNameInfo->objectType == VK_OBJECT_TYPE_UNKNOWN) {
         skip |= LogError(device, "VUID-vkSetDebugUtilsObjectNameEXT-pNameInfo-02587",
@@ -7337,6 +7456,7 @@ bool StatelessValidation::manual_PreCallValidateSetDebugUtilsObjectNameEXT(VkDev
 
 bool StatelessValidation::manual_PreCallValidateSetDebugUtilsObjectTagEXT(VkDevice device,
                                                                           const VkDebugUtilsObjectTagInfoEXT *pTagInfo) const {
+    ZoneScoped;
     bool skip = false;
     if (pTagInfo->objectType == VK_OBJECT_TYPE_UNKNOWN) {
         skip |= LogError(device, "VUID-VkDebugUtilsObjectTagInfoEXT-objectType-01908",
@@ -7348,6 +7468,7 @@ bool StatelessValidation::manual_PreCallValidateSetDebugUtilsObjectTagEXT(VkDevi
 bool StatelessValidation::manual_PreCallValidateAcquireNextImageKHR(VkDevice device, VkSwapchainKHR swapchain, uint64_t timeout,
                                                                     VkSemaphore semaphore, VkFence fence,
                                                                     uint32_t *pImageIndex) const {
+    ZoneScoped;
     bool skip = false;
 
     if (semaphore == VK_NULL_HANDLE && fence == VK_NULL_HANDLE) {
@@ -7360,6 +7481,7 @@ bool StatelessValidation::manual_PreCallValidateAcquireNextImageKHR(VkDevice dev
 
 bool StatelessValidation::manual_PreCallValidateAcquireNextImage2KHR(VkDevice device, const VkAcquireNextImageInfoKHR *pAcquireInfo,
                                                                      uint32_t *pImageIndex) const {
+    ZoneScoped;
     bool skip = false;
 
     if (pAcquireInfo->semaphore == VK_NULL_HANDLE && pAcquireInfo->fence == VK_NULL_HANDLE) {
@@ -7375,6 +7497,7 @@ bool StatelessValidation::manual_PreCallValidateCmdBindTransformFeedbackBuffersE
                                                                                    const VkBuffer *pBuffers,
                                                                                    const VkDeviceSize *pOffsets,
                                                                                    const VkDeviceSize *pSizes) const {
+    ZoneScoped;
     bool skip = false;
 
     char const *const cmd_name = "CmdBindTransformFeedbackBuffersEXT";
@@ -7423,6 +7546,7 @@ bool StatelessValidation::manual_PreCallValidateCmdBeginTransformFeedbackEXT(VkC
                                                                              uint32_t counterBufferCount,
                                                                              const VkBuffer *pCounterBuffers,
                                                                              const VkDeviceSize *pCounterBufferOffsets) const {
+    ZoneScoped;
     bool skip = false;
 
     char const *const cmd_name = "CmdBeginTransformFeedbackEXT";
@@ -7450,6 +7574,7 @@ bool StatelessValidation::manual_PreCallValidateCmdEndTransformFeedbackEXT(VkCom
                                                                            uint32_t firstCounterBuffer, uint32_t counterBufferCount,
                                                                            const VkBuffer *pCounterBuffers,
                                                                            const VkDeviceSize *pCounterBufferOffsets) const {
+    ZoneScoped;
     bool skip = false;
 
     char const *const cmd_name = "CmdEndTransformFeedbackEXT";
@@ -7477,6 +7602,7 @@ bool StatelessValidation::manual_PreCallValidateCmdDrawIndirectByteCountEXT(VkCo
                                                                             uint32_t firstInstance, VkBuffer counterBuffer,
                                                                             VkDeviceSize counterBufferOffset,
                                                                             uint32_t counterOffset, uint32_t vertexStride) const {
+    ZoneScoped;
     bool skip = false;
 
     if ((vertexStride <= 0) || (vertexStride > phys_dev_ext_props.transform_feedback_props.maxTransformFeedbackBufferDataStride)) {
@@ -7499,6 +7625,7 @@ bool StatelessValidation::ValidateCreateSamplerYcbcrConversion(VkDevice device,
                                                                const VkAllocationCallbacks *pAllocator,
                                                                VkSamplerYcbcrConversion *pYcbcrConversion,
                                                                const char *apiName) const {
+    ZoneScoped;
     bool skip = false;
 
     // Check samplerYcbcrConversion feature is set
@@ -7631,6 +7758,7 @@ bool StatelessValidation::manual_PreCallValidateCreateSamplerYcbcrConversion(VkD
                                                                              const VkSamplerYcbcrConversionCreateInfo *pCreateInfo,
                                                                              const VkAllocationCallbacks *pAllocator,
                                                                              VkSamplerYcbcrConversion *pYcbcrConversion) const {
+    ZoneScoped;
     return ValidateCreateSamplerYcbcrConversion(device, pCreateInfo, pAllocator, pYcbcrConversion,
                                                 "vkCreateSamplerYcbcrConversion");
 }
@@ -7638,6 +7766,7 @@ bool StatelessValidation::manual_PreCallValidateCreateSamplerYcbcrConversion(VkD
 bool StatelessValidation::manual_PreCallValidateCreateSamplerYcbcrConversionKHR(
     VkDevice device, const VkSamplerYcbcrConversionCreateInfo *pCreateInfo, const VkAllocationCallbacks *pAllocator,
     VkSamplerYcbcrConversion *pYcbcrConversion) const {
+    ZoneScoped;
     return ValidateCreateSamplerYcbcrConversion(device, pCreateInfo, pAllocator, pYcbcrConversion,
                                                 "vkCreateSamplerYcbcrConversionKHR");
 }
@@ -7645,6 +7774,7 @@ bool StatelessValidation::manual_PreCallValidateCreateSamplerYcbcrConversionKHR(
 bool StatelessValidation::ValidateExternalSemaphoreHandleType(VkSemaphore semaphore, const char *vuid, const char *caller,
                                                               VkExternalSemaphoreHandleTypeFlagBits handle_type,
                                                               VkExternalSemaphoreHandleTypeFlags allowed_types) const {
+    ZoneScoped;
     bool skip = false;
     if (0 == (handle_type & allowed_types)) {
         skip |= LogError(semaphore, vuid, "%s(): handleType %s is not one of the supported handleTypes (%s).", caller,
@@ -7657,6 +7787,7 @@ bool StatelessValidation::ValidateExternalSemaphoreHandleType(VkSemaphore semaph
 bool StatelessValidation::ValidateExternalFenceHandleType(VkFence fence, const char *vuid, const char *caller,
                                                           VkExternalFenceHandleTypeFlagBits handle_type,
                                                           VkExternalFenceHandleTypeFlags allowed_types) const {
+    ZoneScoped;
     bool skip = false;
     if (0 == (handle_type & allowed_types)) {
         skip |= LogError(fence, vuid, "%s(): handleType %s is not one of the supported handleTypes (%s).", caller,
@@ -7671,12 +7802,14 @@ static constexpr VkExternalSemaphoreHandleTypeFlags kSemFdHandleTypes =
 
 bool StatelessValidation::manual_PreCallValidateGetSemaphoreFdKHR(VkDevice device, const VkSemaphoreGetFdInfoKHR *info,
                                                                   int *pFd) const {
+    ZoneScoped;
     return ValidateExternalSemaphoreHandleType(info->semaphore, "VUID-VkSemaphoreGetFdInfoKHR-handleType-01136",
                                                "vkGetSemaphoreFdKHR", info->handleType, kSemFdHandleTypes);
 }
 
 bool StatelessValidation::manual_PreCallValidateImportSemaphoreFdKHR(VkDevice device,
                                                                      const VkImportSemaphoreFdInfoKHR *info) const {
+    ZoneScoped;
     bool skip = false;
     const char *func_name = "vkImportSemaphoreFdKHR";
 
@@ -7697,11 +7830,13 @@ static constexpr VkExternalFenceHandleTypeFlags kFenceFdHandleTypes =
     VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_FD_BIT | VK_EXTERNAL_FENCE_HANDLE_TYPE_SYNC_FD_BIT;
 
 bool StatelessValidation::manual_PreCallValidateGetFenceFdKHR(VkDevice device, const VkFenceGetFdInfoKHR *info, int *pFd) const {
+    ZoneScoped;
     return ValidateExternalFenceHandleType(info->fence, "VUID-VkFenceGetFdInfoKHR-handleType-01456", "vkGetFenceFdKHR",
                                            info->handleType, kFenceFdHandleTypes);
 }
 
 bool StatelessValidation::manual_PreCallValidateImportFenceFdKHR(VkDevice device, const VkImportFenceFdInfoKHR *info) const {
+    ZoneScoped;
     bool skip = false;
     const char *func_name = "vkImportFenceFdKHR";
 
@@ -7724,6 +7859,7 @@ static constexpr VkExternalSemaphoreHandleTypeFlags kSemWin32HandleTypes = VK_EX
 
 bool StatelessValidation::manual_PreCallValidateImportSemaphoreWin32HandleKHR(
     VkDevice device, const VkImportSemaphoreWin32HandleInfoKHR *info) const {
+    ZoneScoped;
     bool skip = false;
     const char *func_name = "vkImportSemaphoreWin32HandleKHR";
 
@@ -7747,6 +7883,7 @@ bool StatelessValidation::manual_PreCallValidateImportSemaphoreWin32HandleKHR(
 bool StatelessValidation::manual_PreCallValidateGetSemaphoreWin32HandleKHR(VkDevice device,
                                                                            const VkSemaphoreGetWin32HandleInfoKHR *info,
                                                                            HANDLE *pHandle) const {
+    ZoneScoped;
     return ValidateExternalSemaphoreHandleType(info->semaphore, "VUID-VkSemaphoreGetWin32HandleInfoKHR-handleType-01131",
                                                "vkGetSemaphoreWin32HandleKHR", info->handleType, kSemWin32HandleTypes);
 }
@@ -7756,6 +7893,7 @@ static constexpr VkExternalFenceHandleTypeFlags kFenceWin32HandleTypes =
 
 bool StatelessValidation::manual_PreCallValidateImportFenceWin32HandleKHR(VkDevice device,
                                                                           const VkImportFenceWin32HandleInfoKHR *info) const {
+    ZoneScoped;
     bool skip = false;
     const char *func_name = "vkImportFenceWin32HandleKHR";
 
@@ -7777,6 +7915,7 @@ bool StatelessValidation::manual_PreCallValidateImportFenceWin32HandleKHR(VkDevi
 
 bool StatelessValidation::manual_PreCallValidateGetFenceWin32HandleKHR(VkDevice device, const VkFenceGetWin32HandleInfoKHR *info,
                                                                        HANDLE *pHandle) const {
+    ZoneScoped;
     return ValidateExternalFenceHandleType(info->fence, "vkGetFenceWin32HandleKHR",
                                            "VUID-VkFenceGetWin32HandleInfoKHR-handleType-01452", info->handleType,
                                            kFenceWin32HandleTypes);
@@ -7785,6 +7924,7 @@ bool StatelessValidation::manual_PreCallValidateGetFenceWin32HandleKHR(VkDevice 
 
 bool StatelessValidation::manual_PreCallValidateCopyAccelerationStructureToMemoryKHR(
     VkDevice device, VkDeferredOperationKHR deferredOperation, const VkCopyAccelerationStructureToMemoryInfoKHR *pInfo) const {
+    ZoneScoped;
     bool skip = false;
     if (pInfo->mode != VK_COPY_ACCELERATION_STRUCTURE_MODE_SERIALIZE_KHR) {
         skip |= LogError(device, "VUID-VkCopyAccelerationStructureToMemoryInfoKHR-mode-03412",
@@ -7808,6 +7948,7 @@ bool StatelessValidation::manual_PreCallValidateCopyAccelerationStructureToMemor
 
 bool StatelessValidation::manual_PreCallValidateCmdCopyAccelerationStructureToMemoryKHR(
     VkCommandBuffer commandBuffer, const VkCopyAccelerationStructureToMemoryInfoKHR *pInfo) const {
+    ZoneScoped;
     bool skip = false;
     if (pInfo->mode != VK_COPY_ACCELERATION_STRUCTURE_MODE_SERIALIZE_KHR) {
         skip |=  // to update VUID to VkCmdCopyAccelerationStructureToMemoryInfoKHR after spec update
@@ -7825,6 +7966,7 @@ bool StatelessValidation::manual_PreCallValidateCmdCopyAccelerationStructureToMe
 
 bool StatelessValidation::ValidateCopyAccelerationStructureInfoKHR(const VkCopyAccelerationStructureInfoKHR *pInfo,
                                                                    const char *api_name) const {
+    ZoneScoped;
     bool skip = false;
     if (!(pInfo->mode == VK_COPY_ACCELERATION_STRUCTURE_MODE_COMPACT_KHR ||
           pInfo->mode == VK_COPY_ACCELERATION_STRUCTURE_MODE_CLONE_KHR)) {
@@ -7838,6 +7980,7 @@ bool StatelessValidation::ValidateCopyAccelerationStructureInfoKHR(const VkCopyA
 
 bool StatelessValidation::manual_PreCallValidateCopyAccelerationStructureKHR(
     VkDevice device, VkDeferredOperationKHR deferredOperation, const VkCopyAccelerationStructureInfoKHR *pInfo) const {
+    ZoneScoped;
     bool skip = false;
     skip |= ValidateCopyAccelerationStructureInfoKHR(pInfo, "vkCopyAccelerationStructureKHR()");
     const auto *acc_struct_features = LvlFindInChain<VkPhysicalDeviceAccelerationStructureFeaturesKHR>(device_createinfo_pnext);
@@ -7852,6 +7995,7 @@ bool StatelessValidation::manual_PreCallValidateCopyAccelerationStructureKHR(
 
 bool StatelessValidation::manual_PreCallValidateCmdCopyAccelerationStructureKHR(
     VkCommandBuffer commandBuffer, const VkCopyAccelerationStructureInfoKHR *pInfo) const {
+    ZoneScoped;
     bool skip = false;
     skip |= ValidateCopyAccelerationStructureInfoKHR(pInfo, "vkCmdCopyAccelerationStructureKHR()");
     return skip;
@@ -7859,6 +8003,7 @@ bool StatelessValidation::manual_PreCallValidateCmdCopyAccelerationStructureKHR(
 
 bool StatelessValidation::ValidateCopyMemoryToAccelerationStructureInfoKHR(const VkCopyMemoryToAccelerationStructureInfoKHR *pInfo,
                                                                            const char *api_name, bool is_cmd) const {
+    ZoneScoped;
     bool skip = false;
     if (pInfo->mode != VK_COPY_ACCELERATION_STRUCTURE_MODE_DESERIALIZE_KHR) {
         skip |= LogError(device, "VUID-VkCopyMemoryToAccelerationStructureInfoKHR-mode-03413",
@@ -7885,6 +8030,7 @@ bool StatelessValidation::manual_PreCallValidateCopyMemoryToAccelerationStructur
 
 bool StatelessValidation::manual_PreCallValidateCmdCopyMemoryToAccelerationStructureKHR(
     VkCommandBuffer commandBuffer, const VkCopyMemoryToAccelerationStructureInfoKHR *pInfo) const {
+    ZoneScoped;
     bool skip = false;
     skip |= ValidateCopyMemoryToAccelerationStructureInfoKHR(pInfo, "vkCmdCopyMemoryToAccelerationStructureKHR()", false);
     if (SafeModulo(pInfo->src.deviceAddress, 256) != 0) {
@@ -7898,6 +8044,7 @@ bool StatelessValidation::manual_PreCallValidateCmdCopyMemoryToAccelerationStruc
 bool StatelessValidation::manual_PreCallValidateCmdWriteAccelerationStructuresPropertiesKHR(
     VkCommandBuffer commandBuffer, uint32_t accelerationStructureCount, const VkAccelerationStructureKHR *pAccelerationStructures,
     VkQueryType queryType, VkQueryPool queryPool, uint32_t firstQuery) const {
+    ZoneScoped;
     bool skip = false;
     if (!(queryType == VK_QUERY_TYPE_ACCELERATION_STRUCTURE_COMPACTED_SIZE_KHR ||
           queryType == VK_QUERY_TYPE_ACCELERATION_STRUCTURE_SERIALIZATION_SIZE_KHR)) {
@@ -7917,6 +8064,7 @@ bool StatelessValidation::manual_PreCallValidateCmdWriteAccelerationStructuresPr
 bool StatelessValidation::manual_PreCallValidateWriteAccelerationStructuresPropertiesKHR(
     VkDevice device, uint32_t accelerationStructureCount, const VkAccelerationStructureKHR *pAccelerationStructures,
     VkQueryType queryType, size_t dataSize, void *pData, size_t stride) const {
+    ZoneScoped;
     bool skip = false;
     const auto *acc_structure_features = LvlFindInChain<VkPhysicalDeviceAccelerationStructureFeaturesKHR>(device_createinfo_pnext);
     if (!acc_structure_features || acc_structure_features->accelerationStructureHostCommands == VK_FALSE) {
@@ -7983,6 +8131,7 @@ bool StatelessValidation::manual_PreCallValidateWriteAccelerationStructuresPrope
 }
 bool StatelessValidation::manual_PreCallValidateGetRayTracingCaptureReplayShaderGroupHandlesKHR(
     VkDevice device, VkPipeline pipeline, uint32_t firstGroup, uint32_t groupCount, size_t dataSize, void *pData) const {
+    ZoneScoped;
     bool skip = false;
     const auto *raytracing_features = LvlFindInChain<VkPhysicalDeviceRayTracingPipelineFeaturesKHR>(device_createinfo_pnext);
     if (!raytracing_features || raytracing_features->rayTracingPipelineShaderGroupHandleCaptureReplay == VK_FALSE) {
@@ -8000,6 +8149,7 @@ bool StatelessValidation::manual_PreCallValidateCmdTraceRaysKHR(VkCommandBuffer 
                                                                 const VkStridedDeviceAddressRegionKHR *pHitShaderBindingTable,
                                                                 const VkStridedDeviceAddressRegionKHR *pCallableShaderBindingTable,
                                                                 uint32_t width, uint32_t height, uint32_t depth) const {
+    ZoneScoped;
     bool skip = false;
     // RayGen
     if (pRaygenShaderBindingTable->size != pRaygenShaderBindingTable->stride) {
@@ -8094,6 +8244,7 @@ bool StatelessValidation::manual_PreCallValidateCmdTraceRaysIndirectKHR(
     VkCommandBuffer commandBuffer, const VkStridedDeviceAddressRegionKHR *pRaygenShaderBindingTable,
     const VkStridedDeviceAddressRegionKHR *pMissShaderBindingTable, const VkStridedDeviceAddressRegionKHR *pHitShaderBindingTable,
     const VkStridedDeviceAddressRegionKHR *pCallableShaderBindingTable, VkDeviceAddress indirectDeviceAddress) const {
+    ZoneScoped;
     bool skip = false;
     const auto *raytracing_features = LvlFindInChain<VkPhysicalDeviceRayTracingPipelineFeaturesKHR>(device_createinfo_pnext);
     if (!raytracing_features || raytracing_features->rayTracingPipelineTraceRaysIndirect == VK_FALSE) {
@@ -8173,6 +8324,7 @@ bool StatelessValidation::manual_PreCallValidateCmdTraceRaysIndirectKHR(
 
 bool StatelessValidation::manual_PreCallValidateCmdTraceRaysIndirect2KHR(VkCommandBuffer commandBuffer,
                                                                          VkDeviceAddress indirectDeviceAddress) const {
+    ZoneScoped;
     bool skip = false;
     const auto *raytracing_features = LvlFindInChain<VkPhysicalDeviceRayTracingPipelineFeaturesKHR>(device_createinfo_pnext);
     if (!raytracing_features || raytracing_features->rayTracingPipelineTraceRaysIndirect == VK_FALSE) {
@@ -8195,6 +8347,7 @@ bool StatelessValidation::manual_PreCallValidateCmdTraceRaysNV(
     VkBuffer hitShaderBindingTableBuffer, VkDeviceSize hitShaderBindingOffset, VkDeviceSize hitShaderBindingStride,
     VkBuffer callableShaderBindingTableBuffer, VkDeviceSize callableShaderBindingOffset, VkDeviceSize callableShaderBindingStride,
     uint32_t width, uint32_t height, uint32_t depth) const {
+    ZoneScoped;
     bool skip = false;
     if (SafeModulo(callableShaderBindingOffset, phys_dev_ext_props.ray_tracing_props_nv.shaderGroupBaseAlignment) != 0) {
         skip |= LogError(device, "VUID-vkCmdTraceRaysNV-callableShaderBindingOffset-02462",
@@ -8273,6 +8426,7 @@ bool StatelessValidation::manual_PreCallValidateCmdTraceRaysNV(
 bool StatelessValidation::manual_PreCallValidateGetDeviceAccelerationStructureCompatibilityKHR(
     VkDevice device, const VkAccelerationStructureVersionInfoKHR *pVersionInfo,
     VkAccelerationStructureCompatibilityKHR *pCompatibility) const {
+    ZoneScoped;
     bool skip = false;
     const auto *ray_query_features = LvlFindInChain<VkPhysicalDeviceRayQueryFeaturesKHR>(device_createinfo_pnext);
     const auto *raytracing_features = LvlFindInChain<VkPhysicalDeviceRayTracingPipelineFeaturesKHR>(device_createinfo_pnext);
@@ -8286,6 +8440,7 @@ bool StatelessValidation::manual_PreCallValidateGetDeviceAccelerationStructureCo
 
 bool StatelessValidation::ValidateCmdSetViewportWithCount(VkCommandBuffer commandBuffer, uint32_t viewportCount,
                                                           const VkViewport *pViewports, CMD_TYPE cmd_type) const {
+    ZoneScoped;
     bool skip = false;
     const char *api_call = CommandTypeString(cmd_type);
 
@@ -8318,6 +8473,7 @@ bool StatelessValidation::ValidateCmdSetViewportWithCount(VkCommandBuffer comman
 
 bool StatelessValidation::manual_PreCallValidateCmdSetViewportWithCountEXT(VkCommandBuffer commandBuffer, uint32_t viewportCount,
                                                                            const VkViewport *pViewports) const {
+    ZoneScoped;
     bool skip = false;
     skip = ValidateCmdSetViewportWithCount(commandBuffer, viewportCount, pViewports, CMD_SETVIEWPORTWITHCOUNTEXT);
     return skip;
@@ -8325,6 +8481,7 @@ bool StatelessValidation::manual_PreCallValidateCmdSetViewportWithCountEXT(VkCom
 
 bool StatelessValidation::manual_PreCallValidateCmdSetViewportWithCount(VkCommandBuffer commandBuffer, uint32_t viewportCount,
                                                                         const VkViewport *pViewports) const {
+    ZoneScoped;
     bool skip = false;
     skip = ValidateCmdSetViewportWithCount(commandBuffer, viewportCount, pViewports, CMD_SETVIEWPORTWITHCOUNT);
     return skip;
@@ -8332,6 +8489,7 @@ bool StatelessValidation::manual_PreCallValidateCmdSetViewportWithCount(VkComman
 
 bool StatelessValidation::ValidateCmdSetScissorWithCount(VkCommandBuffer commandBuffer, uint32_t scissorCount,
                                                          const VkRect2D *pScissors, CMD_TYPE cmd_type) const {
+    ZoneScoped;
     bool skip = false;
     const char *api_call = CommandTypeString(cmd_type);
 
@@ -8398,6 +8556,7 @@ bool StatelessValidation::ValidateCmdSetScissorWithCount(VkCommandBuffer command
 
 bool StatelessValidation::manual_PreCallValidateCmdSetScissorWithCountEXT(VkCommandBuffer commandBuffer, uint32_t scissorCount,
                                                                           const VkRect2D *pScissors) const {
+    ZoneScoped;
     bool skip = false;
     skip = ValidateCmdSetScissorWithCount(commandBuffer, scissorCount, pScissors, CMD_SETSCISSORWITHCOUNTEXT);
     return skip;
@@ -8405,6 +8564,7 @@ bool StatelessValidation::manual_PreCallValidateCmdSetScissorWithCountEXT(VkComm
 
 bool StatelessValidation::manual_PreCallValidateCmdSetScissorWithCount(VkCommandBuffer commandBuffer, uint32_t scissorCount,
                                                                        const VkRect2D *pScissors) const {
+    ZoneScoped;
     bool skip = false;
     skip = ValidateCmdSetScissorWithCount(commandBuffer, scissorCount, pScissors, CMD_SETSCISSORWITHCOUNT);
     return skip;
@@ -8414,6 +8574,7 @@ bool StatelessValidation::ValidateCmdBindVertexBuffers2(VkCommandBuffer commandB
                                                         const VkBuffer *pBuffers, const VkDeviceSize *pOffsets,
                                                         const VkDeviceSize *pSizes, const VkDeviceSize *pStrides,
                                                         CMD_TYPE cmd_type) const {
+    ZoneScoped;
     bool skip = false;
     const char *api_call = CommandTypeString(cmd_type);
 
@@ -8480,6 +8641,7 @@ bool StatelessValidation::manual_PreCallValidateCmdBindVertexBuffers2EXT(VkComma
                                                                          uint32_t bindingCount, const VkBuffer *pBuffers,
                                                                          const VkDeviceSize *pOffsets, const VkDeviceSize *pSizes,
                                                                          const VkDeviceSize *pStrides) const {
+    ZoneScoped;
     bool skip = false;
     skip = ValidateCmdBindVertexBuffers2(commandBuffer, firstBinding, bindingCount, pBuffers, pOffsets, pSizes, pStrides,
                                          CMD_BINDVERTEXBUFFERS2EXT);
@@ -8490,6 +8652,7 @@ bool StatelessValidation::manual_PreCallValidateCmdBindVertexBuffers2(VkCommandB
                                                                       uint32_t bindingCount, const VkBuffer *pBuffers,
                                                                       const VkDeviceSize *pOffsets, const VkDeviceSize *pSizes,
                                                                       const VkDeviceSize *pStrides) const {
+    ZoneScoped;
     bool skip = false;
     skip = ValidateCmdBindVertexBuffers2(commandBuffer, firstBinding, bindingCount, pBuffers, pOffsets, pSizes, pStrides,
                                          CMD_BINDVERTEXBUFFERS2);
@@ -8499,6 +8662,7 @@ bool StatelessValidation::manual_PreCallValidateCmdBindVertexBuffers2(VkCommandB
 bool StatelessValidation::ValidateAccelerationStructureBuildGeometryInfoKHR(
     const VkAccelerationStructureBuildGeometryInfoKHR *pInfos, uint32_t infoCount, uint64_t total_primitive_count,
     const char *api_name) const {
+    ZoneScoped;
     bool skip = false;
     for (uint32_t i = 0; i < infoCount; ++i) {
         if (pInfos[i].type == VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR) {
@@ -8830,6 +8994,7 @@ bool StatelessValidation::ValidateAccelerationStructureBuildGeometryInfoKHR(
 bool StatelessValidation::manual_PreCallValidateCmdBuildAccelerationStructuresKHR(
     VkCommandBuffer commandBuffer, uint32_t infoCount, const VkAccelerationStructureBuildGeometryInfoKHR *pInfos,
     const VkAccelerationStructureBuildRangeInfoKHR *const *ppBuildRangeInfos) const {
+    ZoneScoped;
     bool skip = false;
     skip |= ValidateAccelerationStructureBuildGeometryInfoKHR(pInfos, infoCount, 0, "vkCmdBuildAccelerationStructuresKHR");
     for (uint32_t i = 0; i < infoCount; ++i) {
@@ -8944,6 +9109,7 @@ bool StatelessValidation::manual_PreCallValidateCmdBuildAccelerationStructuresIn
     VkCommandBuffer commandBuffer, uint32_t infoCount, const VkAccelerationStructureBuildGeometryInfoKHR *pInfos,
     const VkDeviceAddress *pIndirectDeviceAddresses, const uint32_t *pIndirectStrides,
     const uint32_t *const *ppMaxPrimitiveCounts) const {
+    ZoneScoped;
     bool skip = false;
     skip |= ValidateAccelerationStructureBuildGeometryInfoKHR(pInfos, infoCount, 0, "vkCmdBuildAccelerationStructuresIndirectKHR");
     const auto *ray_tracing_acceleration_structure_features =
@@ -9059,6 +9225,7 @@ bool StatelessValidation::manual_PreCallValidateBuildAccelerationStructuresKHR(
     VkDevice device, VkDeferredOperationKHR deferredOperation, uint32_t infoCount,
     const VkAccelerationStructureBuildGeometryInfoKHR *pInfos,
     const VkAccelerationStructureBuildRangeInfoKHR *const *ppBuildRangeInfos) const {
+    ZoneScoped;
     bool skip = false;
     skip |= ValidateAccelerationStructureBuildGeometryInfoKHR(pInfos, infoCount, 0, "vkBuildAccelerationStructuresKHR");
     const auto *ray_tracing_acceleration_structure_features =
@@ -9105,6 +9272,7 @@ bool StatelessValidation::manual_PreCallValidateBuildAccelerationStructuresKHR(
 bool StatelessValidation::manual_PreCallValidateGetAccelerationStructureBuildSizesKHR(
     VkDevice device, VkAccelerationStructureBuildTypeKHR buildType, const VkAccelerationStructureBuildGeometryInfoKHR *pBuildInfo,
     const uint32_t *pMaxPrimitiveCounts, VkAccelerationStructureBuildSizesInfoKHR *pSizeInfo) const {
+    ZoneScoped;
     bool skip = false;
     uint64_t total_primitive_count = 0;
     if (pBuildInfo && pMaxPrimitiveCounts) {
@@ -9136,6 +9304,7 @@ bool StatelessValidation::manual_PreCallValidateCmdSetVertexInputEXT(
     VkCommandBuffer commandBuffer, uint32_t vertexBindingDescriptionCount,
     const VkVertexInputBindingDescription2EXT *pVertexBindingDescriptions, uint32_t vertexAttributeDescriptionCount,
     const VkVertexInputAttributeDescription2EXT *pVertexAttributeDescriptions) const {
+    ZoneScoped;
     bool skip = false;
     const auto *vertex_attribute_divisor_features =
         LvlFindInChain<VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT>(device_createinfo_pnext);
@@ -9288,6 +9457,7 @@ bool StatelessValidation::manual_PreCallValidateCmdSetVertexInputEXT(
 bool StatelessValidation::manual_PreCallValidateCmdPushConstants(VkCommandBuffer commandBuffer, VkPipelineLayout layout,
                                                                  VkShaderStageFlags stageFlags, uint32_t offset, uint32_t size,
                                                                  const void *pValues) const {
+    ZoneScoped;
     bool skip = false;
     const uint32_t max_push_constants_size = device_limits.maxPushConstantsSize;
     // Check that offset + size don't exceed the max.
@@ -9322,6 +9492,7 @@ bool StatelessValidation::manual_PreCallValidateCmdPushConstants(VkCommandBuffer
 bool StatelessValidation::manual_PreCallValidateMergePipelineCaches(VkDevice device, VkPipelineCache dstCache,
                                                                     uint32_t srcCacheCount,
                                                                     const VkPipelineCache *pSrcCaches) const {
+    ZoneScoped;
     bool skip = false;
     if (pSrcCaches) {
         for (uint32_t index0 = 0; index0 < srcCacheCount; ++index0) {
@@ -9340,6 +9511,7 @@ bool StatelessValidation::manual_PreCallValidateCmdClearColorImage(VkCommandBuff
                                                                    VkImageLayout imageLayout, const VkClearColorValue *pColor,
                                                                    uint32_t rangeCount,
                                                                    const VkImageSubresourceRange *pRanges) const {
+    ZoneScoped;
     bool skip = false;
     if (!pColor) {
         skip |=
@@ -9349,6 +9521,7 @@ bool StatelessValidation::manual_PreCallValidateCmdClearColorImage(VkCommandBuff
 }
 
 bool StatelessValidation::ValidateCmdBeginRenderPass(const VkRenderPassBeginInfo *const rp_begin, CMD_TYPE cmd_type) const {
+    ZoneScoped;
     bool skip = false;
     if ((rp_begin->clearValueCount != 0) && !rp_begin->pClearValues) {
         skip |= LogError(rp_begin->renderPass, "VUID-VkRenderPassBeginInfo-clearValueCount-04962",
@@ -9361,6 +9534,7 @@ bool StatelessValidation::ValidateCmdBeginRenderPass(const VkRenderPassBeginInfo
 
 bool StatelessValidation::manual_PreCallValidateCmdBeginRenderPass(VkCommandBuffer, const VkRenderPassBeginInfo *pRenderPassBegin,
                                                                    VkSubpassContents) const {
+    ZoneScoped;
     bool skip = ValidateCmdBeginRenderPass(pRenderPassBegin, CMD_BEGINRENDERPASS);
     return skip;
 }
@@ -9368,12 +9542,14 @@ bool StatelessValidation::manual_PreCallValidateCmdBeginRenderPass(VkCommandBuff
 bool StatelessValidation::manual_PreCallValidateCmdBeginRenderPass2KHR(VkCommandBuffer,
                                                                        const VkRenderPassBeginInfo *pRenderPassBegin,
                                                                        const VkSubpassBeginInfo *) const {
+    ZoneScoped;
     bool skip = ValidateCmdBeginRenderPass(pRenderPassBegin, CMD_BEGINRENDERPASS2KHR);
     return skip;
 }
 
 bool StatelessValidation::manual_PreCallValidateCmdBeginRenderPass2(VkCommandBuffer, const VkRenderPassBeginInfo *pRenderPassBegin,
                                                                     const VkSubpassBeginInfo *) const {
+    ZoneScoped;
     bool skip = ValidateCmdBeginRenderPass(pRenderPassBegin, CMD_BEGINRENDERPASS2);
     return skip;
 }
@@ -9414,6 +9590,7 @@ static bool UniqueRenderingInfoImageViews(const VkRenderingInfo *pRenderingInfo,
 
 bool StatelessValidation::ValidateCmdBeginRendering(VkCommandBuffer commandBuffer, const VkRenderingInfo *pRenderingInfo,
                                                     CMD_TYPE cmd_type) const {
+    ZoneScoped;
     bool skip = false;
     const char *func_name = CommandTypeString(cmd_type);
 
@@ -9722,12 +9899,14 @@ bool StatelessValidation::ValidateCmdBeginRendering(VkCommandBuffer commandBuffe
 
 bool StatelessValidation::manual_PreCallValidateCmdBeginRenderingKHR(VkCommandBuffer commandBuffer,
                                                                      const VkRenderingInfo *pRenderingInfo) const {
+    ZoneScoped;
     bool skip = ValidateCmdBeginRendering(commandBuffer, pRenderingInfo, CMD_BEGINRENDERINGKHR);
     return skip;
 }
 
 bool StatelessValidation::manual_PreCallValidateCmdBeginRendering(VkCommandBuffer commandBuffer,
                                                                   const VkRenderingInfo *pRenderingInfo) const {
+    ZoneScoped;
     bool skip = ValidateCmdBeginRendering(commandBuffer, pRenderingInfo, CMD_BEGINRENDERING);
     return skip;
 }
@@ -9736,6 +9915,7 @@ bool StatelessValidation::manual_PreCallValidateCmdSetDiscardRectangleEXT(VkComm
                                                                           uint32_t firstDiscardRectangle,
                                                                           uint32_t discardRectangleCount,
                                                                           const VkRect2D *pDiscardRectangles) const {
+    ZoneScoped;
     bool skip = false;
 
     if (pDiscardRectangles) {
@@ -9766,6 +9946,7 @@ bool StatelessValidation::manual_PreCallValidateCmdSetDiscardRectangleEXT(VkComm
 bool StatelessValidation::manual_PreCallValidateGetQueryPoolResults(VkDevice device, VkQueryPool queryPool, uint32_t firstQuery,
                                                                     uint32_t queryCount, size_t dataSize, void *pData,
                                                                     VkDeviceSize stride, VkQueryResultFlags flags) const {
+    ZoneScoped;
     bool skip = false;
 
     if ((flags & VK_QUERY_RESULT_WITH_STATUS_BIT_KHR) && (flags & VK_QUERY_RESULT_WITH_AVAILABILITY_BIT)) {
@@ -9779,6 +9960,7 @@ bool StatelessValidation::manual_PreCallValidateGetQueryPoolResults(VkDevice dev
 
 bool StatelessValidation::manual_PreCallValidateCmdBeginConditionalRenderingEXT(
     VkCommandBuffer commandBuffer, const VkConditionalRenderingBeginInfoEXT *pConditionalRenderingBegin) const {
+    ZoneScoped;
     bool skip = false;
 
     if ((pConditionalRenderingBegin->offset & 3) != 0) {
@@ -9795,6 +9977,7 @@ bool StatelessValidation::manual_PreCallValidateGetPhysicalDeviceSurfaceFormatsK
                                                                                    VkSurfaceKHR surface,
                                                                                    uint32_t *pSurfaceFormatCount,
                                                                                    VkSurfaceFormatKHR *pSurfaceFormats) const {
+    ZoneScoped;
     bool skip = false;
     if (surface == VK_NULL_HANDLE && !instance_extensions.vk_google_surfaceless_query) {
         skip |= LogError(
@@ -9808,6 +9991,7 @@ bool StatelessValidation::manual_PreCallValidateGetPhysicalDeviceSurfacePresentM
                                                                                         VkSurfaceKHR surface,
                                                                                         uint32_t *pPresentModeCount,
                                                                                         VkPresentModeKHR *pPresentModes) const {
+    ZoneScoped;
     bool skip = false;
     if (surface == VK_NULL_HANDLE && !instance_extensions.vk_google_surfaceless_query) {
         skip |= LogError(
@@ -9820,6 +10004,7 @@ bool StatelessValidation::manual_PreCallValidateGetPhysicalDeviceSurfacePresentM
 bool StatelessValidation::manual_PreCallValidateGetPhysicalDeviceSurfaceCapabilities2KHR(
     VkPhysicalDevice physicalDevice, const VkPhysicalDeviceSurfaceInfo2KHR *pSurfaceInfo,
     VkSurfaceCapabilities2KHR *pSurfaceCapabilities) const {
+    ZoneScoped;
     bool skip = false;
     if (pSurfaceInfo && pSurfaceInfo->surface == VK_NULL_HANDLE && !instance_extensions.vk_google_surfaceless_query) {
         skip |= LogError(physicalDevice, "VUID-vkGetPhysicalDeviceSurfaceCapabilities2KHR-pSurfaceInfo-06520",
@@ -9889,6 +10074,7 @@ bool StatelessValidation::manual_PreCallValidateGetPhysicalDeviceSurfaceCapabili
 bool StatelessValidation::manual_PreCallValidateGetPhysicalDeviceSurfaceFormats2KHR(
     VkPhysicalDevice physicalDevice, const VkPhysicalDeviceSurfaceInfo2KHR *pSurfaceInfo, uint32_t *pSurfaceFormatCount,
     VkSurfaceFormat2KHR *pSurfaceFormats) const {
+    ZoneScoped;
     bool skip = false;
     if (pSurfaceInfo && pSurfaceInfo->surface == VK_NULL_HANDLE && !instance_extensions.vk_google_surfaceless_query) {
         skip |= LogError(physicalDevice, "VUID-vkGetPhysicalDeviceSurfaceFormats2KHR-pSurfaceInfo-06521",
@@ -9900,6 +10086,7 @@ bool StatelessValidation::manual_PreCallValidateGetPhysicalDeviceSurfaceFormats2
 
 bool StatelessValidation::manual_PreCallValidateCmdSetDiscardRectangleEnableEXT(VkCommandBuffer commandBuffer,
                                                                                 VkBool32 discardRectangleEnable) const {
+    ZoneScoped;
     bool skip = false;
     if (discard_rectangles_extension_version < 2) {
         skip |= LogError(commandBuffer, "VUID-vkCmdSetDiscardRectangleEnableEXT-specVersion-07851",
@@ -9910,6 +10097,7 @@ bool StatelessValidation::manual_PreCallValidateCmdSetDiscardRectangleEnableEXT(
 
 bool StatelessValidation::manual_PreCallValidateCmdSetDiscardRectangleModeEXT(
     VkCommandBuffer commandBuffer, VkDiscardRectangleModeEXT discardRectangleMode) const {
+    ZoneScoped;
     bool skip = false;
     if (discard_rectangles_extension_version < 2) {
         skip |= LogError(commandBuffer, "VUID-vkCmdSetDiscardRectangleModeEXT-specVersion-07852",
@@ -9922,6 +10110,7 @@ bool StatelessValidation::manual_PreCallValidateCmdSetExclusiveScissorEnableNV(V
                                                                                uint32_t firstExclusiveScissor,
                                                                                uint32_t exclusiveScissorCount,
                                                                                const VkBool32 *pExclusiveScissorEnables) const {
+    ZoneScoped;
     bool skip = false;
     if (scissor_exclusive_extension_version < 2) {
         skip |= LogError(commandBuffer, "VUID-vkCmdSetExclusiveScissorEnableNV-exclusiveScissor-07853",
@@ -9934,6 +10123,7 @@ bool StatelessValidation::manual_PreCallValidateCmdSetExclusiveScissorEnableNV(V
 bool StatelessValidation::manual_PreCallValidateGetPhysicalDeviceSurfacePresentModes2EXT(
     VkPhysicalDevice physicalDevice, const VkPhysicalDeviceSurfaceInfo2KHR *pSurfaceInfo, uint32_t *pPresentModeCount,
     VkPresentModeKHR *pPresentModes) const {
+    ZoneScoped;
     bool skip = false;
     if (pSurfaceInfo && pSurfaceInfo->surface == VK_NULL_HANDLE && !instance_extensions.vk_google_surfaceless_query) {
         skip |= LogError(physicalDevice, "VUID-vkGetPhysicalDeviceSurfacePresentModes2EXT-pSurfaceInfo-06521",
@@ -9947,6 +10137,7 @@ bool StatelessValidation::manual_PreCallValidateGetPhysicalDeviceSurfacePresentM
 
 bool StatelessValidation::ValidateDeviceImageMemoryRequirements(VkDevice device, const VkDeviceImageMemoryRequirementsKHR *pInfo,
                                                                 const char *func_name) const {
+    ZoneScoped;
     bool skip = false;
 
     if (pInfo && pInfo->pCreateInfo) {
@@ -9977,6 +10168,7 @@ bool StatelessValidation::ValidateDeviceImageMemoryRequirements(VkDevice device,
 
 bool StatelessValidation::manual_PreCallValidateGetDeviceImageMemoryRequirementsKHR(
     VkDevice device, const VkDeviceImageMemoryRequirements *pInfo, VkMemoryRequirements2 *pMemoryRequirements) const {
+    ZoneScoped;
     bool skip = false;
 
     skip |= ValidateDeviceImageMemoryRequirements(device, pInfo, "vkGetDeviceImageMemoryRequirementsKHR");
@@ -9987,6 +10179,7 @@ bool StatelessValidation::manual_PreCallValidateGetDeviceImageMemoryRequirements
 bool StatelessValidation::manual_PreCallValidateGetDeviceImageSparseMemoryRequirementsKHR(
     VkDevice device, const VkDeviceImageMemoryRequirements *pInfo, uint32_t *pSparseMemoryRequirementCount,
     VkSparseImageMemoryRequirements2 *pSparseMemoryRequirements) const {
+    ZoneScoped;
     bool skip = false;
 
     skip |= ValidateDeviceImageMemoryRequirements(device, pInfo, "vkGetDeviceImageSparseMemoryRequirementsKHR");
@@ -9997,6 +10190,7 @@ bool StatelessValidation::manual_PreCallValidateGetDeviceImageSparseMemoryRequir
 #ifdef VK_USE_PLATFORM_METAL_EXT
 bool StatelessValidation::manual_PreCallValidateExportMetalObjectsEXT(VkDevice device,
                                                                       VkExportMetalObjectsInfoEXT *pMetalObjectsInfo) const {
+    ZoneScoped;
     bool skip = false;
 
     static_assert(AllVkExportMetalObjectTypeFlagBitsEXT == 0x3F, "Add new ExportMetalObjects support to VVL!");

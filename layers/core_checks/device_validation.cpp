@@ -34,6 +34,7 @@
 
 bool CoreChecks::ValidateDeviceQueueFamily(uint32_t queue_family, const char *cmd_name, const char *parameter_name,
                                            const char *error_code, bool optional = false) const {
+    ZoneScoped;
     bool skip = false;
     if (!optional && queue_family == VK_QUEUE_FAMILY_IGNORED) {
         skip |= LogError(device, error_code,
@@ -54,6 +55,7 @@ bool CoreChecks::ValidateDeviceQueueFamily(uint32_t queue_family, const char *cm
 bool CoreChecks::ValidatePhysicalDeviceQueueFamilies(uint32_t queue_family_count, const uint32_t *queue_families,
                                                      const char *cmd_name, const char *array_parameter_name,
                                                      const char *vuid) const {
+    ZoneScoped;
     bool skip = false;
     if (queue_families) {
         vvl::unordered_set<uint32_t> set;
@@ -86,6 +88,7 @@ bool CoreChecks::ValidatePhysicalDeviceQueueFamilies(uint32_t queue_family_count
 }
 
 bool CoreChecks::GetPhysicalDeviceImageFormatProperties(IMAGE_STATE &image_state, const char *vuid_string) const {
+    ZoneScoped;
     bool skip = false;
     const auto image_create_info = image_state.createInfo;
     VkResult image_properties_result = VK_SUCCESS;
@@ -182,6 +185,7 @@ bool CoreChecks::ValidateQueueFamilyIndex(const PHYSICAL_DEVICE_STATE *pd_state,
 // Verify VkDeviceQueueCreateInfos
 bool CoreChecks::ValidateDeviceQueueCreateInfos(const PHYSICAL_DEVICE_STATE *pd_state, uint32_t info_count,
                                                 const VkDeviceQueueCreateInfo *infos) const {
+    ZoneScoped;
     bool skip = false;
 
     const uint32_t not_used = std::numeric_limits<uint32_t>::max();
@@ -314,6 +318,7 @@ bool CoreChecks::ValidateDeviceQueueCreateInfos(const PHYSICAL_DEVICE_STATE *pd_
 
 bool CoreChecks::PreCallValidateCreateDevice(VkPhysicalDevice gpu, const VkDeviceCreateInfo *pCreateInfo,
                                              const VkAllocationCallbacks *pAllocator, VkDevice *pDevice) const {
+    ZoneScoped;
     bool skip = false;
     auto pd_state = Get<PHYSICAL_DEVICE_STATE>(gpu);
 
@@ -428,6 +433,7 @@ bool CoreChecks::PreCallValidateCreateDevice(VkPhysicalDevice gpu, const VkDevic
 
 void CoreChecks::CreateDevice(const VkDeviceCreateInfo *pCreateInfo) {
     // The state tracker sets up the device state
+    ZoneScoped;
     StateTracker::CreateDevice(pCreateInfo);
 
     // Add the callback hooks for the functions that are either broadly or deeply used and that the ValidationStateTracker refactor
@@ -480,6 +486,7 @@ void CoreChecks::CreateDevice(const VkDeviceCreateInfo *pCreateInfo) {
 }
 
 void CoreChecks::PreCallRecordDestroyDevice(VkDevice device, const VkAllocationCallbacks *pAllocator) {
+    ZoneScoped;
     if (!device) return;
 
     StateTracker::PreCallRecordDestroyDevice(device, pAllocator);
@@ -522,6 +529,7 @@ void CoreChecks::PreCallRecordDestroyDevice(VkDevice device, const VkAllocationC
 
 bool CoreChecks::PreCallValidateGetDeviceQueue(VkDevice device, uint32_t queueFamilyIndex, uint32_t queueIndex,
                                                VkQueue *pQueue) const {
+    ZoneScoped;
     bool skip = false;
 
     skip |= ValidateDeviceQueueFamily(queueFamilyIndex, "vkGetDeviceQueue", "queueFamilyIndex",
@@ -556,6 +564,7 @@ bool CoreChecks::PreCallValidateGetDeviceQueue(VkDevice device, uint32_t queueFa
 }
 
 bool CoreChecks::PreCallValidateGetDeviceQueue2(VkDevice device, const VkDeviceQueueInfo2 *pQueueInfo, VkQueue *pQueue) const {
+    ZoneScoped;
     bool skip = false;
 
     if (pQueueInfo) {
@@ -620,6 +629,7 @@ bool CoreChecks::PreCallValidateGetPhysicalDeviceImageFormatProperties2KHR(VkPhy
 
 // Access helper functions for external modules
 VkFormatProperties3KHR CoreChecks::GetPDFormatProperties(const VkFormat format) const {
+    ZoneScoped;
     auto fmt_props_3 = LvlInitStruct<VkFormatProperties3KHR>();
     auto fmt_props_2 = LvlInitStruct<VkFormatProperties2>(&fmt_props_3);
 
@@ -641,6 +651,7 @@ VkFormatProperties3KHR CoreChecks::GetPDFormatProperties(const VkFormat format) 
 VkResult CoreChecks::CoreLayerCreateValidationCacheEXT(VkDevice device, const VkValidationCacheCreateInfoEXT *pCreateInfo,
                                                        const VkAllocationCallbacks *pAllocator,
                                                        VkValidationCacheEXT *pValidationCache) {
+    ZoneScoped;
     *pValidationCache = ValidationCache::Create(pCreateInfo);
     return *pValidationCache ? VK_SUCCESS : VK_ERROR_INITIALIZATION_FAILED;
 }
@@ -652,6 +663,7 @@ void CoreChecks::CoreLayerDestroyValidationCacheEXT(VkDevice device, VkValidatio
 
 VkResult CoreChecks::CoreLayerGetValidationCacheDataEXT(VkDevice device, VkValidationCacheEXT validationCache, size_t *pDataSize,
                                                         void *pData) {
+    ZoneScoped;
     size_t in_size = *pDataSize;
     CastFromHandle<ValidationCache *>(validationCache)->Write(pDataSize, pData);
     return (pData && *pDataSize != in_size) ? VK_INCOMPLETE : VK_SUCCESS;
@@ -659,6 +671,7 @@ VkResult CoreChecks::CoreLayerGetValidationCacheDataEXT(VkDevice device, VkValid
 
 VkResult CoreChecks::CoreLayerMergeValidationCachesEXT(VkDevice device, VkValidationCacheEXT dstCache, uint32_t srcCacheCount,
                                                        const VkValidationCacheEXT *pSrcCaches) {
+    ZoneScoped;
     bool skip = false;
     auto dst = CastFromHandle<ValidationCache *>(dstCache);
     VkResult result = VK_SUCCESS;
@@ -679,6 +692,7 @@ VkResult CoreChecks::CoreLayerMergeValidationCachesEXT(VkDevice device, VkValida
 }
 
 bool CoreChecks::ValidateCmdSetDeviceMask(VkCommandBuffer commandBuffer, uint32_t deviceMask, CMD_TYPE cmd_type) const {
+    ZoneScoped;
     bool skip = false;
     auto cb_state_ptr = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     if (!cb_state_ptr) {
@@ -743,6 +757,7 @@ bool CoreChecks::PreCallValidateCreateCommandPool(VkDevice device, const VkComma
 
 bool CoreChecks::PreCallValidateDestroyCommandPool(VkDevice device, VkCommandPool commandPool,
                                                    const VkAllocationCallbacks *pAllocator) const {
+    ZoneScoped;
     auto cp_state = Get<COMMAND_POOL_STATE>(commandPool);
     bool skip = false;
     if (cp_state) {
@@ -754,6 +769,7 @@ bool CoreChecks::PreCallValidateDestroyCommandPool(VkDevice device, VkCommandPoo
 }
 
 bool CoreChecks::PreCallValidateResetCommandPool(VkDevice device, VkCommandPool commandPool, VkCommandPoolResetFlags flags) const {
+    ZoneScoped;
     auto command_pool_state = Get<COMMAND_POOL_STATE>(commandPool);
     return CheckCommandBuffersInFlight(command_pool_state.get(), "reset command pool with",
                                        "VUID-vkResetCommandPool-commandPool-00040");
@@ -761,6 +777,7 @@ bool CoreChecks::PreCallValidateResetCommandPool(VkDevice device, VkCommandPool 
 
 // For given obj node, if it is use, flag a validation error and return callback result, else return false
 bool CoreChecks::ValidateObjectNotInUse(const BASE_NODE *obj_node, const char *caller_name, const char *error_code) const {
+    ZoneScoped;
     if (disabled[object_in_use]) return false;
     auto obj_struct = obj_node->Handle();
     bool skip = false;

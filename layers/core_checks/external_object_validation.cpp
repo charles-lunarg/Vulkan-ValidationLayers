@@ -22,6 +22,7 @@
 #include "core_checks/core_validation.h"
 
 bool CoreChecks::PreCallValidateImportSemaphoreFdKHR(VkDevice device, const VkImportSemaphoreFdInfoKHR *info) const {
+    ZoneScoped;
     bool skip = false;
     const char *func_name = "vkImportSemaphoreFdKHR";
     auto sem_state = Get<SEMAPHORE_STATE>(info->semaphore);
@@ -37,6 +38,7 @@ bool CoreChecks::PreCallValidateImportSemaphoreFdKHR(VkDevice device, const VkIm
 }
 
 bool CoreChecks::PreCallValidateGetSemaphoreFdKHR(VkDevice device, const VkSemaphoreGetFdInfoKHR *info, int *pFd) const {
+    ZoneScoped;
     bool skip = false;
     const char *func_name = "vkGetSemaphoreFdKHR";
     auto sem_state = Get<SEMAPHORE_STATE>(info->semaphore);
@@ -64,6 +66,7 @@ bool CoreChecks::PreCallValidateGetSemaphoreFdKHR(VkDevice device, const VkSemap
 }
 
 bool CoreChecks::ValidateImportFence(VkFence fence, const char *vuid, const char *caller_name) const {
+    ZoneScoped;
     auto fence_node = Get<FENCE_STATE>(fence);
     bool skip = false;
     if (fence_node && fence_node->Scope() == kSyncScopeInternal && fence_node->State() == FENCE_INFLIGHT) {
@@ -78,6 +81,7 @@ bool CoreChecks::PreCallValidateImportFenceFdKHR(VkDevice device, const VkImport
 }
 
 bool CoreChecks::PreCallValidateGetFenceFdKHR(VkDevice device, const VkFenceGetFdInfoKHR *info, int *pFd) const {
+    ZoneScoped;
     bool skip = false;
     const char *func_name = "vkGetFenceFdKHR";
     auto fence_state = Get<FENCE_STATE>(info->fence);
@@ -100,6 +104,7 @@ bool CoreChecks::PreCallValidateGetFenceFdKHR(VkDevice device, const VkFenceGetF
 #ifdef VK_USE_PLATFORM_WIN32_KHR
 bool CoreChecks::PreCallValidateImportSemaphoreWin32HandleKHR(VkDevice device,
                                                               const VkImportSemaphoreWin32HandleInfoKHR *info) const {
+    ZoneScoped;
     bool skip = false;
     const char *func_name = "vkImportSemaphoreWin32HandleKHR";
     auto sem_state = Get<SEMAPHORE_STATE>(info->semaphore);
@@ -117,6 +122,7 @@ bool CoreChecks::PreCallValidateImportSemaphoreWin32HandleKHR(VkDevice device,
 
 bool CoreChecks::PreCallValidateGetSemaphoreWin32HandleKHR(VkDevice device, const VkSemaphoreGetWin32HandleInfoKHR *info,
                                                            HANDLE *pHandle) const {
+    ZoneScoped;
     bool skip = false;
     const char *func_name = "vkGetSemaphoreWin32HandleKHR";
     auto sem_state = Get<SEMAPHORE_STATE>(info->semaphore);
@@ -139,6 +145,7 @@ bool CoreChecks::PreCallValidateImportFenceWin32HandleKHR(
 
 bool CoreChecks::PreCallValidateGetFenceWin32HandleKHR(VkDevice device, const VkFenceGetWin32HandleInfoKHR *info,
                                                        HANDLE *pHandle) const {
+    ZoneScoped;
     bool skip = false;
     const char *func_name = "vkGetFenceWin32HandleKHR";
     auto fence_state = Get<FENCE_STATE>(info->fence);
@@ -157,6 +164,7 @@ bool CoreChecks::PreCallValidateGetFenceWin32HandleKHR(VkDevice device, const Vk
 #ifdef VK_USE_PLATFORM_FUCHSIA
 bool CoreChecks::PreCallValidateImportSemaphoreZirconHandleFUCHSIA(VkDevice device,
                                                                    const VkImportSemaphoreZirconHandleInfoFUCHSIA *info) const {
+    ZoneScoped;
     bool skip = false;
     const char *func_name = "vkImportSemaphoreZirconHandleFUCHSIA";
     auto sem_state = Get<SEMAPHORE_STATE>(info->semaphore);
@@ -189,6 +197,7 @@ void CoreChecks::PostCallRecordGetSemaphoreZirconHandleFUCHSIA(VkDevice device,
 
 #ifdef VK_USE_PLATFORM_METAL_EXT
 bool CoreChecks::PreCallValidateExportMetalObjectsEXT(VkDevice device, VkExportMetalObjectsInfoEXT *pMetalObjectsInfo) const {
+    ZoneScoped;
     bool skip = false;
     const VkBaseOutStructure *metal_objects_info_ptr = reinterpret_cast<const VkBaseOutStructure *>(pMetalObjectsInfo->pNext);
     while (metal_objects_info_ptr) {

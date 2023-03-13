@@ -84,6 +84,17 @@
             "build_platforms": [
                 "windows"
             ]
+        },
+        {
+            "name": "tracy",
+            "url": "https://github.com/wolfpld/tracy.git",
+            "sub_dir": "tracy",
+            "build_dir": "tracy/build",
+            "install_dir": "tracy/build/install",
+            "cmake_options": [
+                "-DTRACY_STATIC=OFF"
+            ],
+            "commit": "v0.9.1"
         }
     ],
     "install_names": {
@@ -93,6 +104,7 @@
         "SPIRV-Tools": "SPIRV_TOOLS_INSTALL_DIR",
         "robin-hood-hashing": "ROBIN_HOOD_HASHING_INSTALL_DIR",
         "googletest": "GOOGLETEST_INSTALL_DIR",
-        "mimalloc": "MIMALLOC_INSTALL_DIR"
+        "mimalloc": "MIMALLOC_INSTALL_DIR",
+        "tracy": "TRACY_INSTALL_DIR"
     }
 }

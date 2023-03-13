@@ -26,6 +26,7 @@
 #include <string>
 #include "vk_layer_dispatch_table.h"
 #include "vk_extension_helper.h"
+#include <tracy/Tracy.hpp>
 
 static VKAPI_ATTR VkResult VKAPI_CALL StubBindBufferMemory2(VkDevice device, uint32_t bindInfoCount, const VkBindBufferMemoryInfo* pBindInfos) { return VK_SUCCESS; };
 static VKAPI_ATTR VkResult VKAPI_CALL StubBindImageMemory2(VkDevice device, uint32_t bindInfoCount, const VkBindImageMemoryInfo* pBindInfos) { return VK_SUCCESS; };
@@ -1045,6 +1046,7 @@ static inline bool ApiParentExtensionEnabled(const std::string api_name, const D
 
 
 static inline void layer_init_device_dispatch_table(VkDevice device, VkLayerDispatchTable *table, PFN_vkGetDeviceProcAddr gpa) {
+    ZoneScoped;
     memset(table, 0, sizeof(*table));
     // Device function pointers
     table->GetDeviceProcAddr = gpa;
@@ -2020,6 +2022,7 @@ static inline void layer_init_device_dispatch_table(VkDevice device, VkLayerDisp
 
 
 static inline void layer_init_instance_dispatch_table(VkInstance instance, VkLayerInstanceDispatchTable *table, PFN_vkGetInstanceProcAddr gpa) {
+    ZoneScoped;
     memset(table, 0, sizeof(*table));
     // Instance function pointers
     table->GetPhysicalDeviceProcAddr = (PFN_GetPhysicalDeviceProcAddr) gpa(instance, "vk_layerGetPhysicalDeviceProcAddr");

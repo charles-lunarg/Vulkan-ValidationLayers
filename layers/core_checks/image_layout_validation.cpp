@@ -84,6 +84,7 @@ static VkImageLayout NormalizeSynchronization2Layout(const VkImageAspectFlags as
 }
 
 static bool ImageLayoutMatches(const VkImageAspectFlags aspect_mask, VkImageLayout a, VkImageLayout b) {
+    ZoneScoped;
     bool matches = (a == b);
     if (!matches) {
         a = NormalizeSynchronization2Layout(aspect_mask, a);
@@ -143,6 +144,7 @@ bool CoreChecks::VerifyImageLayoutRange(const CMD_BUFFER_STATE &cb_state, const 
                                         VkImageAspectFlags aspect_mask, VkImageLayout explicit_layout,
                                         const RangeFactory &range_factory, const char *caller, const char *layout_mismatch_msg_code,
                                         bool *error) const {
+    ZoneScoped;
     bool skip = false;
     const auto *subresource_map = cb_state.GetImageSubresourceLayoutMap(image_state);
     if (!subresource_map) return skip;
@@ -173,6 +175,7 @@ bool CoreChecks::VerifyImageLayout(const CMD_BUFFER_STATE &cb_state, const IMAGE
                                    const VkImageSubresourceRange &range, VkImageAspectFlags aspect_mask,
                                    VkImageLayout explicit_layout, VkImageLayout optimal_layout, const char *caller,
                                    const char *layout_invalid_msg_code, const char *layout_mismatch_msg_code, bool *error) const {
+    ZoneScoped;
     if (disabled[image_layout_validation]) return false;
     bool skip = false;
 
@@ -244,6 +247,7 @@ bool CoreChecks::VerifyImageLayout(const CMD_BUFFER_STATE &cb_state, const IMAGE
 
 void CoreChecks::TransitionFinalSubpassLayouts(CMD_BUFFER_STATE *cb_state, const VkRenderPassBeginInfo *pRenderPassBegin,
                                                FRAMEBUFFER_STATE *framebuffer_state) {
+    ZoneScoped;
     auto render_pass = Get<RENDER_PASS_STATE>(pRenderPassBegin->renderPass);
     if (!render_pass) return;
 
@@ -295,6 +299,7 @@ struct GlobalLayoutUpdater {
 // This validates that the initial layout specified in the command buffer for the IMAGE is the same as the global IMAGE layout
 bool CoreChecks::ValidateCmdBufImageLayouts(const Location &loc, const CMD_BUFFER_STATE &cb_state,
                                             GlobalImageLayoutMap &overlayLayoutMap) const {
+    ZoneScoped;
     if (disabled[image_layout_validation]) return false;
     bool skip = false;
     // Iterate over the layout maps for each referenced image
@@ -386,6 +391,7 @@ void CoreChecks::UpdateCmdBufImageLayouts(const CMD_BUFFER_STATE *cb_state) {
 bool CoreChecks::ValidateLayoutVsAttachmentDescription(RenderPassCreateVersion rp_version, const VkImageLayout first_layout,
                                                        const uint32_t attachment,
                                                        const VkAttachmentDescription2 &attachment_description) const {
+    ZoneScoped;
     bool skip = false;
     const bool use_rp2 = (rp_version == RENDER_PASS_VERSION_2);
 
@@ -440,6 +446,7 @@ bool CoreChecks::ValidateMultipassRenderedToSingleSampledSampleCount(RenderPassC
                                                                      VkRenderPass renderpass, uint32_t subpass,
                                                                      IMAGE_STATE *image_state, VkSampleCountFlagBits msrtss_samples,
                                                                      uint32_t attachment_index, bool depth) const {
+    ZoneScoped;
     bool skip = false;
     const char *function_name = (rp_version == RENDER_PASS_VERSION_2) ? "vkCmdBeginRenderPass2()" : "vkCmdBeginRenderPass()";
     const auto image_create_info = image_state->createInfo;
@@ -473,6 +480,7 @@ bool CoreChecks::ValidateRenderPassLayoutAgainstFramebufferImageUsage(RenderPass
                                                                       const IMAGE_VIEW_STATE &image_view_state,
                                                                       VkFramebuffer framebuffer, VkRenderPass renderpass,
                                                                       uint32_t attachment_index, const char *variable_name) const {
+    ZoneScoped;
     bool skip = false;
     const auto &image_view = image_view_state.Handle();
     const auto *image_state = image_view_state.image_state.get();
@@ -621,6 +629,7 @@ bool CoreChecks::ValidateRenderPassLayoutAgainstFramebufferImageUsage(RenderPass
 bool CoreChecks::VerifyFramebufferAndRenderPassLayouts(RenderPassCreateVersion rp_version, const CMD_BUFFER_STATE &cb_state,
                                                        const VkRenderPassBeginInfo *pRenderPassBegin,
                                                        const FRAMEBUFFER_STATE *framebuffer_state) const {
+    ZoneScoped;
     bool skip = false;
     auto render_pass_state = Get<RENDER_PASS_STATE>(pRenderPassBegin->renderPass);
     const auto *render_pass_info = render_pass_state->createInfo.ptr();
@@ -811,6 +820,7 @@ bool CoreChecks::VerifyFramebufferAndRenderPassLayouts(RenderPassCreateVersion r
 
 void CoreChecks::TransitionAttachmentRefLayout(CMD_BUFFER_STATE *cb_state, FRAMEBUFFER_STATE *pFramebuffer,
                                                const safe_VkAttachmentReference2 &ref) {
+    ZoneScoped;
     if (ref.attachment != VK_ATTACHMENT_UNUSED) {
         IMAGE_VIEW_STATE *image_view = cb_state->GetActiveAttachmentImageViewState(ref.attachment);
         if (image_view) {
@@ -827,6 +837,7 @@ void CoreChecks::TransitionAttachmentRefLayout(CMD_BUFFER_STATE *cb_state, FRAME
 
 void CoreChecks::TransitionSubpassLayouts(CMD_BUFFER_STATE *cb_state, const RENDER_PASS_STATE *render_pass_state,
                                           const int subpass_index, FRAMEBUFFER_STATE *framebuffer_state) {
+    ZoneScoped;
     assert(render_pass_state);
 
     if (framebuffer_state) {
@@ -848,6 +859,7 @@ void CoreChecks::TransitionSubpassLayouts(CMD_BUFFER_STATE *cb_state, const REND
 // 2. Transition from initialLayout to layout used in subpass 0
 void CoreChecks::TransitionBeginRenderPassLayouts(CMD_BUFFER_STATE *cb_state, const RENDER_PASS_STATE *render_pass_state,
                                                   FRAMEBUFFER_STATE *framebuffer_state) {
+    ZoneScoped;
     // First record expected initialLayout as a potential initial layout usage.
     auto const rpci = render_pass_state->createInfo.ptr();
     for (uint32_t i = 0; i < rpci->attachmentCount; ++i) {
@@ -876,6 +888,7 @@ void CoreChecks::TransitionBeginRenderPassLayouts(CMD_BUFFER_STATE *cb_state, co
 bool CoreChecks::VerifyClearImageLayout(const CMD_BUFFER_STATE &cb_state, const IMAGE_STATE *image_state,
                                         const VkImageSubresourceRange &range, VkImageLayout dest_image_layout,
                                         const char *func_name) const {
+    ZoneScoped;
     bool skip = false;
     if (strcmp(func_name, "vkCmdClearDepthStencilImage()") == 0) {
         if ((dest_image_layout != VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) && (dest_image_layout != VK_IMAGE_LAYOUT_GENERAL)) {
@@ -939,6 +952,7 @@ template <typename ImageBarrier>
 bool CoreChecks::UpdateCommandBufferImageLayoutMap(const CMD_BUFFER_STATE *cb_state, const Location &loc,
                                                    const ImageBarrier &img_barrier, const CommandBufferImageLayoutMap &current_map,
                                                    CommandBufferImageLayoutMap &layout_updates) const {
+    ZoneScoped;
     bool skip = false;
     auto image_state = Get<IMAGE_STATE>(img_barrier.image);
     auto &write_subresource_map = layout_updates[image_state.get()];
@@ -994,6 +1008,7 @@ template bool CoreChecks::UpdateCommandBufferImageLayoutMap(const CMD_BUFFER_STA
                                                             CommandBufferImageLayoutMap &layout_updates) const;
 
 bool CoreChecks::FindLayouts(const IMAGE_STATE &image_state, std::vector<VkImageLayout> &layouts) const {
+    ZoneScoped;
     const auto *layout_range_map = image_state.layout_range_map.get();
     if (!layout_range_map) return false;
 
@@ -1017,6 +1032,7 @@ bool CoreChecks::FindLayouts(const IMAGE_STATE &image_state, std::vector<VkImage
 template <typename ImgBarrier>
 void CoreChecks::RecordTransitionImageLayout(CMD_BUFFER_STATE *cb_state, const IMAGE_STATE *image_state,
                                              const ImgBarrier &mem_barrier, bool is_release_op) {
+    ZoneScoped;
     if (enabled_features.core13.synchronization2) {
         if (mem_barrier.oldLayout == mem_barrier.newLayout) {
             return;
@@ -1050,6 +1066,7 @@ void CoreChecks::TransitionImageLayouts(CMD_BUFFER_STATE *cb_state, uint32_t bar
     // choose to perform it as part of the acquire operation.
     //
     // However, we still need to record initial layout for the "initial layout" validation
+    ZoneScoped;
     for (uint32_t i = 0; i < barrier_count; i++) {
         const auto &mem_barrier = barriers[i];
         const bool is_release_op = cb_state->IsReleaseOp(mem_barrier);

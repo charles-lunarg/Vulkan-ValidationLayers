@@ -23,6 +23,8 @@
 #include <filesystem>
 #include <cmath>
 
+#include <tracy/Tracy.hpp>
+
 // Command-line options
 enum TOptions {
     EOptionNone = 0x000,
@@ -258,6 +260,12 @@ void VkTestFramework::InitArgs(int *argc, char *argv[]) {
 }
 
 void VkTestFramework::Finish() {}
+
+void VkTestFramework::SetUp() {
+    FrameMark;
+}
+void VkTestFramework::TearDown() {
+}
 
 //
 // These are the default resources for TBuiltInResources, used for both

@@ -63,6 +63,7 @@ bool ImmutableSamplersAreEqual(const DSLayoutBindingA &b1, const DSLayoutBinding
 //  else return false and fill in error_msg will description of what causes incompatibility
 bool CoreChecks::VerifySetLayoutCompatibility(const DescriptorSetLayout &layout_dsl, const DescriptorSetLayout &bound_dsl,
                                               std::string &error_msg) const {
+    ZoneScoped;
     // Short circuit the detailed check.
     if (layout_dsl.IsCompatible(&bound_dsl)) return true;
 
@@ -151,6 +152,7 @@ bool CoreChecks::VerifySetLayoutCompatibility(const DescriptorSetLayout &layout_
 bool CoreChecks::VerifySetLayoutCompatibility(const cvdescriptorset::DescriptorSet &descriptor_set,
                                               const PIPELINE_LAYOUT_STATE &pipeline_layout, const uint32_t layoutIndex,
                                               std::string &errorMsg) const {
+    ZoneScoped;
     auto num_sets = pipeline_layout.set_layouts.size();
     if (layoutIndex >= num_sets) {
         std::stringstream error_str;
@@ -175,6 +177,7 @@ bool CoreChecks::PreCallValidateCmdBindDescriptorSets(VkCommandBuffer commandBuf
                                                       VkPipelineLayout layout, uint32_t firstSet, uint32_t setCount,
                                                       const VkDescriptorSet *pDescriptorSets, uint32_t dynamicOffsetCount,
                                                       const uint32_t *pDynamicOffsets) const {
+    ZoneScoped;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     assert(cb_state);
     bool skip = false;
@@ -358,6 +361,7 @@ bool CoreChecks::PreCallValidateCmdBindDescriptorSets(VkCommandBuffer commandBuf
 bool CoreChecks::PreCallValidateCreateDescriptorSetLayout(VkDevice device, const VkDescriptorSetLayoutCreateInfo *pCreateInfo,
                                                           const VkAllocationCallbacks *pAllocator,
                                                           VkDescriptorSetLayout *pSetLayout) const {
+    ZoneScoped;
     bool skip = false;
     vvl::unordered_set<uint32_t> bindings;
     uint64_t total_descriptors = 0;
@@ -732,6 +736,7 @@ unsigned DescriptorRequirementsBitsFromFormat(VkFormat fmt) {
 bool CoreChecks::ValidateDrawState(const DescriptorSet &descriptor_set, const BindingReqMap &bindings,
                                    const std::vector<uint32_t> &dynamic_offsets, const CMD_BUFFER_STATE &cb_state,
                                    const char *caller, const DrawDispatchVuid &vuids) const {
+    ZoneScoped;
     std::optional<vvl::unordered_map<VkImageView, VkImageLayout>> checked_layouts;
     if (descriptor_set.GetTotalDescriptorCount() > cvdescriptorset::PrefilterBindRequestMap::kManyDescriptors_) {
         checked_layouts.emplace();
@@ -766,6 +771,7 @@ bool CoreChecks::ValidateDrawState(const DescriptorSet &descriptor_set, const Bi
 template <typename T>
 bool CoreChecks::ValidateDescriptors(const DescriptorContext &context, const DescriptorBindingInfo &binding_info,
                                      const T &binding) const {
+    ZoneScoped;
     bool skip = false;
     for (uint32_t index = 0; !skip && index < binding.count; index++) {
         const auto &descriptor = binding.descriptors[index];
@@ -788,6 +794,7 @@ bool CoreChecks::ValidateDescriptors(const DescriptorContext &context, const Des
 
 bool CoreChecks::ValidateDescriptorSetBindingData(const DescriptorContext &context, const DescriptorBindingInfo &binding_info,
                                                   const cvdescriptorset::DescriptorBinding &binding) const {
+    ZoneScoped;
     using DescriptorClass = cvdescriptorset::DescriptorClass;
     bool skip = false;
     switch (binding.descriptor_class) {
@@ -821,6 +828,7 @@ bool CoreChecks::ValidateDescriptorSetBindingData(const DescriptorContext &conte
 
 bool CoreChecks::ValidateDescriptor(const DescriptorContext &context, const DescriptorBindingInfo &binding_info, uint32_t index,
                                     VkDescriptorType descriptor_type, const cvdescriptorset::BufferDescriptor &descriptor) const {
+    ZoneScoped;
     // Verify that buffers are valid
     auto buffer = descriptor.GetBuffer();
     auto buffer_node = descriptor.GetBufferState();
@@ -867,6 +875,7 @@ bool CoreChecks::ValidateDescriptor(const DescriptorContext &context, const Desc
 bool CoreChecks::ValidateDescriptor(const DescriptorContext &context, const DescriptorBindingInfo &binding_info, uint32_t index,
                                     VkDescriptorType descriptor_type,
                                     const cvdescriptorset::ImageDescriptor &image_descriptor) const {
+    ZoneScoped;
     std::vector<const SAMPLER_STATE *> sampler_states;
     VkImageView image_view = image_descriptor.GetImageView();
     const IMAGE_VIEW_STATE *image_view_state = image_descriptor.GetImageViewState();
@@ -1410,6 +1419,7 @@ bool CoreChecks::ValidateDescriptor(const DescriptorContext &context, const Desc
 bool CoreChecks::ValidateDescriptor(const DescriptorContext &context, const DescriptorBindingInfo &binding_info, uint32_t index,
                                     VkDescriptorType descriptor_type,
                                     const cvdescriptorset::ImageSamplerDescriptor &descriptor) const {
+    ZoneScoped;
     bool skip = ValidateDescriptor(context, binding_info, index, descriptor_type,
                                    static_cast<const cvdescriptorset::ImageDescriptor &>(descriptor));
     if (!skip) {
@@ -1422,6 +1432,7 @@ bool CoreChecks::ValidateDescriptor(const DescriptorContext &context, const Desc
 bool CoreChecks::ValidateDescriptor(const DescriptorContext &context, const DescriptorBindingInfo &binding_info, uint32_t index,
                                     VkDescriptorType descriptor_type,
                                     const cvdescriptorset::TexelDescriptor &texel_descriptor) const {
+    ZoneScoped;
     auto buffer_view = texel_descriptor.GetBufferView();
     auto buffer_view_state = texel_descriptor.GetBufferViewState();
     const auto binding = binding_info.first;
@@ -1576,6 +1587,7 @@ bool CoreChecks::ValidateDescriptor(const DescriptorContext &context, const Desc
 bool CoreChecks::ValidateDescriptor(const DescriptorContext &context, const DescriptorBindingInfo &binding_info, uint32_t index,
                                     VkDescriptorType descriptor_type,
                                     const cvdescriptorset::AccelerationStructureDescriptor &descriptor) const {
+    ZoneScoped;
     // Verify that acceleration structures are valid
     const auto binding = binding_info.first;
     if (descriptor.is_khr()) {
@@ -1648,6 +1660,7 @@ bool CoreChecks::ValidateDescriptor(const DescriptorContext &context, const Desc
 bool CoreChecks::ValidateSamplerDescriptor(const DescriptorContext &context, const cvdescriptorset::DescriptorSet &descriptor_set,
                                            const DescriptorBindingInfo &binding_info, uint32_t index, VkSampler sampler,
                                            bool is_immutable, const SAMPLER_STATE *sampler_state) const {
+    ZoneScoped;
     // Verify Sampler still valid
     if (!sampler_state || sampler_state->Destroyed()) {
         auto set = descriptor_set.GetSet();
@@ -1689,6 +1702,7 @@ bool CoreChecks::ValidateDescriptor(const DescriptorContext &context, const Desc
 //  If so, return true. If not, fill in error_msg and return false
 static bool VerifyUpdateConsistency(debug_report_data *report_data, const DescriptorSet &set, uint32_t binding, uint32_t offset,
                                     uint32_t update_count, const char *type, std::string *error_msg) {
+    ZoneScoped;
     auto current_iter = set.FindBinding(binding);
     bool pass = true;
     // Verify consecutive bindings match (if needed)
@@ -1763,6 +1777,7 @@ static bool VerifyUpdateConsistency(debug_report_data *report_data, const Descri
 // Validate Copy update
 bool CoreChecks::ValidateCopyUpdate(const VkCopyDescriptorSet *update, const DescriptorSet *dst_set, const DescriptorSet *src_set,
                                     const char *func_name, std::string *error_code, std::string *error_msg) const {
+    ZoneScoped;
     const auto *dst_layout = dst_set->GetLayout().get();
     const auto *src_layout = src_set->GetLayout().get();
 
@@ -2069,6 +2084,7 @@ bool CoreChecks::ValidateSampler(const VkSampler sampler) const { return Get<SAM
 
 bool CoreChecks::ValidateImageUpdate(VkImageView image_view, VkImageLayout image_layout, VkDescriptorType type,
                                      const char *func_name, std::string *error_code, std::string *error_msg) const {
+    ZoneScoped;
     auto iv_state = Get<IMAGE_VIEW_STATE>(image_view);
     assert(iv_state);
 
@@ -2408,6 +2424,7 @@ bool CoreChecks::ValidateImageUpdate(VkImageView image_view, VkImageLayout image
 // If there is no issue with the update, then false is returned.
 bool CoreChecks::ValidateUpdateDescriptorSets(uint32_t write_count, const VkWriteDescriptorSet *p_wds, uint32_t copy_count,
                                               const VkCopyDescriptorSet *p_cds, const char *func_name) const {
+    ZoneScoped;
     bool skip = false;
     // Validate Write updates
     for (uint32_t i = 0; i < write_count; i++) {
@@ -2484,6 +2501,7 @@ cvdescriptorset::DecodedTemplateUpdate::DecodedTemplateUpdate(const ValidationSt
                                                               VkDescriptorSet descriptorSet,
                                                               const UPDATE_TEMPLATE_STATE *template_state, const void *pData,
                                                               VkDescriptorSetLayout push_layout) {
+    ZoneScoped;
     auto const &create_info = template_state->create_info;
     inline_infos.resize(create_info.descriptorUpdateEntryCount);  // Make sure we have one if we need it
     inline_infos_khr.resize(create_info.descriptorUpdateEntryCount);
@@ -2584,6 +2602,7 @@ cvdescriptorset::DecodedTemplateUpdate::DecodedTemplateUpdate(const ValidationSt
 // the templatized data and leverage the non-template UpdateDescriptor helper functions.
 bool CoreChecks::ValidateUpdateDescriptorSetsWithTemplateKHR(VkDescriptorSet descriptorSet,
                                                              const UPDATE_TEMPLATE_STATE *template_state, const void *pData) const {
+    ZoneScoped;
     // Translate the templated update into a normal update for validation...
     cvdescriptorset::DecodedTemplateUpdate decoded_update(this, descriptorSet, template_state, pData);
     return ValidateUpdateDescriptorSets(static_cast<uint32_t>(decoded_update.desc_writes.size()), decoded_update.desc_writes.data(),
@@ -2591,6 +2610,7 @@ bool CoreChecks::ValidateUpdateDescriptorSetsWithTemplateKHR(VkDescriptorSet des
 }
 
 std::string cvdescriptorset::DescriptorSet::StringifySetAndLayout() const {
+    ZoneScoped;
     std::string out;
     auto layout_handle = layout_->GetDescriptorSetLayout();
     if (IsPushDescriptor()) {
@@ -2609,6 +2629,7 @@ std::string cvdescriptorset::DescriptorSet::StringifySetAndLayout() const {
 // Loop through the write updates to validate for a push descriptor set, ignoring dstSet
 bool CoreChecks::ValidatePushDescriptorsUpdate(const DescriptorSet *push_set, uint32_t write_count,
                                                const VkWriteDescriptorSet *p_wds, const char *func_name) const {
+    ZoneScoped;
     assert(push_set->IsPushDescriptor());
     bool skip = false;
     for (uint32_t i = 0; i < write_count; i++) {
@@ -2626,6 +2647,7 @@ bool CoreChecks::ValidatePushDescriptorsUpdate(const DescriptorSet *push_set, ui
 //  If there's an error, update the error_msg string with details and return false, else return true
 static bool ValidateBufferUsage(debug_report_data *report_data, BUFFER_STATE const *buffer_node, VkDescriptorType type,
                                 std::string *error_code, std::string *error_msg) {
+    ZoneScoped;
     // Verify that usage bits set correctly for given type
     auto usage = buffer_node->createInfo.usage;
     const char *error_usage_bit = nullptr;
@@ -2679,6 +2701,7 @@ static bool ValidateBufferUsage(debug_report_data *report_data, BUFFER_STATE con
 // If there's an error, update the error_msg string with details and return false, else return true
 bool CoreChecks::ValidateBufferUpdate(VkDescriptorBufferInfo const *buffer_info, VkDescriptorType type, const char *func_name,
                                       std::string *error_code, std::string *error_msg) const {
+    ZoneScoped;
     // First make sure that buffer is valid
     auto buffer_node = Get<BUFFER_STATE>(buffer_info->buffer);
     // Any invalid buffer should already be caught by object_tracker
@@ -2772,6 +2795,7 @@ bool CoreChecks::ValidateBufferUpdate(VkDescriptorBufferInfo const *buffer_info,
 template <typename T>
 bool CoreChecks::ValidateAccelerationStructureUpdate(T acc_node, const char *func_name, std::string *error_code,
                                                      std::string *error_msg) const {
+    ZoneScoped;
     // nullDescriptor feature allows this to be VK_NULL_HANDLE
     if (acc_node) {
         if (ValidateMemoryIsBoundToAccelerationStructure(device, *acc_node, func_name, kVUIDUndefined)) {
@@ -2788,6 +2812,7 @@ bool CoreChecks::VerifyCopyUpdateContents(const VkCopyDescriptorSet *update, con
                                           VkDescriptorType src_type, uint32_t src_index, const DescriptorSet *dst_set,
                                           VkDescriptorType dst_type, uint32_t dst_index, const char *func_name,
                                           std::string *error_code, std::string *error_msg) const {
+    ZoneScoped;
     // Note : Repurposing some Write update error codes here as specific details aren't called out for copy updates like they are
     // for write updates
     using DescriptorClass = cvdescriptorset::DescriptorClass;
@@ -2944,6 +2969,7 @@ bool CoreChecks::VerifyCopyUpdateContents(const VkCopyDescriptorSet *update, con
 // Verify that the state at allocate time is correct, but don't actually allocate the sets yet
 bool CoreChecks::ValidateAllocateDescriptorSets(const VkDescriptorSetAllocateInfo *p_alloc_info,
                                                 const cvdescriptorset::AllocateDescriptorSetsData *ds_data) const {
+    ZoneScoped;
     bool skip = false;
     auto pool_state = Get<DESCRIPTOR_POOL_STATE>(p_alloc_info->descriptorPool);
 
@@ -3035,6 +3061,7 @@ bool CoreChecks::ValidateAllocateDescriptorSets(const VkDescriptorSetAllocateInf
 //  If an error would occur for this update, return false and fill in details in error_msg string
 bool CoreChecks::ValidateWriteUpdate(const DescriptorSet *dest_set, const VkWriteDescriptorSet *update, const char *func_name,
                                      std::string *error_code, std::string *error_msg, bool push) const {
+    ZoneScoped;
     const auto *dest_layout = dest_set->GetLayout().get();
 
     // Verify dst layout still valid
@@ -3231,6 +3258,7 @@ bool CoreChecks::ValidateWriteUpdate(const DescriptorSet *dest_set, const VkWrit
 bool CoreChecks::VerifyWriteUpdateContents(const DescriptorSet *dest_set, const VkWriteDescriptorSet *update, const uint32_t index,
                                            const char *func_name, std::string *error_code, std::string *error_msg,
                                            bool push) const {
+    ZoneScoped;
     using ImageSamplerDescriptor = cvdescriptorset::ImageSamplerDescriptor;
 
     switch (update->descriptorType) {
@@ -3447,6 +3475,7 @@ bool CoreChecks::PreCallValidateCmdSetDescriptorBufferOffsetsEXT(VkCommandBuffer
                                                                  uint32_t firstSet, uint32_t setCount,
                                                                  const uint32_t *pBufferIndices,
                                                                  const VkDeviceSize *pOffsets) const {
+    ZoneScoped;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     auto pipeline_layout = Get<PIPELINE_LAYOUT_STATE>(layout);
     assert(cb_state);
@@ -3596,6 +3625,7 @@ bool CoreChecks::PreCallValidateCmdSetDescriptorBufferOffsetsEXT(VkCommandBuffer
 bool CoreChecks::PreCallValidateCmdBindDescriptorBufferEmbeddedSamplersEXT(VkCommandBuffer commandBuffer,
                                                                            VkPipelineBindPoint pipelineBindPoint,
                                                                            VkPipelineLayout layout, uint32_t set) const {
+    ZoneScoped;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     assert(cb_state);
 
@@ -3637,6 +3667,7 @@ bool CoreChecks::PreCallValidateCmdBindDescriptorBufferEmbeddedSamplersEXT(VkCom
 
 bool CoreChecks::PreCallValidateCmdBindDescriptorBuffersEXT(VkCommandBuffer commandBuffer, uint32_t bufferCount,
                                                             const VkDescriptorBufferBindingInfoEXT *pBindingInfos) const {
+    ZoneScoped;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     assert(cb_state);
 
@@ -3774,6 +3805,7 @@ bool CoreChecks::PreCallValidateCmdBindDescriptorBuffersEXT(VkCommandBuffer comm
 
 bool CoreChecks::PreCallValidateGetDescriptorSetLayoutSizeEXT(VkDevice device, VkDescriptorSetLayout layout,
                                                               VkDeviceSize *pLayoutSizeInBytes) const {
+    ZoneScoped;
     bool skip = false;
 
     if (!enabled_features.descriptor_buffer_features.descriptorBuffer) {
@@ -3794,6 +3826,7 @@ bool CoreChecks::PreCallValidateGetDescriptorSetLayoutSizeEXT(VkDevice device, V
 
 bool CoreChecks::PreCallValidateGetDescriptorSetLayoutBindingOffsetEXT(VkDevice device, VkDescriptorSetLayout layout,
                                                                        uint32_t binding, VkDeviceSize *pOffset) const {
+    ZoneScoped;
     bool skip = false;
 
     if (!enabled_features.descriptor_buffer_features.descriptorBuffer) {
@@ -3815,6 +3848,7 @@ bool CoreChecks::PreCallValidateGetDescriptorSetLayoutBindingOffsetEXT(VkDevice 
 bool CoreChecks::PreCallValidateGetBufferOpaqueCaptureDescriptorDataEXT(VkDevice device,
                                                                         const VkBufferCaptureDescriptorDataInfoEXT *pInfo,
                                                                         void *pData) const {
+    ZoneScoped;
     bool skip = false;
 
     if (!enabled_features.descriptor_buffer_features.descriptorBufferCaptureReplay) {
@@ -3846,6 +3880,7 @@ bool CoreChecks::PreCallValidateGetBufferOpaqueCaptureDescriptorDataEXT(VkDevice
 bool CoreChecks::PreCallValidateGetImageOpaqueCaptureDescriptorDataEXT(VkDevice device,
                                                                        const VkImageCaptureDescriptorDataInfoEXT *pInfo,
                                                                        void *pData) const {
+    ZoneScoped;
     bool skip = false;
 
     if (!enabled_features.descriptor_buffer_features.descriptorBufferCaptureReplay) {
@@ -3877,6 +3912,7 @@ bool CoreChecks::PreCallValidateGetImageOpaqueCaptureDescriptorDataEXT(VkDevice 
 bool CoreChecks::PreCallValidateGetImageViewOpaqueCaptureDescriptorDataEXT(VkDevice device,
                                                                            const VkImageViewCaptureDescriptorDataInfoEXT *pInfo,
                                                                            void *pData) const {
+    ZoneScoped;
     bool skip = false;
 
     if (!enabled_features.descriptor_buffer_features.descriptorBufferCaptureReplay) {
@@ -3909,6 +3945,7 @@ bool CoreChecks::PreCallValidateGetImageViewOpaqueCaptureDescriptorDataEXT(VkDev
 bool CoreChecks::PreCallValidateGetSamplerOpaqueCaptureDescriptorDataEXT(VkDevice device,
                                                                          const VkSamplerCaptureDescriptorDataInfoEXT *pInfo,
                                                                          void *pData) const {
+    ZoneScoped;
     bool skip = false;
 
     if (!enabled_features.descriptor_buffer_features.descriptorBufferCaptureReplay) {
@@ -3940,6 +3977,7 @@ bool CoreChecks::PreCallValidateGetSamplerOpaqueCaptureDescriptorDataEXT(VkDevic
 
 bool CoreChecks::PreCallValidateGetAccelerationStructureOpaqueCaptureDescriptorDataEXT(
     VkDevice device, const VkAccelerationStructureCaptureDescriptorDataInfoEXT *pInfo, void *pData) const {
+    ZoneScoped;
     bool skip = false;
 
     if (!enabled_features.descriptor_buffer_features.descriptorBufferCaptureReplay) {
@@ -4002,6 +4040,7 @@ bool CoreChecks::PreCallValidateGetAccelerationStructureOpaqueCaptureDescriptorD
 }
 
 bool CoreChecks::ValidateDescriptorAddressInfoEXT(VkDevice device, const VkDescriptorAddressInfoEXT *address_info) const {
+    ZoneScoped;
     bool skip = false;
 
     if ((address_info->address == 0) && !enabled_features.robustness2_features.nullDescriptor) {
@@ -4034,6 +4073,7 @@ bool CoreChecks::ValidateDescriptorAddressInfoEXT(VkDevice device, const VkDescr
 
 bool CoreChecks::PreCallValidateGetDescriptorEXT(VkDevice device, const VkDescriptorGetInfoEXT *pDescriptorInfo, size_t dataSize,
                                                  void *pDescriptor) const {
+    ZoneScoped;
     bool skip = false;
 
     if (!enabled_features.descriptor_buffer_features.descriptorBuffer) {
@@ -4370,6 +4410,7 @@ bool CoreChecks::PreCallValidateGetDescriptorEXT(VkDevice device, const VkDescri
 
 bool CoreChecks::PreCallValidateResetDescriptorPool(VkDevice device, VkDescriptorPool descriptorPool,
                                                     VkDescriptorPoolResetFlags flags) const {
+    ZoneScoped;
     // Make sure sets being destroyed are not currently in-use
     if (disabled[object_in_use]) return false;
     bool skip = false;
@@ -4383,6 +4424,7 @@ bool CoreChecks::PreCallValidateResetDescriptorPool(VkDevice device, VkDescripto
 
 bool CoreChecks::PreCallValidateDestroyDescriptorPool(VkDevice device, VkDescriptorPool descriptorPool,
                                                       const VkAllocationCallbacks *pAllocator) const {
+    ZoneScoped;
     auto desc_pool_state = Get<DESCRIPTOR_POOL_STATE>(descriptorPool);
     bool skip = false;
     if (desc_pool_state) {
@@ -4397,6 +4439,7 @@ bool CoreChecks::PreCallValidateDestroyDescriptorPool(VkDevice device, VkDescrip
 // as well as DescriptorSetLayout ptrs used for later update.
 bool CoreChecks::PreCallValidateAllocateDescriptorSets(VkDevice device, const VkDescriptorSetAllocateInfo *pAllocateInfo,
                                                        VkDescriptorSet *pDescriptorSets, void *ads_state_data) const {
+    ZoneScoped;
     StateTracker::PreCallValidateAllocateDescriptorSets(device, pAllocateInfo, pDescriptorSets, ads_state_data);
 
     cvdescriptorset::AllocateDescriptorSetsData *ads_state =
@@ -4410,6 +4453,7 @@ bool CoreChecks::PreCallValidateAllocateDescriptorSets(VkDevice device, const Vk
 // Return false if no errors occur
 // Return true if validation error occurs and callback returns true (to skip upcoming API call down the chain)
 bool CoreChecks::ValidateIdleDescriptorSet(VkDescriptorSet set, const char *func_str) const {
+    ZoneScoped;
     if (disabled[object_in_use]) return false;
     bool skip = false;
     auto set_node = Get<cvdescriptorset::DescriptorSet>(set);
@@ -4426,6 +4470,7 @@ bool CoreChecks::ValidateIdleDescriptorSet(VkDescriptorSet set, const char *func
 
 bool CoreChecks::PreCallValidateFreeDescriptorSets(VkDevice device, VkDescriptorPool descriptorPool, uint32_t count,
                                                    const VkDescriptorSet *pDescriptorSets) const {
+    ZoneScoped;
     // Make sure that no sets being destroyed are in-flight
     bool skip = false;
     // First make sure sets being destroyed are not currently in-use
@@ -4461,6 +4506,7 @@ bool CoreChecks::PreCallValidateUpdateDescriptorSets(VkDevice device, uint32_t d
 bool CoreChecks::PreCallValidateCmdPushDescriptorSetKHR(VkCommandBuffer commandBuffer, VkPipelineBindPoint pipelineBindPoint,
                                                         VkPipelineLayout layout, uint32_t set, uint32_t descriptorWriteCount,
                                                         const VkWriteDescriptorSet *pDescriptorWrites) const {
+    ZoneScoped;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     assert(cb_state);
     const char *func_name = "vkCmdPushDescriptorSetKHR()";
@@ -4505,6 +4551,7 @@ bool CoreChecks::PreCallValidateCmdPushDescriptorSetKHR(VkCommandBuffer commandB
 
 bool CoreChecks::ValidateDescriptorUpdateTemplate(const char *func_name,
                                                   const VkDescriptorUpdateTemplateCreateInfo *pCreateInfo) const {
+    ZoneScoped;
     bool skip = false;
     auto layout = Get<cvdescriptorset::DescriptorSetLayout>(pCreateInfo->descriptorSetLayout);
     if (VK_DESCRIPTOR_UPDATE_TEMPLATE_TYPE_DESCRIPTOR_SET == pCreateInfo->templateType && !layout) {
@@ -4617,6 +4664,7 @@ bool CoreChecks::PreCallValidateCmdPushDescriptorSetWithTemplateKHR(VkCommandBuf
                                                                     VkDescriptorUpdateTemplate descriptorUpdateTemplate,
                                                                     VkPipelineLayout layout, uint32_t set,
                                                                     const void *pData) const {
+    ZoneScoped;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     assert(cb_state);
     const char *const func_name = "vkPushDescriptorSetWithTemplateKHR()";
@@ -4704,6 +4752,7 @@ enum DSL_DESCRIPTOR_GROUPS {
 std::valarray<uint32_t> GetDescriptorCountMaxPerStage(
     const DeviceFeatures *enabled_features,
     const std::vector<std::shared_ptr<cvdescriptorset::DescriptorSetLayout const>> &set_layouts, bool skip_update_after_bind) {
+    ZoneScoped;
     // Identify active pipeline stages
     std::vector<VkShaderStageFlags> stage_flags = {VK_SHADER_STAGE_VERTEX_BIT, VK_SHADER_STAGE_FRAGMENT_BIT,
                                                    VK_SHADER_STAGE_COMPUTE_BIT};
@@ -4799,6 +4848,7 @@ std::valarray<uint32_t> GetDescriptorCountMaxPerStage(
 // Note: descriptors only count against the limit once even if used by multiple stages.
 std::map<uint32_t, uint32_t> GetDescriptorSum(
     const std::vector<std::shared_ptr<cvdescriptorset::DescriptorSetLayout const>> &set_layouts, bool skip_update_after_bind) {
+    ZoneScoped;
     std::map<uint32_t, uint32_t> sum_by_type;
     for (const auto &dsl : set_layouts) {
         if (!dsl) {
@@ -4827,6 +4877,7 @@ std::map<uint32_t, uint32_t> GetDescriptorSum(
 bool CoreChecks::PreCallValidateCreatePipelineLayout(VkDevice device, const VkPipelineLayoutCreateInfo *pCreateInfo,
                                                      const VkAllocationCallbacks *pAllocator,
                                                      VkPipelineLayout *pPipelineLayout) const {
+    ZoneScoped;
     bool skip = false;
 
     std::vector<std::shared_ptr<cvdescriptorset::DescriptorSetLayout const>> set_layouts(pCreateInfo->setLayoutCount, nullptr);
@@ -5307,6 +5358,7 @@ bool CoreChecks::PreCallValidateCreatePipelineLayout(VkDevice device, const VkPi
 bool CoreChecks::PreCallValidateCmdPushConstants(VkCommandBuffer commandBuffer, VkPipelineLayout layout,
                                                  VkShaderStageFlags stageFlags, uint32_t offset, uint32_t size,
                                                  const void *pValues) const {
+    ZoneScoped;
     bool skip = false;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     assert(cb_state);
@@ -5350,6 +5402,7 @@ bool CoreChecks::PreCallValidateCmdPushConstants(VkCommandBuffer commandBuffer, 
 
 bool CoreChecks::ValidateCreateSamplerYcbcrConversion(const char *func_name,
                                                       const VkSamplerYcbcrConversionCreateInfo *create_info) const {
+    ZoneScoped;
     bool skip = false;
     const VkFormat conversion_format = create_info->format;
 
@@ -5468,6 +5521,7 @@ bool CoreChecks::PreCallValidateCreateSamplerYcbcrConversionKHR(VkDevice device,
 
 bool CoreChecks::PreCallValidateCreateSampler(VkDevice device, const VkSamplerCreateInfo *pCreateInfo,
                                               const VkAllocationCallbacks *pAllocator, VkSampler *pSampler) const {
+    ZoneScoped;
     bool skip = false;
 
     auto num_samplers = Count<SAMPLER_STATE>();

@@ -69,6 +69,7 @@ bool CoreChecks::ValidateStageMaskHost(const Location &loc, VkPipelineStageFlags
 
 bool CoreChecks::ValidateFenceForSubmit(const FENCE_STATE *fence_state, const char *inflight_vuid, const char *retired_vuid,
                                         const char *func_name) const {
+    ZoneScoped;
     bool skip = false;
 
     if (fence_state && fence_state->Scope() == kSyncScopeInternal) {
@@ -92,6 +93,7 @@ bool CoreChecks::ValidateFenceForSubmit(const FENCE_STATE *fence_state, const ch
 
 bool SemaphoreSubmitState::ValidateBinaryWait(const core_error::Location &loc, VkQueue queue,
                                               const SEMAPHORE_STATE &semaphore_state) {
+    ZoneScoped;
     using sync_vuid_maps::GetQueueSubmitVUID;
     using sync_vuid_maps::SubmitError;
 
@@ -125,6 +127,7 @@ bool SemaphoreSubmitState::ValidateBinaryWait(const core_error::Location &loc, V
 }
 
 bool SemaphoreSubmitState::ValidateWaitSemaphore(const core_error::Location &loc, VkSemaphore semaphore, uint64_t value) {
+    ZoneScoped;
     using sync_vuid_maps::GetQueueSubmitVUID;
     using sync_vuid_maps::SubmitError;
     bool skip = false;
@@ -157,6 +160,7 @@ bool SemaphoreSubmitState::ValidateWaitSemaphore(const core_error::Location &loc
 }
 
 bool SemaphoreSubmitState::ValidateSignalSemaphore(const core_error::Location &loc, VkSemaphore semaphore, uint64_t value) {
+    ZoneScoped;
     using sync_vuid_maps::GetQueueSubmitVUID;
     using sync_vuid_maps::SubmitError;
     bool skip = false;
@@ -227,6 +231,7 @@ bool SemaphoreSubmitState::ValidateSignalSemaphore(const core_error::Location &l
 
 bool CoreChecks::ValidateSemaphoresForSubmit(SemaphoreSubmitState &state, const VkSubmitInfo &submit,
                                              const Location &outer_loc) const {
+    ZoneScoped;
     bool skip = false;
 #ifdef VK_USE_PLATFORM_WIN32_KHR
     if (const auto d3d12_fence_submit_info = LvlFindInChain<VkD3D12FenceSubmitInfoKHR>(submit.pNext)) {
@@ -315,6 +320,7 @@ bool CoreChecks::ValidateSemaphoresForSubmit(SemaphoreSubmitState &state, const 
 
 bool CoreChecks::ValidateSemaphoresForSubmit(SemaphoreSubmitState &state, const VkSubmitInfo2KHR &submit,
                                              const Location &outer_loc) const {
+    ZoneScoped;
     bool skip = false;
     for (uint32_t i = 0; i < submit.waitSemaphoreInfoCount; ++i) {
         const auto &wait_info = submit.pWaitSemaphoreInfos[i];
@@ -351,6 +357,7 @@ bool CoreChecks::ValidateSemaphoresForSubmit(SemaphoreSubmitState &state, const 
 
 bool CoreChecks::ValidateSemaphoresForSubmit(SemaphoreSubmitState &state, const VkBindSparseInfo &submit,
                                              const Location &outer_loc) const {
+    ZoneScoped;
     bool skip = false;
     auto *timeline_semaphore_submit_info = LvlFindInChain<VkTimelineSemaphoreSubmitInfo>(submit.pNext);
     for (uint32_t i = 0; i < submit.waitSemaphoreCount; ++i) {
@@ -417,6 +424,7 @@ bool CoreChecks::ValidateSemaphoresForSubmit(SemaphoreSubmitState &state, const 
 
 bool CoreChecks::PreCallValidateCreateFence(VkDevice device, const VkFenceCreateInfo *pCreateInfo,
                                             const VkAllocationCallbacks *pAllocator, VkFence *pFence) const {
+    ZoneScoped;
     bool skip = false;
     auto fence_export_info = LvlFindInChain<VkExportFenceCreateInfo>(pCreateInfo->pNext);
     if (fence_export_info && fence_export_info->handleTypes != 0) {
@@ -450,6 +458,7 @@ bool CoreChecks::PreCallValidateCreateFence(VkDevice device, const VkFenceCreate
 
 bool CoreChecks::PreCallValidateCreateSemaphore(VkDevice device, const VkSemaphoreCreateInfo *pCreateInfo,
                                                 const VkAllocationCallbacks *pAllocator, VkSemaphore *pSemaphore) const {
+    ZoneScoped;
     bool skip = false;
     auto sem_type_create_info = LvlFindInChain<VkSemaphoreTypeCreateInfo>(pCreateInfo->pNext);
 
@@ -507,6 +516,7 @@ bool CoreChecks::PreCallValidateWaitSemaphoresKHR(VkDevice device, const VkSemap
 
 bool CoreChecks::ValidateWaitSemaphores(VkDevice device, const VkSemaphoreWaitInfo *pWaitInfo, uint64_t timeout,
                                         const char *apiName) const {
+    ZoneScoped;
     bool skip = false;
 
     for (uint32_t i = 0; i < pWaitInfo->semaphoreCount; i++) {
@@ -522,6 +532,7 @@ bool CoreChecks::ValidateWaitSemaphores(VkDevice device, const VkSemaphoreWaitIn
 }
 
 bool CoreChecks::PreCallValidateDestroyFence(VkDevice device, VkFence fence, const VkAllocationCallbacks *pAllocator) const {
+    ZoneScoped;
     auto fence_node = Get<FENCE_STATE>(fence);
     bool skip = false;
     if (fence_node) {
@@ -533,6 +544,7 @@ bool CoreChecks::PreCallValidateDestroyFence(VkDevice device, VkFence fence, con
 }
 
 bool CoreChecks::PreCallValidateResetFences(VkDevice device, uint32_t fenceCount, const VkFence *pFences) const {
+    ZoneScoped;
     bool skip = false;
     for (uint32_t i = 0; i < fenceCount; ++i) {
         auto fence_state = Get<FENCE_STATE>(pFences[i]);
@@ -546,6 +558,7 @@ bool CoreChecks::PreCallValidateResetFences(VkDevice device, uint32_t fenceCount
 
 bool CoreChecks::PreCallValidateDestroySemaphore(VkDevice device, VkSemaphore semaphore,
                                                  const VkAllocationCallbacks *pAllocator) const {
+    ZoneScoped;
     auto sema_node = Get<SEMAPHORE_STATE>(semaphore);
     bool skip = false;
     if (sema_node) {
@@ -555,6 +568,7 @@ bool CoreChecks::PreCallValidateDestroySemaphore(VkDevice device, VkSemaphore se
 }
 
 bool CoreChecks::PreCallValidateDestroyEvent(VkDevice device, VkEvent event, const VkAllocationCallbacks *pAllocator) const {
+    ZoneScoped;
     auto event_state = Get<EVENT_STATE>(event);
     bool skip = false;
     if (event_state) {
@@ -564,6 +578,7 @@ bool CoreChecks::PreCallValidateDestroyEvent(VkDevice device, VkEvent event, con
 }
 
 bool CoreChecks::PreCallValidateDestroySampler(VkDevice device, VkSampler sampler, const VkAllocationCallbacks *pAllocator) const {
+    ZoneScoped;
     auto sampler_state = Get<SAMPLER_STATE>(sampler);
     bool skip = false;
     if (sampler_state) {
@@ -573,6 +588,7 @@ bool CoreChecks::PreCallValidateDestroySampler(VkDevice device, VkSampler sample
 }
 
 bool CoreChecks::PreCallValidateCmdSetEvent(VkCommandBuffer commandBuffer, VkEvent event, VkPipelineStageFlags stageMask) const {
+    ZoneScoped;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     bool skip = false;
     skip |= ValidateExtendedDynamicState(*cb_state, CMD_SETEVENT, VK_TRUE, nullptr, nullptr);
@@ -585,6 +601,7 @@ bool CoreChecks::PreCallValidateCmdSetEvent(VkCommandBuffer commandBuffer, VkEve
 
 bool CoreChecks::ValidateCmdSetEvent2(VkCommandBuffer commandBuffer, VkEvent event, const VkDependencyInfo *pDependencyInfo,
                                       CMD_TYPE cmd_type) const {
+    ZoneScoped;
     const LogObjectList objlist(commandBuffer, event);
 
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
@@ -612,6 +629,7 @@ bool CoreChecks::PreCallValidateCmdSetEvent2(VkCommandBuffer commandBuffer, VkEv
 }
 
 bool CoreChecks::PreCallValidateCmdResetEvent(VkCommandBuffer commandBuffer, VkEvent event, VkPipelineStageFlags stageMask) const {
+    ZoneScoped;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     assert(cb_state);
     const LogObjectList objlist(commandBuffer);
@@ -626,6 +644,7 @@ bool CoreChecks::PreCallValidateCmdResetEvent(VkCommandBuffer commandBuffer, VkE
 
 bool CoreChecks::ValidateCmdResetEvent2(VkCommandBuffer commandBuffer, VkEvent event, VkPipelineStageFlags2 stageMask,
                                         CMD_TYPE cmd_type) const {
+    ZoneScoped;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     assert(cb_state);
     const LogObjectList objlist(commandBuffer);
@@ -789,6 +808,7 @@ bool CoreChecks::ValidateRenderPassPipelineBarriers(const Location &outer_loc, c
                                                     const VkBufferMemoryBarrier *buffer_mem_barriers,
                                                     uint32_t image_mem_barrier_count,
                                                     const VkImageMemoryBarrier *image_barriers) const {
+    ZoneScoped;
     bool skip = false;
     const auto &rp_state = cb_state->activeRenderPass;
     RenderPassDepState state(this, outer_loc.StringFunc().c_str(), "VUID-vkCmdPipelineBarrier-pDependencies-02285",
@@ -839,6 +859,7 @@ bool CoreChecks::ValidateRenderPassPipelineBarriers(const Location &outer_loc, c
 
 bool CoreChecks::ValidateRenderPassPipelineBarriers(const Location &outer_loc, const CMD_BUFFER_STATE *cb_state,
                                                     const VkDependencyInfoKHR *dep_info) const {
+    ZoneScoped;
     bool skip = false;
     const auto &rp_state = cb_state->activeRenderPass;
     if (rp_state->UsesDynamicRendering()) {
@@ -894,6 +915,7 @@ bool CoreChecks::ValidateRenderPassPipelineBarriers(const Location &outer_loc, c
 
 bool CoreChecks::ValidateStageMasksAgainstQueueCapabilities(const LogObjectList &objlist, const Location &loc,
                                                             VkQueueFlags queue_flags, VkPipelineStageFlags2KHR stage_mask) const {
+    ZoneScoped;
     bool skip = false;
     // these are always allowed.
     stage_mask &= ~(VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT_KHR | VK_PIPELINE_STAGE_2_TOP_OF_PIPE_BIT_KHR |
@@ -942,6 +964,7 @@ bool CoreChecks::ValidateStageMasksAgainstQueueCapabilities(const LogObjectList 
 
 bool CoreChecks::ValidatePipelineStageFeatureEnables(const LogObjectList &objlist, const Location &loc,
                                                      VkPipelineStageFlags2KHR stage_mask) const {
+    ZoneScoped;
     bool skip = false;
     if (!enabled_features.core13.synchronization2 && stage_mask == 0) {
         const auto &vuid = sync_vuid_maps::GetBadFeatureVUID(loc, 0);
@@ -971,6 +994,7 @@ bool CoreChecks::ValidatePipelineStageFeatureEnables(const LogObjectList &objlis
 
 bool CoreChecks::ValidatePipelineStage(const LogObjectList &objlist, const Location &loc, VkQueueFlags queue_flags,
                                        VkPipelineStageFlags2KHR stage_mask) const {
+    ZoneScoped;
     bool skip = false;
     skip |= ValidateStageMasksAgainstQueueCapabilities(objlist, loc, queue_flags, stage_mask);
     skip |= ValidatePipelineStageFeatureEnables(objlist, loc, stage_mask);
@@ -979,6 +1003,7 @@ bool CoreChecks::ValidatePipelineStage(const LogObjectList &objlist, const Locat
 
 bool CoreChecks::ValidateAccessMask(const LogObjectList &objlist, const Location &loc, VkQueueFlags queue_flags,
                                     VkAccessFlags2KHR access_mask, VkPipelineStageFlags2KHR stage_mask) const {
+    ZoneScoped;
     bool skip = false;
     // Early out if all commands set
     if ((stage_mask & VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT_KHR) != 0) return skip;
@@ -1008,6 +1033,7 @@ bool CoreChecks::ValidateAccessMask(const LogObjectList &objlist, const Location
 
 bool CoreChecks::ValidateEventStageMask(const CMD_BUFFER_STATE &cb_state, size_t eventCount, size_t firstEventIndex,
                                         VkPipelineStageFlags2KHR sourceStageMask, EventToStageMap *localEventToStageMap) {
+    ZoneScoped;
     bool skip = false;
     const ValidationStateTracker *state_data = cb_state.dev_data;
     VkPipelineStageFlags2KHR stage_mask = 0;
@@ -1048,6 +1074,7 @@ bool CoreChecks::PreCallValidateCmdWaitEvents(VkCommandBuffer commandBuffer, uin
                                               uint32_t bufferMemoryBarrierCount, const VkBufferMemoryBarrier *pBufferMemoryBarriers,
                                               uint32_t imageMemoryBarrierCount,
                                               const VkImageMemoryBarrier *pImageMemoryBarriers) const {
+    ZoneScoped;
     bool skip = false;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     assert(cb_state);
@@ -1084,6 +1111,7 @@ bool CoreChecks::PreCallValidateCmdWaitEvents(VkCommandBuffer commandBuffer, uin
 
 bool CoreChecks::ValidateCmdWaitEvents2(VkCommandBuffer commandBuffer, uint32_t eventCount, const VkEvent *pEvents,
                                         const VkDependencyInfo *pDependencyInfos, CMD_TYPE cmd_type) const {
+    ZoneScoped;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     assert(cb_state);
 
@@ -1119,6 +1147,7 @@ bool CoreChecks::PreCallValidateCmdWaitEvents2(VkCommandBuffer commandBuffer, ui
 
 void CORE_CMD_BUFFER_STATE::RecordWaitEvents(CMD_TYPE cmd_type, uint32_t eventCount, const VkEvent *pEvents,
                                              VkPipelineStageFlags2KHR srcStageMask) {
+    ZoneScoped;
     // CMD_BUFFER_STATE will add to the events vector.
     auto first_event_index = events.size();
     CMD_BUFFER_STATE::RecordWaitEvents(cmd_type, eventCount, pEvents, srcStageMask);
@@ -1136,6 +1165,7 @@ void CoreChecks::PreCallRecordCmdWaitEvents(VkCommandBuffer commandBuffer, uint3
                                             uint32_t memoryBarrierCount, const VkMemoryBarrier *pMemoryBarriers,
                                             uint32_t bufferMemoryBarrierCount, const VkBufferMemoryBarrier *pBufferMemoryBarriers,
                                             uint32_t imageMemoryBarrierCount, const VkImageMemoryBarrier *pImageMemoryBarriers) {
+    ZoneScoped;
     StateTracker::PreCallRecordCmdWaitEvents(commandBuffer, eventCount, pEvents, sourceStageMask, dstStageMask, memoryBarrierCount,
                                              pMemoryBarriers, bufferMemoryBarrierCount, pBufferMemoryBarriers,
                                              imageMemoryBarrierCount, pImageMemoryBarriers);
@@ -1145,6 +1175,7 @@ void CoreChecks::PreCallRecordCmdWaitEvents(VkCommandBuffer commandBuffer, uint3
 
 void CoreChecks::RecordCmdWaitEvents2(VkCommandBuffer commandBuffer, uint32_t eventCount, const VkEvent *pEvents,
                                       const VkDependencyInfo *pDependencyInfos, CMD_TYPE cmd_type) {
+    ZoneScoped;
     // don't hold read lock during the base class method
     auto cb_state = GetWrite<CMD_BUFFER_STATE>(commandBuffer);
     for (uint32_t i = 0; i < eventCount; i++) {
@@ -1155,12 +1186,14 @@ void CoreChecks::RecordCmdWaitEvents2(VkCommandBuffer commandBuffer, uint32_t ev
 
 void CoreChecks::PreCallRecordCmdWaitEvents2KHR(VkCommandBuffer commandBuffer, uint32_t eventCount, const VkEvent *pEvents,
                                                 const VkDependencyInfoKHR *pDependencyInfos) {
+    ZoneScoped;
     StateTracker::PreCallRecordCmdWaitEvents2KHR(commandBuffer, eventCount, pEvents, pDependencyInfos);
     RecordCmdWaitEvents2(commandBuffer, eventCount, pEvents, pDependencyInfos, CMD_WAITEVENTS2KHR);
 }
 
 void CoreChecks::PreCallRecordCmdWaitEvents2(VkCommandBuffer commandBuffer, uint32_t eventCount, const VkEvent *pEvents,
                                              const VkDependencyInfo *pDependencyInfos) {
+    ZoneScoped;
     StateTracker::PreCallRecordCmdWaitEvents2(commandBuffer, eventCount, pEvents, pDependencyInfos);
     RecordCmdWaitEvents2(commandBuffer, eventCount, pEvents, pDependencyInfos, CMD_WAITEVENTS2);
 }
@@ -1170,6 +1203,7 @@ void CoreChecks::PostCallRecordCmdWaitEvents(VkCommandBuffer commandBuffer, uint
                                              uint32_t memoryBarrierCount, const VkMemoryBarrier *pMemoryBarriers,
                                              uint32_t bufferMemoryBarrierCount, const VkBufferMemoryBarrier *pBufferMemoryBarriers,
                                              uint32_t imageMemoryBarrierCount, const VkImageMemoryBarrier *pImageMemoryBarriers) {
+    ZoneScoped;
     auto cb_state = GetWrite<CMD_BUFFER_STATE>(commandBuffer);
     RecordBarriers(Func::vkCmdWaitEvents, cb_state.get(), bufferMemoryBarrierCount, pBufferMemoryBarriers, imageMemoryBarrierCount,
                    pImageMemoryBarriers);
@@ -1177,6 +1211,7 @@ void CoreChecks::PostCallRecordCmdWaitEvents(VkCommandBuffer commandBuffer, uint
 
 void CoreChecks::PostCallRecordCmdWaitEvents2KHR(VkCommandBuffer commandBuffer, uint32_t eventCount, const VkEvent *pEvents,
                                                  const VkDependencyInfoKHR *pDependencyInfos) {
+    ZoneScoped;
     auto cb_state = GetWrite<CMD_BUFFER_STATE>(commandBuffer);
     for (uint32_t i = 0; i < eventCount; i++) {
         const auto &dep_info = pDependencyInfos[i];
@@ -1186,6 +1221,7 @@ void CoreChecks::PostCallRecordCmdWaitEvents2KHR(VkCommandBuffer commandBuffer, 
 
 void CoreChecks::PostCallRecordCmdWaitEvents2(VkCommandBuffer commandBuffer, uint32_t eventCount, const VkEvent *pEvents,
                                               const VkDependencyInfo *pDependencyInfos) {
+    ZoneScoped;
     auto cb_state = GetWrite<CMD_BUFFER_STATE>(commandBuffer);
     for (uint32_t i = 0; i < eventCount; i++) {
         const auto &dep_info = pDependencyInfos[i];
@@ -1200,6 +1236,7 @@ bool CoreChecks::PreCallValidateCmdPipelineBarrier(VkCommandBuffer commandBuffer
                                                    const VkBufferMemoryBarrier *pBufferMemoryBarriers,
                                                    uint32_t imageMemoryBarrierCount,
                                                    const VkImageMemoryBarrier *pImageMemoryBarriers) const {
+    ZoneScoped;
     bool skip = false;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     assert(cb_state);
@@ -1233,6 +1270,7 @@ bool CoreChecks::PreCallValidateCmdPipelineBarrier(VkCommandBuffer commandBuffer
 
 bool CoreChecks::ValidateCmdPipelineBarrier2(VkCommandBuffer commandBuffer, const VkDependencyInfo *pDependencyInfo,
                                              CMD_TYPE cmd_type) const {
+    ZoneScoped;
     bool skip = false;
     auto cb_state = GetRead<CMD_BUFFER_STATE>(commandBuffer);
     assert(cb_state);
@@ -1279,6 +1317,7 @@ void CoreChecks::PreCallRecordCmdPipelineBarrier(VkCommandBuffer commandBuffer, 
                                                  const VkBufferMemoryBarrier *pBufferMemoryBarriers,
                                                  uint32_t imageMemoryBarrierCount,
                                                  const VkImageMemoryBarrier *pImageMemoryBarriers) {
+    ZoneScoped;
     StateTracker::PreCallRecordCmdPipelineBarrier(commandBuffer, srcStageMask, dstStageMask, dependencyFlags, memoryBarrierCount,
                                                   pMemoryBarriers, bufferMemoryBarrierCount, pBufferMemoryBarriers,
                                                   imageMemoryBarrierCount, pImageMemoryBarriers);
@@ -1291,6 +1330,7 @@ void CoreChecks::PreCallRecordCmdPipelineBarrier(VkCommandBuffer commandBuffer, 
 }
 
 void CoreChecks::PreCallRecordCmdPipelineBarrier2KHR(VkCommandBuffer commandBuffer, const VkDependencyInfoKHR *pDependencyInfo) {
+    ZoneScoped;
     StateTracker::PreCallRecordCmdPipelineBarrier2KHR(commandBuffer, pDependencyInfo);
 
     auto cb_state = GetWrite<CMD_BUFFER_STATE>(commandBuffer);
@@ -1299,6 +1339,7 @@ void CoreChecks::PreCallRecordCmdPipelineBarrier2KHR(VkCommandBuffer commandBuff
 }
 
 void CoreChecks::PreCallRecordCmdPipelineBarrier2(VkCommandBuffer commandBuffer, const VkDependencyInfo *pDependencyInfo) {
+    ZoneScoped;
     StateTracker::PreCallRecordCmdPipelineBarrier2(commandBuffer, pDependencyInfo);
 
     auto cb_state = GetWrite<CMD_BUFFER_STATE>(commandBuffer);
@@ -1307,6 +1348,7 @@ void CoreChecks::PreCallRecordCmdPipelineBarrier2(VkCommandBuffer commandBuffer,
 }
 
 bool CoreChecks::PreCallValidateSetEvent(VkDevice device, VkEvent event) const {
+    ZoneScoped;
     bool skip = false;
     auto event_state = Get<EVENT_STATE>(event);
     if (event_state) {
@@ -1325,6 +1367,7 @@ bool CoreChecks::PreCallValidateSetEvent(VkDevice device, VkEvent event) const {
 }
 
 bool CoreChecks::PreCallValidateResetEvent(VkDevice device, VkEvent event) const {
+    ZoneScoped;
     bool skip = false;
     auto event_state = Get<EVENT_STATE>(event);
     if (event_state) {
@@ -1338,6 +1381,7 @@ bool CoreChecks::PreCallValidateResetEvent(VkDevice device, VkEvent event) const
 }
 
 bool CoreChecks::PreCallValidateGetEventStatus(VkDevice device, VkEvent event) const {
+    ZoneScoped;
     bool skip = false;
     auto event_state = Get<EVENT_STATE>(event);
     if (event_state) {
@@ -1351,6 +1395,7 @@ bool CoreChecks::PreCallValidateGetEventStatus(VkDevice device, VkEvent event) c
 }
 
 bool CoreChecks::ValidateSignalSemaphore(VkDevice device, const VkSemaphoreSignalInfo *pSignalInfo, const char *api_name) const {
+    ZoneScoped;
     bool skip = false;
     auto semaphore_state = Get<SEMAPHORE_STATE>(pSignalInfo->semaphore);
     if (!semaphore_state) {
@@ -1415,6 +1460,7 @@ bool CoreChecks::PreCallValidateSignalSemaphoreKHR(VkDevice device, const VkSema
 
 bool CoreChecks::ValidateGetSemaphoreCounterValue(VkDevice device, VkSemaphore semaphore, uint64_t *pValue,
                                                   const char *apiName) const {
+    ZoneScoped;
     bool skip = false;
     auto semaphore_state = Get<SEMAPHORE_STATE>(semaphore);
     if (semaphore_state && semaphore_state->type != VK_SEMAPHORE_TYPE_TIMELINE) {
@@ -1441,6 +1487,7 @@ static inline VkQueueFlags SubpassToQueueFlags(uint32_t subpass) {
 
 bool CoreChecks::ValidateSubpassDependency(const LogObjectList &objects, const Location &in_loc,
                                            const VkSubpassDependency2 &dependency) const {
+    ZoneScoped;
     bool skip = false;
     Location loc = in_loc;
     VkMemoryBarrier2KHR converted_barrier;
@@ -1471,6 +1518,7 @@ bool CoreChecks::ValidateSubpassDependency(const LogObjectList &objects, const L
 // Verify an ImageMemoryBarrier's old/new ImageLayouts are compatible with the Image's ImageUsageFlags.
 bool CoreChecks::ValidateBarrierLayoutToImageUsage(const Location &loc, VkImage image, VkImageLayout layout,
                                                    VkImageUsageFlags usage_flags) const {
+    ZoneScoped;
     bool skip = false;
     bool is_error = false;
     switch (layout) {
@@ -1545,6 +1593,7 @@ bool CoreChecks::ValidateBarrierLayoutToImageUsage(const Location &loc, VkImage 
 template <typename ImageBarrier>
 bool CoreChecks::ValidateBarriersToImages(const Location &outer_loc, const CMD_BUFFER_STATE *cb_state,
                                           uint32_t imageMemoryBarrierCount, const ImageBarrier *pImageMemoryBarriers) const {
+    ZoneScoped;
     bool skip = false;
     using sync_vuid_maps::GetImageBarrierVUID;
     using sync_vuid_maps::ImageError;
@@ -1666,6 +1715,7 @@ bool CoreChecks::ValidateImageBarrierAttachment(const Location &loc, CMD_BUFFER_
                                                 const FRAMEBUFFER_STATE *framebuffer, uint32_t active_subpass,
                                                 const safe_VkSubpassDescription2 &sub_desc, const VkRenderPass rp_handle,
                                                 const ImgBarrier &img_barrier, const CMD_BUFFER_STATE *primary_cb_state) const {
+    ZoneScoped;
     using sync_vuid_maps::GetImageBarrierVUID;
     using sync_vuid_maps::ImageError;
 
@@ -1795,6 +1845,7 @@ std::shared_ptr<const BUFFER_STATE> BarrierHandleState(const ValidationStateTrac
 template <typename ImgBarrier>
 void CoreChecks::EnqueueSubmitTimeValidateImageBarrierAttachment(const Location &loc, CMD_BUFFER_STATE *cb_state,
                                                                  const ImgBarrier &barrier) {
+    ZoneScoped;
     // Secondary CBs can have null framebuffer so queue up validation in that case 'til FB is known
     if ((cb_state->activeRenderPass) && (VK_NULL_HANDLE == cb_state->activeFramebuffer) &&
         (VK_COMMAND_BUFFER_LEVEL_SECONDARY == cb_state->createInfo.level)) {
@@ -1817,6 +1868,7 @@ void CoreChecks::EnqueueSubmitTimeValidateImageBarrierAttachment(const Location 
 template <typename Barrier, typename TransferBarrier>
 void CoreChecks::RecordBarrierValidationInfo(const Location &loc, CMD_BUFFER_STATE *cb_state, const Barrier &barrier,
                                              QFOTransferBarrierSets<TransferBarrier> &barrier_sets) {
+    ZoneScoped;
     if (IsTransferOp(barrier)) {
         if (cb_state->IsReleaseOp(barrier) && !QueueFamilyIsExternal(barrier.dstQueueFamilyIndex)) {
             barrier_sets.release.emplace(barrier);
@@ -1852,6 +1904,7 @@ void CoreChecks::RecordBarrierValidationInfo(const Location &loc, CMD_BUFFER_STA
 void CoreChecks::RecordBarriers(Func func_name, CMD_BUFFER_STATE *cb_state, uint32_t bufferBarrierCount,
                                 const VkBufferMemoryBarrier *pBufferMemBarriers, uint32_t imageMemBarrierCount,
                                 const VkImageMemoryBarrier *pImageMemBarriers) {
+    ZoneScoped;
     for (uint32_t i = 0; i < bufferBarrierCount; i++) {
         Location loc(func_name, Struct::VkBufferMemoryBarrier, Field::pBufferMemoryBarriers, i);
         RecordBarrierValidationInfo(loc, cb_state, pBufferMemBarriers[i], cb_state->qfo_transfer_buffer_barriers);
@@ -1865,6 +1918,7 @@ void CoreChecks::RecordBarriers(Func func_name, CMD_BUFFER_STATE *cb_state, uint
 }
 
 void CoreChecks::RecordBarriers(Func func_name, CMD_BUFFER_STATE *cb_state, const VkDependencyInfoKHR &dep_info) {
+    ZoneScoped;
     for (uint32_t i = 0; i < dep_info.bufferMemoryBarrierCount; i++) {
         Location loc(func_name, Struct::VkBufferMemoryBarrier2, Field::pBufferMemoryBarriers, i);
         RecordBarrierValidationInfo(loc, cb_state, dep_info.pBufferMemoryBarriers[i], cb_state->qfo_transfer_buffer_barriers);
@@ -1881,6 +1935,7 @@ template <typename TransferBarrier, typename Scoreboard>
 bool CoreChecks::ValidateAndUpdateQFOScoreboard(const debug_report_data *report_data, const CMD_BUFFER_STATE &cb_state,
                                                 const char *operation, const TransferBarrier &barrier,
                                                 Scoreboard *scoreboard) const {
+    ZoneScoped;
     // Record to the scoreboard or report that we have a duplication
     bool skip = false;
     auto inserted = scoreboard->emplace(barrier, &cb_state);
@@ -1901,6 +1956,7 @@ template <typename TransferBarrier>
 bool CoreChecks::ValidateQueuedQFOTransferBarriers(
     const CMD_BUFFER_STATE &cb_state, QFOTransferCBScoreboards<TransferBarrier> *scoreboards,
     const GlobalQFOTransferBarrierMap<TransferBarrier> &global_release_barriers) const {
+    ZoneScoped;
     bool skip = false;
     const auto &cb_barriers = cb_state.GetQFOBarrierSets(TransferBarrier());
     const char *barrier_name = TransferBarrier::BarrierName();
@@ -1946,6 +2002,7 @@ bool CoreChecks::ValidateQueuedQFOTransferBarriers(
 bool CoreChecks::ValidateQueuedQFOTransfers(const CMD_BUFFER_STATE &cb_state,
                                             QFOTransferCBScoreboards<QFOImageTransferBarrier> *qfo_image_scoreboards,
                                             QFOTransferCBScoreboards<QFOBufferTransferBarrier> *qfo_buffer_scoreboards) const {
+    ZoneScoped;
     bool skip = false;
     skip |=
         ValidateQueuedQFOTransferBarriers<QFOImageTransferBarrier>(cb_state, qfo_image_scoreboards, qfo_release_image_barrier_map);
@@ -1957,6 +2014,7 @@ bool CoreChecks::ValidateQueuedQFOTransfers(const CMD_BUFFER_STATE &cb_state,
 template <typename TransferBarrier>
 void RecordQueuedQFOTransferBarriers(QFOTransferBarrierSets<TransferBarrier> &cb_barriers,
                                      GlobalQFOTransferBarrierMap<TransferBarrier> &global_release_barriers) {
+    ZoneScoped;
     // Add release barriers from this submit to the global map
     for (const auto &release : cb_barriers.release) {
         // the global barrier list is mapped by resource handle to allow cleanup on resource destruction
@@ -1986,6 +2044,7 @@ void RecordQueuedQFOTransferBarriers(QFOTransferBarrierSets<TransferBarrier> &cb
 }
 
 void CoreChecks::RecordQueuedQFOTransfers(CMD_BUFFER_STATE *cb_state) {
+    ZoneScoped;
     RecordQueuedQFOTransferBarriers<QFOImageTransferBarrier>(cb_state->qfo_transfer_image_barriers, qfo_release_image_barrier_map);
     RecordQueuedQFOTransferBarriers<QFOBufferTransferBarrier>(cb_state->qfo_transfer_buffer_barriers,
                                                               qfo_release_buffer_barrier_map);
@@ -1994,6 +2053,7 @@ void CoreChecks::RecordQueuedQFOTransfers(CMD_BUFFER_STATE *cb_state) {
 template <typename Barrier, typename TransferBarrier>
 bool CoreChecks::ValidateQFOTransferBarrierUniqueness(const Location &loc, const CMD_BUFFER_STATE *cb_state, const Barrier &barrier,
                                                       const QFOTransferBarrierSets<TransferBarrier> &barrier_sets) const {
+    ZoneScoped;
     bool skip = false;
     const char *handle_name = TransferBarrier::HandleName();
     const char *transfer_type = nullptr;
@@ -2134,6 +2194,7 @@ class ValidatorState {
 
 bool Validate(const CoreChecks *device_data, const CMD_BUFFER_STATE *cb_state, const ValidatorState &val,
               const uint32_t src_queue_family, const uint32_t dst_queue_family) {
+    ZoneScoped;
     bool skip = false;
 
     const bool mode_concurrent = val.GetSharingMode() == VK_SHARING_MODE_CONCURRENT;
@@ -2193,6 +2254,7 @@ bool CoreChecks::ValidateConcurrentBarrierAtSubmit(const Location &loc, const Va
 template <typename ImgBarrier>
 bool CoreChecks::ValidateBarrierQueueFamilies(const Location &loc, const CMD_BUFFER_STATE *cb_state, const ImgBarrier &barrier,
                                               const IMAGE_STATE *state_data) const {
+    ZoneScoped;
     // State data is required
     if (!state_data) {
         return false;
@@ -2210,6 +2272,7 @@ bool CoreChecks::ValidateBarrierQueueFamilies(const Location &loc, const CMD_BUF
 template <typename BufBarrier>
 bool CoreChecks::ValidateBarrierQueueFamilies(const Location &loc, const CMD_BUFFER_STATE *cb_state, const BufBarrier &barrier,
                                               const BUFFER_STATE *state_data) const {
+    ZoneScoped;
     // State data is required
     if (!state_data) {
         return false;
@@ -2226,6 +2289,7 @@ bool CoreChecks::ValidateBarrierQueueFamilies(const Location &loc, const CMD_BUF
 template <typename Barrier>
 bool CoreChecks::ValidateBufferBarrier(const LogObjectList &objects, const Location &loc, const CMD_BUFFER_STATE *cb_state,
                                        const Barrier &mem_barrier) const {
+    ZoneScoped;
     using sync_vuid_maps::BufferError;
     using sync_vuid_maps::GetBufferBarrierVUID;
 
@@ -2279,6 +2343,7 @@ bool CoreChecks::ValidateBufferBarrier(const LogObjectList &objects, const Locat
 template <typename Barrier>
 bool CoreChecks::ValidateImageBarrier(const LogObjectList &objects, const Location &loc, const CMD_BUFFER_STATE *cb_state,
                                       const Barrier &mem_barrier) const {
+    ZoneScoped;
     bool skip = false;
 
     skip |= ValidateQFOTransferBarrierUniqueness(loc, cb_state, mem_barrier, cb_state->qfo_transfer_image_barriers);
@@ -2348,6 +2413,7 @@ bool CoreChecks::ValidateBarriers(const Location &outer_loc, const CMD_BUFFER_ST
                                   const VkMemoryBarrier *pMemBarriers, uint32_t bufferBarrierCount,
                                   const VkBufferMemoryBarrier *pBufferMemBarriers, uint32_t imageMemBarrierCount,
                                   const VkImageMemoryBarrier *pImageMemBarriers) const {
+    ZoneScoped;
     bool skip = false;
     LogObjectList objects(cb_state->commandBuffer());
 
@@ -2377,6 +2443,7 @@ bool CoreChecks::ValidateBarriers(const Location &outer_loc, const CMD_BUFFER_ST
 
 bool CoreChecks::ValidateDependencyInfo(const LogObjectList &objects, const Location &outer_loc, const CMD_BUFFER_STATE *cb_state,
                                         const VkDependencyInfoKHR *dep_info) const {
+    ZoneScoped;
     bool skip = false;
 
     if (cb_state->activeRenderPass) {
@@ -2414,6 +2481,7 @@ template <typename Barrier>
 bool CoreChecks::ValidateMemoryBarrier(const LogObjectList &objects, const Location &loc, const CMD_BUFFER_STATE *cb_state,
                                        const Barrier &barrier, VkPipelineStageFlags src_stage_mask,
                                        VkPipelineStageFlags dst_stage_mask) const {
+    ZoneScoped;
     bool skip = false;
     assert(cb_state);
     auto queue_flags = cb_state->GetQueueFlags();
@@ -2431,6 +2499,7 @@ bool CoreChecks::ValidateMemoryBarrier(const LogObjectList &objects, const Locat
 template <typename Barrier>
 bool CoreChecks::ValidateMemoryBarrier(const LogObjectList &objects, const Location &loc, const CMD_BUFFER_STATE *cb_state,
                                        const Barrier &barrier) const {
+    ZoneScoped;
     bool skip = false;
     assert(cb_state);
     auto queue_flags = cb_state->GetQueueFlags();
