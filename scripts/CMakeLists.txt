@@ -90,6 +90,16 @@ if (UPDATE_DEPS)
         list(APPEND cmake_vars "ANDROID_PLATFORM" "CMAKE_ANDROID_ARCH_ABI" "CMAKE_ANDROID_STL_TYPE" "CMAKE_ANDROID_RTTI" "CMAKE_ANDROID_EXCEPTIONS" "ANDROID_USE_LEGACY_TOOLCHAIN_FILE")
     endif()
 
+    if (VVL_MOCK_ANDROID)
+        list(APPEND cmake_vars "VUL_MOCK_ANDROID=ON")
+    endif()
+
+    # Enable mimalloc statistics level 1. This is useful for release builds.
+    # Default value for release builds is MI_STAT=0, for debug builds it is MI_STAT=2.
+    if (VVL_ENABLE_MI_STAT)
+         list(APPEND cmake_vars "MI_EXTRA_CPPDEFS=\"MI_STAT=1\"")
+    endif()
+
     set(cmake_var)
     foreach(var IN LISTS cmake_vars)
         if (DEFINED ${var})
@@ -97,15 +107,6 @@ if (UPDATE_DEPS)
             list(APPEND update_dep_command "${var}=${${var}}")
         endif()
     endforeach()
-    if (VVL_MOCK_ANDROID)
-        list(APPEND cmake_var "--cmake_var" "VUL_MOCK_ANDROID=ON")
-    endif()
-
-    # Enable mimalloc statistics level 1. This is useful for release builds.
-    # Default value for release builds is MI_STAT=0, for debug builds it is MI_STAT=2.
-    if (VVL_ENABLE_MI_STAT)
-         list(APPEND cmake_var "--cmake_var" "MI_EXTRA_CPPDEFS=\"MI_STAT=1\"")
-    endif()
 
     if (cmake_var)
         list(APPEND update_dep_command "${cmake_var}")
